@@ -1,0 +1,102 @@
+/* 定義自訂字體 */
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('Cubic_11.ttf') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 使用自訂字體 */
+body {
+    font-family: 'MyCustomFont', sans-serif;
+}
+
+.head{
+    display: flex;
+}
+.headline{
+    width: 50%;
+    font-size: 30pt;
+}
+.head-box{
+    width: 50%;
+    display: flex;
+    justify-content:flex-end;}
+.head-c{
+    width: 30px;
+    margin-right: 10px;
+    font-size: 15pt;
+}
+.welcome{
+    width:100%;
+    height: 200px;
+    display: flex;
+    justify-content:center;
+    align-items:center;
+}
+.fish{
+    width: 150px;
+    display: block;
+    border-radius: 10px;
+}
+.angry{
+    font-size: 10pt;
+    display: none;
+}
+.list{
+    display: flex;
+    justify-content: center;
+}
+.object{
+    font-size: 20px;color: azure;
+    text-align: center;vertical-align:middle;
+    background-color:lightblue;
+    line-height:100px;width: 280px;
+    margin: 10px;
+    border-radius: 10px;
+}
+.slideshow {
+    position: relative;
+    margin: 30px;
+    display: flex;
+    justify-content:center;align-items:center;
+    height: 230px;
+}
+.artwork{
+    position: absolute;
+    top: 0;
+    display:none;
+    height: 200px;width: 300px;
+}
+/*平板設定*/
+@media(max-width:1250px){
+    .headline{
+        font-size: 20px;
+    }
+    .list{
+        flex-wrap:wrap
+    }
+    .object{
+        width: 45%
+    }
+}
+
+/*手機設定*/
+@media(max-width:500px){
+    .list{
+        flex-wrap:wrap
+    }
+    .object{
+        width: 90%
+    }
+    .fish{
+        display: none;
+    }
+    .angry{
+        display: block;
+    }
+}
+a:link {color: blue;}
+a:visited {color:black;}
+a:hover {color: green;}
+a:active {color: palevioletred;}
