@@ -96,7 +96,7 @@ body {
         display: block;
     }
 }
-a:link {color: blue;}
+a:link {color: black;}
 a:visited {color:black;}
 a:hover {color: green;}
-a:active {color: palevioletred;}
+a:active {color: red;}
