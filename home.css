@@ -9,43 +9,45 @@
 /* 使用自訂字體 */
 body {
     font-family: 'MyCustomFont', sans-serif;
+    background: #010101;
+    color: #f4ffc0;
 }
 
 .head{
     display: flex;
+    transform: none;
 }
 .headline{
     width: 50%;
     font-size: 30pt;
 }
 .head-box{
-    width: 50%;
+    width: 100%;
     display: flex;
-    justify-content:flex-end;}
-.head-c{
-    width: 30px;
-    margin-right: 10px;
-    font-size: 15pt;
+    justify-content: right;
+    flex-direction: column;
+    position: fixed;
 }
-.welcome{
-    width:100%;
-    height: 200px;
+.head-c{
+    text-align: right;
+    margin: 10px;
+    font-size: 15pt;
+    align-items: end;
+}
+.welcome-box{
+   height: 250px;
     display: flex;
     justify-content:center;
     align-items:center;
 }
-.fish{
-    width: 150px;
-    display: block;
-    border-radius: 10px;
-}
-.angry{
-    font-size: 10pt;
-    display: none;
+.welcome{
+    font-size: 50px;
+    /*font-family: ;*/
 }
 .list{
     display: flex;
     justify-content: center;
+    margin-bottom: 50px;
 }
 .object{
     font-size: 20px;color: azure;
@@ -89,12 +91,7 @@ body {
     .object{
         width: 90%
     }
-    .fish{
-        display: none;
-    }
-    .angry{
-        display: block;
-    }
+    
 }
 a:link {color: black;}
 a:visited {color:black;}
