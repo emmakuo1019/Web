@@ -42,7 +42,8 @@ body {
     align-items:center;
 }
 .welcome{
-    font-size: 50px;
+    height: 200px;
+    width: 80%;
 }
 .list{
     display: flex;
@@ -70,6 +71,24 @@ body {
     display:none;
     height: 200px;width: 300px;
 }
+.carousel {
+    width: 100%; /* 容器寬度 */
+    height: 200px;
+    overflow: hidden; /* 隱藏溢出的內容 */
+    position: relative;
+}
+
+.carousel-track {
+    display: flex;
+    position: relative;
+    white-space: nowrap; /* 避免折行 */
+}
+
+.carousel-track img {
+    height: 200px;
+    flex-shrink: 0;
+}
+
 /*平板設定*/
 @media(max-width:1250px){
     .headline{
