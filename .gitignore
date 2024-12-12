@@ -132,3 +132,6 @@ Cubic_11.ttf
 jquery-3.7.1.min.js
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,git,rider
+.DS_Store
+picture/.DS_Store
+*.xml

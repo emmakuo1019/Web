@@ -65,17 +65,17 @@ body {
     justify-content:center;align-items:center;
     height: 230px;
 }
-.artwork{
-    position: absolute;
-    top: 0;
-    display:none;
-    height: 200px;width: 300px;
+.line{
+    height: 2px;
+    width: 2px;
+    background: #f4ffc0;
 }
 .carousel {
     width: 100%; /* 容器寬度 */
     height: 200px;
     overflow: hidden; /* 隱藏溢出的內容 */
     position: relative;
+    margin-bottom: 50px;
 }
 
 .carousel-track {
