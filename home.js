@@ -5,7 +5,7 @@ $(document).ready(function () {
             {
                 scrollTop:0
             })
-    } );
+    });
 
     $( "#art" ).on( "click", function() {
         $("#art-area").get(0).scrollIntoView(
@@ -24,12 +24,17 @@ $(document).ready(function () {
             {behavior: "smooth"}
         );
     } );
-    
+
+    $(".contact").click(function(){
+        $('.object').slideToggle(500);
+    });
+
     const $track = $('.carousel-track');
     const $carousel = $('.carousel');
     const speed = 50; // 控制滾動速度，數字越小越快
 
     // 複製內容以實現無縫滾動
+    $track.append($track.html());
     $track.append($track.html());
 
     let scrollAmount = 0;
@@ -37,7 +42,7 @@ $(document).ready(function () {
     function startScrolling() {
         scrollAmount -= 1; // 每次向左滾動 1 像素
         if (Math.abs(scrollAmount) >= $track.width() / 1) {
-            scrollAmount = 0; // 當滾動超過一半，重置位置
+            scrollAmount =0;
         }
         $track.css('transform', `translateX(${scrollAmount}px)`);
         requestAnimationFrame(startScrolling); // 使用更流暢的動畫更新
@@ -62,17 +67,23 @@ $(document).ready(function () {
     // 開始觀察指定的元素
     elements.forEach(element =>{
         observer.observe(element);
-    })
+    });
+
+    $( ".back" ).on( "click", function() {
+        $("html,body").animate(
+            {
+                scrollTop:0
+            })
+    });
+    $( ".back2" ).on( "click", function() {
+        $("html,body").animate(
+            {
+                scrollTop:0
+            })
+    });
 });
 
-/*$(document).ready(function () {
-    $('.fish').click(function(){
-        $('.object').slideToggle(500);
-        });
-
-        $('.angry').click(function(){
-        $('.object').slideToggle(500);
-    });
+/*
     
     let currentIndex = 0; // 記錄當前顯示圖片的索引
     const artworks = $('.slideshow .artwork'); // 取得所有的 artwork 圖片
@@ -88,4 +99,4 @@ $(document).ready(function () {
         var inputValue = $(this).val();
         $('#display').text(inputValue);
     });
-});*/
+    */

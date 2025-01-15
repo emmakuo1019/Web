@@ -45,19 +45,6 @@ body {
     height: 200px;
     width: 80%;
 }
-.list{
-    display: flex;
-    justify-content: center;
-    margin-bottom: 50px;
-}
-.object{
-    font-size: 20px;color: azure;
-    text-align: center;vertical-align:middle;
-    background-color:lightblue;
-    line-height:100px;width: 280px;
-    margin: 10px;
-    border-radius: 10px;
-}
 .slideshow {
     position: relative;
     margin: 30px;
@@ -88,7 +75,35 @@ body {
     height: 200px;
     flex-shrink: 0;
 }
-
+.list{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+.object{
+    font-size: 20px;color: azure;
+    text-align: center;vertical-align:middle;
+    background-color:#f4ffc0;
+    line-height:100px;width: 280px;
+    margin: 10px;
+    border-radius: 10px;
+}
+.area{
+    height: 700px;
+    text-align: center;
+    font-size: 40px;
+    margin: bottom 30px;
+}
+.back{
+    text-align: center;
+    color:#f4ffc0;
+    display: block;
+}
+.back2{
+    text-align: center;
+    color:#f4ffc0;
+    display:none;
+}
 /*平板設定*/
 @media(max-width:1250px){
     .headline{
@@ -100,17 +115,28 @@ body {
     .object{
         width: 45%
     }
+    .back{
+        display: none;
+    }
+    .back2{
+        display: block;
+    }
 }
 
 /*手機設定*/
 @media(max-width:500px){
-    .list{
-        flex-wrap:wrap
-    }
     .object{
         width: 90%
     }
-    
+    .list{
+        flex-wrap:wrap
+    }
+    .back{
+        display: none;
+    }
+    .back2{
+        display: block;
+    }
 }
 a:link {color: black;}
 a:visited {color:black;}
