@@ -1,8 +1,7 @@
 /* 定義自訂字體 */
 @font-face {
     font-family: 'MyCustomFont';
-    src: url('Cubic_11.ttf') format('woff2');
-    font-weight: normal;
+    src: url('SourceHanSans-VF.ttf.ttc') format('woff2');
     font-style: normal;
 }
 
@@ -10,7 +9,7 @@
 body {
     font-family: 'MyCustomFont', sans-serif;
     background: #010101;
-    color: #f4ffc0;
+    color: #ade1a2;
 }
 
 .head{
@@ -21,115 +20,132 @@ body {
     width: 50%;
     font-size: 30pt;
 }
-.head-box{
-    width: 100%;
+.aside-box{
+    width: 20%;
+    margin-left: 80%;
     display: flex;
     justify-content: right;
     flex-direction: column;
     position: fixed;
 }
-.head-c{
+.asideoption{
     text-align: right;
-    margin-top: 5px;
+    margin: 6px;
     margin-right: 30px;
+    height:25px;
     font-size: 15pt;
     align-items: end;
 }
-.welcome-box{
+.asideoption:hover{
+    margin-right: 40px;
+    color: #010101;
+    background: #ade1a2;
+}
+.welcome{
    height: 250px;
     display: flex;
     justify-content:center;
     align-items:center;
+    font-size: 50px;
 }
-.welcome{
-    height: 200px;
-    width: 80%;
-}
-.slideshow {
-    position: relative;
-    margin: 30px;
-    display: flex;
-    justify-content:center;align-items:center;
-    height: 230px;
-}
+
 .line{
     height: 2px;
     width: 2px;
-    background: #f4ffc0;
+    background: #ade1a2;
 }
-.carousel {
-    width: 100%; /* 容器寬度 */
-    height: 200px;
-    overflow: hidden; /* 隱藏溢出的內容 */
-    position: relative;
-    margin-bottom: 50px;
-}
-
-.carousel-track {
+.area{
     display: flex;
-    position: relative;
-    white-space: nowrap; /* 避免折行 */
-}
-
-.carousel-track img {
-    height: 200px;
-    flex-shrink: 0;
-}
-.list{
-    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 30px;
+    margin-left: 10%;
+    width: 80%;
+    margin-bottom :30px;
 }
-.object{
-    font-size: 20px;color: azure;
-    text-align: center;vertical-align:middle;
-    background-color:#f4ffc0;
-    line-height:100px;width: 280px;
+.article{
+    margin: 10px;
+    width: 250px;height:350px;
+    text-align: left;
+    line-height: 1.6;
+    color: #ade1a2;
+    font-size: 18px;
+    font-weight:lighter;
+}
+.mypicture{
+    height: 180px;
     margin: 10px;
     border-radius: 10px;
 }
-.area{
-    height: 700px;
-    text-align: center;
-    font-size: 40px;
-    margin: bottom 30px;
-}
 .back{
     text-align: center;
-    color:#f4ffc0;
+    color:#ade1a2;
     display: block;
 }
 .back2{
     text-align: center;
-    color:#f4ffc0;
+    color:#ade1a2;
     display:none;
 }
+.footer{
+    display: flex;
+    justify-content: left;
+    padding-left: 10%;
+    color:#010101;
+    background: #ade1a2;
+    font-size: 15px;
+}
+.linkbox{
+    width: 35%;
+}
+.link{
+    text-align: left;
+    margin: 10px;
+}
+a:link {color: #010101;}
+a:visited {color: #010101;}
+a:hover {color:red;}
+a:active {color: red;}
+
 /*平板設定*/
 @media(max-width:1250px){
     .headline{
         font-size: 20px;
     }
-    .list{
-        flex-wrap:wrap
+    .aside-box{
+        width:100px;
     }
-    .object{
-        width: 45%
+    .asideoption{
+        font-size: 14px;
     }
-    .back{
-        display: none;
+    .area{
+        width: 90%;
     }
-    .back2{
-        display: block;
+    .article{
+        display: flex;
+        font-size: 14px;
+        height: 280px;
+    }
+    .mypicture{
+        height: 150px;
     }
 }
 
 /*手機設定*/
 @media(max-width:500px){
-    .object{
-        width: 90%
+    .aside-box{
+        width:100px;
+        margin-left: 70%;
     }
-    .list{
-        flex-wrap:wrap
+    .asideoption{
+        font-size: 12px;
+    }
+    .mypicture{
+        height: 120px;
+        line-height: 1.2;
+    }
+    .article{
+        font-size: 12px;
+        height: 230px;
     }
     .back{
         display: none;
@@ -138,7 +154,3 @@ body {
         display: block;
     }
 }
-a:link {color: black;}
-a:visited {color:black;}
-a:hover {color: green;}
-a:active {color: red;}

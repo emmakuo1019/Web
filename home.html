@@ -9,59 +9,76 @@
     <link href="home.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-<!--標題區-->
-<div>
+<!--側欄-->
+<aside class="aside-box">
+    <div class="asideoption" id="top">TOP</div>
+    <div class="asideoption" id="introduction">INTRODUCTION</div>
+    <div class="asideoption" id="design">DESIGN</div>
+    <div class="asideoption" id="website">WEBSITE</div>
+</aside>
+<!--頁首-->
+<header>
+    <h1 style="margin: 40px">My WEBSITE</h1>
 <div class="head">
-    <div class="headline">MY WEBSITE</div>
-    <div class="head-box">
-        <div class="head-c" id="top">top</div>
-        <div class="head-c" id="art">art</div>
-        <div class="head-c" id="picture">picture</div>
-        <div class="head-c" id="game">game</div>
-    </div>
 </div>
-<div class="welcome-box">
-    <img src="picture/wel.png" class="welcome"></img>
-</div>
-</div>
-<div class="carousel">
-    <div class="carousel-track">
-        <img src="picture/cat.jpg" alt="Image 1">
-        <img src="picture/rock.jpg" alt="Image 2">
-        <img src="picture/cat2.jpg" alt="Image 3">
-        <img src="picture/lobster.jpg" alt="Image 4">
-    </div>
-</div>
-<div class="contact" style="margin-left: 45%;font-size: 20px;">CONTACT ME</div>
-<div class="list">
-    <div class="object"><a href="https://www.instagram.com/emmakuo1019/">INSTAGRAM</a></div>
-    <div class="object"><a href="https://www.facebook.com/EmmaKuo1019?locale=zh_TW">FACE BOOK</a></div>
-    <div class="object"><a href="">NOTHING YET</a></div>
-    <div class="object"><a href="">NOTHING YET</a></div>
-</div>
-<div class="area" id="art-area">art area</div>
+<div class="welcome"> WELCOME</div>
+</header>
+<!--內容-->
+<main class="area" id="introduction-area">
+    <article class="article" style="width: 350px;padding-left: 10px">
+        <img class="mypicture" src="picture/fish.jpg">
+        <div><h4>郭青蛙</h4>產地：台北，然後我不喜歡台北</div>
+    </article>
+</main>
+
     <div class="line"></div>
-<div class="area" id="picture-area">picture area</div>
+<main class="area" id="design-area">
+        <article class="article">
+            <img class="mypicture" src="picture/Book01small.png">
+            <div style="padding-left: 10px"><h4>畢業紀念冊</h4>士林高商第68屆畢業紀念冊封面設計</div>
+        </article>
+        <article class="article">
+            <img class="mypicture" src="picture/book02samll.png">
+            <div style="padding-left: 10px"><h4>面試經驗談</h4>2023年士林高商輔導室刊物封面設計</div>
+        </article>
+    <article class="article">
+        <img class="mypicture" src="picture/cisLogo-02.png">
+        <div style="padding-left: 10px"><h4>早餐研究室</h4>APP UIUX DESIGN</div>
+    </article>
+</main>
+
     <div class="line"></div>
-<div class="area" id="game-area">game area</div>
+<main class="area" id="website-area">
+    <article class="article">
+        <img class="mypicture" src="picture/formtest.png">
+        <div style="padding-left: 10px"><h4>線上表單</h4>網頁表單上線，及架設後台資料庫</div>
+    </article>
+    <article class="article">
+        <img class="mypicture" src="picture/webpra01.png">
+        <div style="padding-left: 10px"><h4>網頁練習</h4>基本網頁排版、JQwery應用練習</div>
+    </article>
+</main>
+<div class="back"> ⬆︎ BACK TO TOP ⬆︎</div>
+<div class="back2"> ⬆︎ </div>
+<!--頁尾-->
+<footer class="footer">
+    <div class="linkbox">
+        <h4>CONTACT ME</h4>
+        <div class="link"><a href="https://www.instagram.com/emmakuo1019/">INSTAGRAM</a></div>
+        <div class="link"><a href="https://www.facebook.com/EmmaKuo1019?locale=zh_TW">FACE BOOK</a></div>
+        <div class="link"><a href="">GMAIL</a></div>
+    </div>
+    <div class="linkbox">
+        <h4>關於這個網頁</h4>
+        <div class="link">他是我一手拉拔長大的<br>（感動</div>
+    </div>
+    <div class="linkbox">
+        <h4>View</h4>
+        <a href="https://matias.me/nsfw/?fbclid=PAZXh0bgNhZW0CMTEAAabrlXwCofpQaHGkGqUS7Qhd_6TcpLodBs0KEXRYPKGVmwtrJIQvsCQewx8_aem_75-H6FKdLvmSPRFoGoqnyg">cool stuff</a>
+    </div>
+</footer>
 
 <script src="jquery-3.7.1.min.js"></script>
 <script src="home.js"></script>
-<div class="back"> ⬆︎ BACK TO TOP ⬆︎</div>
-<div class="back2"> ⬆︎ </div>
 </body>
 </html>
-
-<!--
-<div class="head" style="justify-content: center">
-    <div class="headline" style="text-align: center;">MY PICTURE</div>
-</div>-->
-
-<!--切換圖片
-<div class="slideshow">
-    <img src="picture/cat.jpg" class="artwork"/>
-    <img src="picture/rock.jpg" class="artwork"/>
-    <img src="picture/frog.jpg" class="artwork"/>
-    <img src="picture/cat2.jpg" class="artwork"/>
-    <img src="picture/lobster.jpg" class="artwork"/>
-</div>-->
