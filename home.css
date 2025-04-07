@@ -9,81 +9,117 @@
 body {
     font-family: 'MyCustomFont', sans-serif;
     background: #010101;
-    color: #ade1a2;
+    color: #85e3c5;
 }
-
-.head{
-    display: flex;
-    transform: none;
-}
-.headline{
-    width: 50%;
-    font-size: 30pt;
-}
-.aside-box{
-    width: 20%;
-    margin-left: 80%;
-    display: flex;
-    justify-content: right;
-    flex-direction: column;
-    position: fixed;
-}
-.asideoption{
-    text-align: right;
-    margin: 6px;
-    margin-right: 30px;
-    height:25px;
-    font-size: 15pt;
-    align-items: end;
-}
-.asideoption:hover{
-    margin-right: 40px;
-    color: #010101;
-    background: #ade1a2;
-}
-.welcome{
-   height: 250px;
+.header{
     display: flex;
     justify-content:center;
     align-items:center;
     font-size: 50px;
 }
-
-.line{
-    height: 2px;
-    width: 2px;
-    background: #ade1a2;
+.nav{
+    position: fixed;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 5%;
+    width: 90%;
+    font-size: 15px;
+}
+.Navoption{
+    margin: 12px;
+    filter: invert(10%);
+}
+.Navoption:hover{
+    background: #85e3c5;
+}
+.porfile-picture{
+    height: 200px;width: 200px;
+    border: 1px solid white ;
+    border-radius: 10px;
+    margin-right: 50px;
+}
+.dec01{
+    height: 200px;
+    background: #F7F7F7;
+}
+.dec02{
+    height: 80px;
+    background: #F7F7F7;
 }
 .area{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin-left: 10%;
-    width: 80%;
-    margin-bottom :30px;
+    padding-top: 100px;
+    width: 90%;
+    margin-bottom :100px;
 }
 .article{
     margin: 10px;
-    width: 250px;height:350px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.title{
+    margin-left: 150px;margin-top: 100px;
+    font-size: 30px;
+    font-weight: bold;
+}
+.word{
     text-align: left;
     line-height: 1.6;
-    color: #ade1a2;
-    font-size: 18px;
+    color: #85e3c5;
+    font-size: 20px;
     font-weight:lighter;
 }
-.mypicture{
-    height: 180px;
-    margin: 10px;
-    border-radius: 10px;
+.work{
+    height: 300px;
+    width: 400px;
+    border:2px dashed white;
+    border-radius:10px;
+}
+.mypicture:hover{
+    height: 200px;
+}
+.mypicture_ching02{
+    width: 70%;
+}
+.mypicture_book01{
+    width: 60%;
+}
+.form{
+    justify-content: center;
+    margin-left: 10%;
+    padding-top: 50px;
+}
+.contact{
+    margin-top: 10px;margin-bottom: 10px;
+    height: 40px;width: 300px;
+    background: #85e3c5;
+    border: 0;
+    border-radius: 3px;
+    outline:none;
+}
+.contact:hover{
+    background: #F7F7F7;
+}
+.button {
+    margin-top: 20px;
+    margin-right: 20px;
+    height: 40px;width: 100px;
+    background: #85e3c5;
+    border: 0;
+    border-radius: 3px;
+    outline:none;
 }
 .back{
     text-align: center;
-    color:#ade1a2;
+    color:#85e3c5;
     display: block;
 }
 .back2{
     text-align: center;
-    color:#ade1a2;
+    color:#85e3c5;
     display:none;
 }
 .footer{
@@ -91,7 +127,7 @@ body {
     justify-content: left;
     padding-left: 10%;
     color:#010101;
-    background: #ade1a2;
+    background: #85e3c5;
     font-size: 15px;
 }
 .linkbox{
@@ -111,41 +147,58 @@ a:active {color: red;}
     .headline{
         font-size: 20px;
     }
-    .aside-box{
-        width:100px;
+    .nav{
+        font-size: 15px;
+        width: 95%;
     }
-    .asideoption{
+    .Navoption{
         font-size: 14px;
     }
     .area{
         width: 90%;
     }
-    .article{
-        display: flex;
+    .word{
         font-size: 14px;
-        height: 280px;
+    }
+    .work{
+        height: 250px;
+        width: 350px;
     }
     .mypicture{
         height: 150px;
+    }
+    .mypicture_ching02{
+        width: 90%;
     }
 }
 
 /*手機設定*/
 @media(max-width:500px){
-    .aside-box{
-        width:100px;
-        margin-left: 70%;
+    .nav{
+        display: none;
     }
-    .asideoption{
+    .title{
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .word{
         font-size: 12px;
+    }
+    .work{
+        height: 200px;
+        width: 300px;
+        border-radius:10px;
     }
     .mypicture{
         height: 120px;
+        width: 120px;
         line-height: 1.2;
     }
-    .article{
-        font-size: 12px;
-        height: 230px;
+    .mypicture_ching02{
+        width: 100%;
+    }
+    .mypicture_book01{
+        width: 70%;
     }
     .back{
         display: none;

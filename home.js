@@ -1,63 +1,55 @@
 $(document).ready(function () {
 
-    $( ".top" ).on( "click", function() {
-        $("html,body").animate(
-            {
-                scrollTop:0
-            })
+    $("#top").on("click", function () {
+        $("#top-area").get(0).scrollIntoView(
+            {behavior: "smooth"}
+        )
     });
 
-    $( "#introduction" ).on( "click", function() {
-        $("#introduction-area").get(0).scrollIntoView(
-            {behavior:"smooth"}
-        );
-    } );
-        
-    $( "#design" ).on( "click", function() {
-        $("#design-area").get(0).scrollIntoView(
+    $("#works").on("click", function () {
+        $("#works-area").get(0).scrollIntoView(
             {behavior: "smooth"}
         );
-    } );
+    });
 
-    $( "#website" ).on( "click", function() {
-        $("#website-area").get(0).scrollIntoView(
+    $("#profile").on("click", function () {
+        $("#profile-area").get(0).scrollIntoView(
             {behavior: "smooth"}
         );
-    } );
+    });
 
-    /*$(".contact").click(function(){
-        $('.linkbox').slideToggle(500);
-    });*/
+    $("#contact").on("click", function () {
+        $("#contact-area").get(0).scrollIntoView(
+            {behavior: "smooth"}
+        );
+    });
 
     const elements = document.querySelectorAll(".line")
+
     function observeHandler(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 // 當元素進入視窗時觸發動畫
                 var $div = $(entry.target); // 使用 jQuery 選取目標元素
-                $div.animate({ width: '100%', opacity: '0.4' }, "slow");
+                $div.animate({width: '100%', opacity: '0.4'}, "slow");
                 // 停止觀察該元素，避免重複動畫
                 observer.unobserve(entry.target);
             }
         })
     }
+
     const observer = new IntersectionObserver(observeHandler);
 
     // 開始觀察指定的元素
-    elements.forEach(element =>{
+    elements.forEach(element => {
         observer.observe(element);
     });
 
-    $( ".back" ).on( "click", function() {
+    $(".back").on("click", function () {
         $("html,body").animate(
             {
-                scrollTop:0
+                scrollTop: 0
             })
     });
-    $( ".back2" ).on( "click", function() {
-        $("html,body").animate(
-            {
-                scrollTop:0
-            })
-    });
-});
+
+})

@@ -5,61 +5,78 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 </home>
 <head>
-    <title>Test01</title>
-    <link href="home.css" rel="stylesheet" type="text/css" />
+    <title>郭青蛙的作品集</title>
+    <link rel="stylesheet" href="home.css">
 </head>
-<body>
-<!--側欄-->
-<aside class="aside-box">
-    <div class="asideoption" id="top">TOP</div>
-    <div class="asideoption" id="introduction">INTRODUCTION</div>
-    <div class="asideoption" id="design">DESIGN</div>
-    <div class="asideoption" id="website">WEBSITE</div>
+<body style="margin: 0">
+<!--nav-->
+<aside class="nav">
+    <div class="Navoption" id="top">TOP</div>
+    <div class="Navoption" id="works">WORKS</div>
+    <div class="Navoption" id="profile">PROFILE</div>
+    <div class="Navoption" id="contact">CONTACT</div>
 </aside>
 <!--頁首-->
-<header>
-    <h1 style="margin: 40px">My WEBSITE</h1>
-<div class="head">
+<header class="header" id="top-area" style="height: 700px;background-color: #F7F7F7;color: #010101"> header</header>
+<!--works-->
+<div class="title" style="">WORKS</div>
+<main class="area" id="works-area">
+    <article class="article">
+        <a href="ching.html"><div class="work">work</div></a>
+        <br>
+        <div class="word">這裡是作品描述</div>
+    </article>
+    <article class="article">
+        <a href="book01.html"><div class="work">work</div></a><br>
+        <div class="word">這裡是作品描述</div>
+    </article>
+    <article class="article">
+        <div class="work">work</div><br>
+        <div class="word">這裡是作品描述</div>
+    </article>
+    <article class="article">
+        <div class="work">work</div><br>
+        <div class="word">這裡是作品描述</div>
+    </article>
+    <article class="article">
+        <a href="breakfast.html"><div class="work">work</div></a><br>
+        <div class="word">這裡是作品描述</div>
+    </article>
+    <article class="article">
+        <div class="work">work</div><br>
+        <div class="word">這裡是作品描述</div>
+    </article>
+</main>
+<!--Dec01-->
+<div class="dec01"></div>
+<!--profile-->
+<main class="header" id="profile-area" style=" background-color:#010101 ;height:600px;">
+    <article class="article" style="display: flex;flex-direction: row ">
+        <div class="porfile-picture" ></div>
+        <div class="word"><h4>郭青蛙</h4>產地：台北，然後我不喜歡台北，專長平面設計，對電腦胡言亂語</div>
+    </article>
+</main>
+<!--Dec02-->
+<div class="dec02">
+    
 </div>
-<div class="welcome"> WELCOME</div>
-</header>
-<!--內容-->
-<main class="area" id="introduction-area">
-    <article class="article" style="width: 350px;padding-left: 10px">
-        <img class="mypicture" src="picture/fish.jpg">
-        <div><h4>郭青蛙</h4>產地：台北，然後我不喜歡台北</div>
-    </article>
-</main>
+<!--contact-->
+<div class="title">CONTACT ME</div>
+<form class="form" id="contact-area" style="height: 500px">
+    <label>NAME</label><br>
+    <input type="text" id="name" class="contact"><br>
+    <label>COMPANY</label><br>
+    <input type="text" id="company" class="contact"><br>
+    <label>EMAIL</label><br>
+    <input type="email" id="email" class="contact"><br>
+    <label>INFORMATION</label><br>
+    <input type="text" id="information" class="contact" style="height: 50px"><br>
+    <button class="button" id="send">送出</button>
+</form>
 
-    <div class="line"></div>
-<main class="area" id="design-area">
-        <article class="article">
-            <img class="mypicture" src="picture/Book01small.png">
-            <div style="padding-left: 10px"><h4>畢業紀念冊</h4>士林高商第68屆畢業紀念冊封面設計</div>
-        </article>
-        <article class="article">
-            <img class="mypicture" src="picture/book02samll.png">
-            <div style="padding-left: 10px"><h4>面試經驗談</h4>2023年士林高商輔導室刊物封面設計</div>
-        </article>
-    <article class="article">
-        <img class="mypicture" src="picture/cisLogo-02.png">
-        <div style="padding-left: 10px"><h4>早餐研究室</h4>APP UIUX DESIGN</div>
-    </article>
-</main>
-
-    <div class="line"></div>
-<main class="area" id="website-area">
-    <article class="article">
-        <img class="mypicture" src="picture/formtest.png">
-        <div style="padding-left: 10px"><h4>線上表單</h4>網頁表單上線，及架設後台資料庫</div>
-    </article>
-    <article class="article">
-        <img class="mypicture" src="picture/webpra01.png">
-        <div style="padding-left: 10px"><h4>網頁練習</h4>基本網頁排版、JQwery應用練習</div>
-    </article>
-</main>
 <div class="back"> ⬆︎ BACK TO TOP ⬆︎</div>
 <div class="back2"> ⬆︎ </div>
+
 <!--頁尾-->
 <footer class="footer">
     <div class="linkbox">
@@ -73,12 +90,16 @@
         <div class="link">他是我一手拉拔長大的<br>（感動</div>
     </div>
     <div class="linkbox">
-        <h4>View</h4>
-        <a href="https://matias.me/nsfw/?fbclid=PAZXh0bgNhZW0CMTEAAabrlXwCofpQaHGkGqUS7Qhd_6TcpLodBs0KEXRYPKGVmwtrJIQvsCQewx8_aem_75-H6FKdLvmSPRFoGoqnyg">cool stuff</a>
+        <h4>Weird stuff</h4>
+        <a href="https://matias.me/nsfw/?fbclid=PAZXh0bgNhZW0CMTEAAabrlXwCofpQaHGkGqUS7Qhd_6TcpLodBs0KEXRYPKGVmwtrJIQvsCQewx8_aem_75-H6FKdLvmSPRFoGoqnyg">cool♫♪</a>
     </div>
 </footer>
 
-<script src="jquery-3.7.1.min.js"></script>
+<script 
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous">
+</script>
 <script src="home.js"></script>
 </body>
 </html>
