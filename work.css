@@ -1,0 +1,123 @@
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('NotoSansTC-VariableFont_wght.ttf') format('woff2'),
+    url('NotoSansTC-VariableFont_wght.ttf') format('woff');
+}
+body {
+    margin: 0;
+    background: #010101;
+    color: #F7F7F7;
+    font-family: 'NotoSansTC-VariableFont_wght.ttf', sans-serif;
+}
+.nav{
+    z-index: 50;
+    position: fixed;
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    font-size: 15px;
+    background: #85e3c5;
+    color: #010101;
+}
+.logo{
+    z-index: 60;
+    position: fixed;
+    font-size:25px;
+    margin-top: 5px;
+    color: #010101;
+}
+.Navoption{
+    margin: 12px;
+}
+.Navoption:hover{
+    background: #010101;
+    color:#85e3c5;
+}
+.article{
+    display: flex;
+}
+/*文字設定*/
+.title{
+    align-items: start;
+    font-size: 30px;
+    font-weight: bold;
+    color: #85e3c5;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s ease;
+}
+.title.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.word{
+    text-align: left;
+    line-height: 1.8;
+    font-size: 18px;
+    font-weight:lighter;
+}
+ul{
+    list-style-type: none;
+    padding: 0;
+}
+/*圖片設定*/
+.work-info-big{
+    margin-top: 100px;
+    margin-bottom: 30px;
+    width: 80%;
+    height: 500px;
+    border:2px solid #edadad;
+    border-radius:10px;
+}
+/*互動設定*/
+.footer{
+    display: flex;
+    justify-content: left;
+    padding-left: 10%;
+    color:#010101;
+    background: #85e3c5;
+    font-size: 15px;
+}
+.linkbox{
+    width: 35%;
+}
+.link{
+    text-align: left;
+    margin: 10px;
+}
+a:visited{ color:#010101;}
+a:link{ color:#010101;}
+/*平板設定*/
+@media(max-width:1250px){
+    .Navoption{
+        font-size: 14px;
+    }
+    .work{
+        height: 250px;
+        width: 350px;
+    }
+}
+
+/*手機設定*/
+@media(max-width:500px){
+    .logo{
+        display: none;
+    }
+    .Navoption{
+        display: none;
+    }
+    .word{
+        font-size: 14px;
+    }
+    .work{
+        height: 200px;
+        width: 300px;
+        border-radius:10px;
+    }
+    .back{
+        display: none;
+    }
+    .back2{
+        display: block;
+    }
+}

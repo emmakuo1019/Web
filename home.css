@@ -4,6 +4,7 @@
     url('NotoSansTC-VariableFont_wght.ttf') format('woff');
 }
 body {
+    margin: 0;
     background: #010101;
     color: #F7F7F7;
     font-family: 'NotoSansTC-VariableFont_wght.ttf', sans-serif;
@@ -25,7 +26,7 @@ body {
     color: #010101;
 }
 .logo{
-    z-index: 30;
+    z-index: 60;
     position: fixed;
     font-size:25px;
     margin-top: 5px;
@@ -98,12 +99,7 @@ body {
     margin-bottom: 40px;
 }
 /*文字設定*/
-.logo{
-    z-index: 60;
-}
 .title{
-    width: 200px;
-    height: 100%;
     align-items: start;
     font-size: 30px;
     font-weight: bold;
@@ -208,10 +204,7 @@ a:visited{ color:#010101;}
 a:link{ color:#010101;}
 /*平板設定*/
 @media(max-width:1250px){
-    .headline{
-        font-size: 20px;
-    }
-    .Navoption{
+   .Navoption{
         font-size: 14px;
     }
     .title-space{
