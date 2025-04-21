@@ -1,5 +1,11 @@
 $(document).ready(function () {
 
+    $("#emma").on("click", function () {
+        $("#top-area").get(0).scrollIntoView(
+            {behavior: "smooth"}
+        )
+    });
+
     $("#top").on("click", function () {
         $("#top-area").get(0).scrollIntoView(
             {behavior: "smooth"}
@@ -24,23 +30,20 @@ $(document).ready(function () {
         );
     });
 
-    const elements = document.querySelectorAll(".line")
+    const elements = document.querySelectorAll(".title");
 
-    function observeHandler(entries) {
+    function observeHandler(entries, observer) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // 當元素進入視窗時觸發動畫
-                var $div = $(entry.target); // 使用 jQuery 選取目標元素
-                $div.animate({width: '100%', opacity: '0.4'}, "slow");
-                // 停止觀察該元素，避免重複動畫
-                observer.unobserve(entry.target);
+                entry.target.classList.add("visible");
+            } else {
+                entry.target.classList.remove("visible"); // 離開視窗就移除 class，讓它可以再次觸發
             }
-        })
+        });
     }
 
     const observer = new IntersectionObserver(observeHandler);
 
-    // 開始觀察指定的元素
     elements.forEach(element => {
         observer.observe(element);
     });
@@ -52,4 +55,11 @@ $(document).ready(function () {
             })
     });
 
+    $(".back2").on("click", function () {
+        $("html,body").animate(
+            {
+                scrollTop: 0
+            })
+    });
+    
 })

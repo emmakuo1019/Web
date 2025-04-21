@@ -8,61 +8,87 @@
     <title>郭青蛙的作品集</title>
     <link rel="stylesheet" href="home.css">
 </head>
+
 <body style="margin: 0">
 <!--nav-->
-<aside class="nav">
+<div class="logo" id="emma">.EMMA</div>
+<nav class="nav">
     <div class="Navoption" id="top">TOP</div>
     <div class="Navoption" id="works">WORKS</div>
     <div class="Navoption" id="profile">PROFILE</div>
     <div class="Navoption" id="contact">CONTACT</div>
-</aside>
+</nav>
 <!--頁首-->
 <header class="header" id="top-area" style="height: 700px;background-color: #F7F7F7;color: #010101"> header</header>
+
 <!--works-->
-<div class="title" style="">WORKS</div>
-<main class="area" id="works-area">
-    <article class="article">
-        <a href="ching.html"><div class="work">work</div></a>
-        <br>
-        <div class="word">這裡是作品描述</div>
-    </article>
-    <article class="article">
-        <a href="book01.html"><div class="work">work</div></a><br>
-        <div class="word">這裡是作品描述</div>
-    </article>
-    <article class="article">
-        <div class="work">work</div><br>
-        <div class="word">這裡是作品描述</div>
-    </article>
-    <article class="article">
-        <div class="work">work</div><br>
-        <div class="word">這裡是作品描述</div>
-    </article>
-    <article class="article">
-        <a href="breakfast.html"><div class="work">work</div></a><br>
-        <div class="word">這裡是作品描述</div>
-    </article>
-    <article class="article">
-        <div class="work">work</div><br>
-        <div class="word">這裡是作品描述</div>
-    </article>
+<div class="title-phone">作品 WORKS</div>
+<main id="works-area" class="area2">
+    <div class="title-space">
+        <div class="title">作品<br>WORKS</div>
+    </div>
+    <div class="works">
+        <article class="article">
+            <a href="ching.html"><div class="work">work</div></a>
+            <br>
+            <div class="word">這裡是作品描述</div>
+        </article>
+        <article class="article">
+            <a href="book01.html"><div class="work">work</div></a><br>
+            <h2 class="word">這裡是作品描述</h2>
+        </article>
+        <article class="article">
+            <div class="work">work</div><br>
+            <div class="word">這裡是作品描述</div>
+        </article>
+        <article class="article">
+            <div class="work">work</div><br>
+            <div class="word">這裡是作品描述</div>
+        </article>
+        <article class="article">
+            <a href="breakfast.html"><div class="work">work</div></a><br>
+            <div class="word">這裡是作品描述</div>
+        </article>
+        <article class="article">
+            <div class="work">work</div><br>
+            <div class="word">這裡是作品描述</div>
+        </article>
+    </div>    
 </main>
+
 <!--Dec01-->
 <div class="dec01"></div>
+
 <!--profile-->
-<main class="header" id="profile-area" style=" background-color:#010101 ;height:600px;">
-    <article class="article" style="display: flex;flex-direction: row ">
-        <div class="porfile-picture" ></div>
-        <div class="word"><h4>郭青蛙</h4>產地：台北，然後我不喜歡台北，專長平面設計，對電腦胡言亂語</div>
+<div class="title-phone">關於我  PROFILE</div>
+<main id="profile-area" class="area2">
+    <div class="title-space">
+        <div class="title">關於我<br>PROFILE</div>
+        <img class="porfile-picture" src="picture/me.png">
+    </div>
+    <article style="display:flex;flex-direction: column">
+        <div style="font-size: 30px;color: #85e3c5;">郭羽棠</div>
+        <section style="display:flex;flex-direction: row">
+            <div class="word" style="margin-right:65px "><h3>基本資訊</h3>家鄉在台北市<br>目前就讀嶺東科技大學大二<br>喜歡各式怪東西</div>
+            <div class="word" style="margin-right:65px "><h3>專長</h3>平面設計<br>網頁前端設計<br>Ai Ps Pr</div>
+            <div class="word"><h3>經歷</h3>嶺東科大數媒系系學會美宣長<br>青川影展主視覺負責人<br>大一班級聯展主視覺負責人</div>
+        </section>
     </article>
 </main>
+
 <!--Dec02-->
 <div class="dec02">
-    
+    <div>.EMMA.EMMA</div>
 </div>
+
 <!--contact-->
-<div class="title">CONTACT ME</div>
-<form class="form" id="contact-area" style="height: 500px">
+<div class="title-phone">聯繫我 CONTACT ME</div>
+<main id="contact-area" class="area2">
+    <div class="title-space">
+        <div class="title">聯繫我<br>CONTACT ME</div>
+        <img class="crying" src="picture/me-ooo.png">
+    </div>
+<form class="form">
     <label>NAME</label><br>
     <input type="text" id="name" class="contact"><br>
     <label>COMPANY</label><br>
@@ -73,6 +99,7 @@
     <input type="text" id="information" class="contact" style="height: 50px"><br>
     <button class="button" id="send">送出</button>
 </form>
+</main>
 
 <div class="back"> ⬆︎ BACK TO TOP ⬆︎</div>
 <div class="back2"> ⬆︎ </div>
@@ -83,15 +110,10 @@
         <h4>CONTACT ME</h4>
         <div class="link"><a href="https://www.instagram.com/emmakuo1019/">INSTAGRAM</a></div>
         <div class="link"><a href="https://www.facebook.com/EmmaKuo1019?locale=zh_TW">FACE BOOK</a></div>
-        <div class="link"><a href="">GMAIL</a></div>
     </div>
     <div class="linkbox">
         <h4>關於這個網頁</h4>
         <div class="link">他是我一手拉拔長大的<br>（感動</div>
-    </div>
-    <div class="linkbox">
-        <h4>Weird stuff</h4>
-        <a href="https://matias.me/nsfw/?fbclid=PAZXh0bgNhZW0CMTEAAabrlXwCofpQaHGkGqUS7Qhd_6TcpLodBs0KEXRYPKGVmwtrJIQvsCQewx8_aem_75-H6FKdLvmSPRFoGoqnyg">cool♫♪</a>
     </div>
 </footer>
 

@@ -1,15 +1,12 @@
-/* 定義自訂字體 */
 @font-face {
     font-family: 'MyCustomFont';
-    src: url('SourceHanSans-VF.ttf.ttc') format('woff2');
-    font-style: normal;
+    src: url('NotoSansTC-VariableFont_wght.ttf') format('woff2'),
+    url('NotoSansTC-VariableFont_wght.ttf') format('woff');
 }
-
-/* 使用自訂字體 */
 body {
-    font-family: 'MyCustomFont', sans-serif;
     background: #010101;
-    color: #85e3c5;
+    color: #F7F7F7;
+    font-family: 'NotoSansTC-VariableFont_wght.ttf', sans-serif;
 }
 .header{
     display: flex;
@@ -18,90 +15,160 @@ body {
     font-size: 50px;
 }
 .nav{
+    z-index: 50;
     position: fixed;
     display: flex;
+    width: 100%;
     justify-content: flex-end;
-    margin-right: 5%;
-    width: 90%;
     font-size: 15px;
+    background: #85e3c5;
+    color: #010101;
+}
+.logo{
+    z-index: 30;
+    position: fixed;
+    font-size:25px;
+    margin-top: 5px;
+    color: #010101;
 }
 .Navoption{
     margin: 12px;
-    filter: invert(10%);
 }
 .Navoption:hover{
-    background: #85e3c5;
-}
-.porfile-picture{
-    height: 200px;width: 200px;
-    border: 1px solid white ;
-    border-radius: 10px;
-    margin-right: 50px;
+    background: #010101;
+    color:#85e3c5;
 }
 .dec01{
-    height: 200px;
-    background: #F7F7F7;
+    height: 100px;
+    background: #85e3c5;
 }
 .dec02{
-    height: 80px;
-    background: #F7F7F7;
+    height: 60px;
+    background: #85e3c5;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
 }
-.area{
+.dec02 div{
+    color: #010101;
+    font-size: 50px;
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 10s linear infinite;
+}
+@keyframes marquee {
+    0%   { transform: translateX(0%); }
+    100% { transform: translateX(-100%); }
+}
+.article{
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    /*擴散顏色效果*/
+    background: radial-gradient(circle at center, #ffffff 0%, #ffffff 0%, #ffffff 100%);
+    background-size: 0% 0%;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-size 0.8s ease;
+    border-radius:10px;
+}
+
+.article:hover {
+    background-size: 200% 200%;
+}
+.article:hover .word {
+    color: #010101;
+}
+.works{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding-top: 100px;
-    width: 90%;
-    margin-bottom :100px;
 }
-.article{
-    margin: 10px;
-    padding: 10px;
+.area2{
+    margin-top: 100px;
+    margin-bottom: 100px;
     display: flex;
-    flex-direction: column;
+    align-items: start;
+}
+.title-space{
+    padding-left: 8%;
+    display: flex;
+    flex-direction:column;
+    width: 20%;
+    margin-bottom: 40px;
+}
+/*文字設定*/
+.logo{
+    z-index: 60;
 }
 .title{
-    margin-left: 150px;margin-top: 100px;
+    width: 200px;
+    height: 100%;
+    align-items: start;
     font-size: 30px;
     font-weight: bold;
+    color: #85e3c5;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s ease;
+}
+.title.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.title-phone{
+    font-size: 30px;
+    font-weight: bold;
+    color: #85e3c5;
+    display: none;
+    margin-top: 20px;
+    margin-left: 30px;
 }
 .word{
     text-align: left;
-    line-height: 1.6;
-    color: #85e3c5;
-    font-size: 20px;
+    line-height: 1.8;
+    font-size: 18px;
     font-weight:lighter;
 }
+/*圖片設定*/
 .work{
-    height: 300px;
-    width: 400px;
-    border:2px dashed white;
+    height: 250px;
+    width: 300px;
+    border:2px solid #edadad;
     border-radius:10px;
 }
-.mypicture:hover{
+.porfile-picture{
+    height: 200px;width: 200px;
+    border: 3px solid white ;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+.porfile-picture:hover{
+    content: url("picture/me-ya.png");
+}
+.crying{
     height: 200px;
+    width: 200px;
+    margin-top: 180px;
 }
-.mypicture_ching02{
-    width: 70%;
+.crying:hover{
+    content: url("picture/me-aaa.png");
 }
-.mypicture_book01{
-    width: 60%;
-}
+/*互動設定*/
 .form{
     justify-content: center;
-    margin-left: 10%;
     padding-top: 50px;
 }
 .contact{
     margin-top: 10px;margin-bottom: 10px;
     height: 40px;width: 300px;
-    background: #85e3c5;
+    background: #F7F7F7;
     border: 0;
     border-radius: 3px;
     outline:none;
 }
 .contact:hover{
-    background: #F7F7F7;
+    background: #85e3c5;
 }
 .button {
     margin-top: 20px;
@@ -137,28 +204,18 @@ body {
     text-align: left;
     margin: 10px;
 }
-a:link {color: #010101;}
-a:visited {color: #010101;}
-a:hover {color:red;}
-a:active {color: red;}
-
+a:visited{ color:#010101;}
+a:link{ color:#010101;}
 /*平板設定*/
 @media(max-width:1250px){
     .headline{
         font-size: 20px;
     }
-    .nav{
-        font-size: 15px;
-        width: 95%;
-    }
     .Navoption{
         font-size: 14px;
     }
-    .area{
-        width: 90%;
-    }
-    .word{
-        font-size: 14px;
+    .title-space{
+        width: 30%
     }
     .work{
         height: 250px;
@@ -167,38 +224,49 @@ a:active {color: red;}
     .mypicture{
         height: 150px;
     }
-    .mypicture_ching02{
-        width: 90%;
-    }
 }
 
 /*手機設定*/
 @media(max-width:500px){
-    .nav{
+    .logo{
         display: none;
     }
+    .Navoption{
+        display: none;
+    }
+    .area2{
+        margin-top: 20px;
+    }
+    #profile-area{
+        flex-direction: column;
+        padding: 30px;
+    }
     .title{
-        font-size: 20px;
-        font-weight: bold;
+        display: none;
+    }
+    .title-space{
+        display: none;
+    }
+    .title-phone{
+        display: block;
     }
     .word{
-        font-size: 12px;
+        font-size: 14px;
     }
     .work{
         height: 200px;
         width: 300px;
         border-radius:10px;
     }
-    .mypicture{
-        height: 120px;
-        width: 120px;
-        line-height: 1.2;
+    .porfile-picture{
+        height: 300px;width: 300px;
+        margin-bottom: 20px;
     }
-    .mypicture_ching02{
-        width: 100%;
+    .crying{
+        display: none;
     }
-    .mypicture_book01{
-        width: 70%;
+    .form{
+        margin-left: 30px;
     }
     .back{
         display: none;
