@@ -61,5 +61,11 @@ $(document).ready(function () {
                 scrollTop: 0
             })
     });
+/*作品頁*/
+    $("#work-top").on("click", function () {
+        $(".work-info-big").get(0).scrollIntoView(
+            {behavior: "smooth"}
+        )
+    });
     
 })

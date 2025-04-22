@@ -70,20 +70,16 @@ body {
     background-size: 0% 0%;
     background-repeat: no-repeat;
     background-position: center;
-    transition: background-size 0.8s ease;
+    transition: background-size 1s ease;
     border-radius:10px;
 }
-
 .article:hover {
     background-size: 200% 200%;
-}
-.article:hover .word {
-    color: #010101;
 }
 .works{
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content:start;
 }
 .area2{
     margin-top: 100px;
@@ -105,7 +101,7 @@ body {
     font-weight: bold;
     color: #85e3c5;
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(-50px);
     transition: all 0.8s ease;
 }
 .title.visible {
@@ -126,15 +122,15 @@ body {
     font-size: 18px;
     font-weight:lighter;
 }
+.article .word{mix-blend-mode: difference;}
 /*圖片設定*/
 .work{
     height: 250px;
     width: 300px;
-    border:2px solid #edadad;
     border-radius:10px;
 }
 .porfile-picture{
-    height: 200px;width: 200px;
+    height: 180px;width: 180px;
     border: 3px solid white ;
     border-radius: 10px;
     margin-top: 30px;
@@ -153,7 +149,6 @@ body {
 /*互動設定*/
 .form{
     justify-content: center;
-    padding-top: 50px;
 }
 .contact{
     margin-top: 10px;margin-bottom: 10px;
@@ -195,11 +190,13 @@ body {
 }
 .linkbox{
     width: 35%;
+    height: 130px;
 }
 .link{
     text-align: left;
-    margin: 10px;
+    margin-top: 10px;
 }
+a{text-decoration: none;}
 a:visited{ color:#010101;}
 a:link{ color:#010101;}
 /*平板設定*/
@@ -214,8 +211,9 @@ a:link{ color:#010101;}
         height: 250px;
         width: 350px;
     }
-    .mypicture{
-        height: 150px;
+    .porfile-picture{
+        height: 80px;
+        width: 80px;
     }
 }
 
@@ -229,6 +227,9 @@ a:link{ color:#010101;}
     }
     .area2{
         margin-top: 20px;
+    }
+    .works{
+        margin-left: 30px;
     }
     #profile-area{
         flex-direction: column;
@@ -260,6 +261,7 @@ a:link{ color:#010101;}
     }
     .form{
         margin-left: 30px;
+        padding-top: 50px;
     }
     .back{
         display: none;

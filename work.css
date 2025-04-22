@@ -19,13 +19,6 @@ body {
     background: #85e3c5;
     color: #010101;
 }
-.logo{
-    z-index: 60;
-    position: fixed;
-    font-size:25px;
-    margin-top: 5px;
-    color: #010101;
-}
 .Navoption{
     margin: 12px;
 }
@@ -33,17 +26,25 @@ body {
     background: #010101;
     color:#85e3c5;
 }
+.logo{
+    z-index: 60;
+    position: fixed;
+    font-size:25px;
+    margin-top: 5px;
+    color: #010101;
+}
 .article{
     display: flex;
 }
 /*文字設定*/
 .title{
     align-items: start;
+    margin-bottom: 20px;
     font-size: 30px;
     font-weight: bold;
     color: #85e3c5;
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(-50px);
     transition: all 0.8s ease;
 }
 .title.visible {
@@ -53,7 +54,7 @@ body {
 .word{
     text-align: left;
     line-height: 1.8;
-    font-size: 18px;
+    font-size: 16px;
     font-weight:lighter;
 }
 ul{
@@ -64,12 +65,25 @@ ul{
 .work-info-big{
     margin-top: 100px;
     margin-bottom: 30px;
-    width: 80%;
-    height: 500px;
-    border:2px solid #edadad;
+    width: 100%;
     border-radius:10px;
 }
+.work-info-small{
+    width: 50%;
+    margin: 10px;
+}
+
 /*互動設定*/
+.back{
+    text-align: center;
+    color:#85e3c5;
+    display: block;
+}
+.back2{
+    text-align: center;
+    color:#85e3c5;
+    display:none;
+}
 .footer{
     display: flex;
     justify-content: left;
@@ -80,11 +94,13 @@ ul{
 }
 .linkbox{
     width: 35%;
+    height: 130px;
 }
 .link{
     text-align: left;
-    margin: 10px;
+    margin-top: 10px;
 }
+a{text-decoration: none;}
 a:visited{ color:#010101;}
 a:link{ color:#010101;}
 /*平板設定*/
