@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    console.log('home.js 載入成功');
+
 
     $("#emma").on("click", function () {
         $("#top-area").get(0).scrollIntoView(
@@ -47,7 +49,34 @@ $(document).ready(function () {
     elements.forEach(element => {
         observer.observe(element);
     });
+    
+/*表單訊息*/
+    const form = document.getElementById("myForm");
 
+    if (form) {
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            fetch("submit.php", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data); // 顯示回傳的訊息
+                    form.reset(); // 清空表單
+                })
+                .catch(error => {
+                    alert('送出失敗，請稍後再試');
+                    console.error('錯誤:', error);
+                });
+        });
+    } else {
+        console.error('找不到表單myForm');
+    }
+    
     $(".back").on("click", function () {
         $("html,body").animate(
             {

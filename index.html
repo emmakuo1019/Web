@@ -19,7 +19,10 @@
     <div class="Navoption" id="contact">CONTACT</div>
 </nav>
 <!--頁首-->
-<header class="header" id="top-area" style="height: 700px;background-color: #F7F7F7;color: #010101"> header</header>
+<header class="header" id="top-area">
+    <img src="picture/A001-01.png" style="z-index: 30;height: 450px"/>
+    <img src="picture/A001-02.png" style="z-index: 20;position: absolute;width: 80%;top:200px"/>
+</header>
 
 <!--works-->
 <div class="title-phone">作品 WORKS</div>
@@ -33,12 +36,12 @@
             <div class="word">2025臺中青川影展</div>
         </article>
         <article class="article">
-            <a href="book01.html"><img class="work" src="picture/Book-02.png"/></a><br>
-            <div class="word">士林高商68屆畢業紀念冊</div>
+            <a href="exhibition-01.html"><img class="work" src="picture/exhibition-follow.png"/></a><br>
+            <div class="word">嶺東數媒112級班級聯展</div>
         </article>
         <article class="article">
-            <a href="exhibition-01.html"><img class="work" src="picture/exhibition-follow.png"/></a><br>
-            <div class="word">大一班級聯展</div>
+            <a href="book01.html"><img class="work" src="picture/Book-02.png"/></a><br>
+            <div class="word">士林高商68屆畢業紀念冊</div>
         </article>
     </div>
 </main>
@@ -56,9 +59,9 @@
     <article style="display:flex;flex-direction: column">
         <div style="font-size: 30px;color: #85e3c5;">郭羽棠</div>
         <section style="display:flex;flex-direction: row">
-            <div class="word" style="margin-right:65px "><h3>基本資訊</h3>家鄉在台北市<br>目前就讀嶺東科技大學大二<br>喜歡各式怪東西</div>
+            <div class="word" style="margin-right:65px "><h3>基本資訊</h3>家鄉在台北市<br>目前就讀嶺東科技大學<br>喜歡各式怪東西</div>
             <div class="word" style="margin-right:65px "><h3>專長</h3>平面設計<br>網頁前端設計<br>Ai Ps Pr</div>
-            <div class="word"><h3>經歷</h3>嶺東科大數媒系系學會美宣長<br>青川影展主視覺負責人<br>大一班級聯展主視覺負責人</div>
+            <div class="word"><h3>經歷</h3>嶺東科大數媒系系學會美宣長<br>青川影展主視覺負責人<br>嶺東數媒112級班級聯展主視覺負責人</div>
         </section>
     </article>
 </main>
@@ -75,16 +78,16 @@
         <div class="title">聯繫我<br>CONTACT ME</div>
         <img class="crying" src="picture/me-ooo.png">
     </div>
-    <form class="form">
-        <label>NAME</label><br>
-        <input type="text" id="name" class="contact"><br>
+    <form class="form" id="myForm">
+        <label>*NAME</label><br>
+        <input type="text" name="name" class="contact"><br>
         <label>COMPANY</label><br>
-        <input type="text" id="company" class="contact"><br>
-        <label>EMAIL</label><br>
-        <input type="email" id="email" class="contact"><br>
-        <label>INFORMATION</label><br>
-        <input type="text" id="information" class="contact" style="height: 50px"><br>
-        <button class="button" id="send">送出</button>
+        <input type="text" name="company" class="contact"><br>
+        <label>*EMAIL</label><br>
+        <input type="email" name="email" class="contact"><br>
+        <label>*INFORMATION</label><br>
+        <textarea name="information" class="contact" style="height: 50px"></textarea><br>
+        <button type="submit" class="button" id="send">送出</button>
     </form>
 </main>
 
@@ -109,6 +112,6 @@
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous">
 </script>
-<script src="home.js"></script>
+<script src="/home.js"></script>
 </body>
 </html>

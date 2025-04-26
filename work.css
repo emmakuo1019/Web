@@ -31,6 +31,7 @@ body {
     position: fixed;
     font-size:25px;
     margin-top: 5px;
+    margin-left: 5px;
     color: #010101;
 }
 .article{
@@ -71,6 +72,7 @@ ul{
 .work-info-small{
     width: 50%;
     margin: 10px;
+    border-radius:10px;
 }
 
 /*互動設定*/
@@ -116,12 +118,6 @@ a:link{ color:#010101;}
 
 /*手機設定*/
 @media(max-width:500px){
-    .logo{
-        display: none;
-    }
-    .Navoption{
-        display: none;
-    }
     .word{
         font-size: 14px;
     }
