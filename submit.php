@@ -34,7 +34,7 @@ if (empty($name) || empty($email) || empty($information)) {
 
 // 寫入資料庫
 try {
-    $stmt = $pdo->prepare("INSERT INTO 表單資料表 (name, company, email, information) VALUES (:name, :company, :email, :information)");
+    $stmt = $pdo->prepare("INSERT INTO contact_data (name, company, email, information) VALUES (:name, :company, :email, :information)");
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':company', $company);
     $stmt->bindParam(':email', $email);
