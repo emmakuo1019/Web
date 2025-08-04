@@ -35,13 +35,31 @@ body {
     color: #010101;
 }
 .article{
+    margin:50px 10% 30px 10%;
     display: flex;
+}
+.footer{
+    display: flex;
+    justify-content: left;
+    gap: 30px;
+    padding:30px 0 30px 10%;
+    color:#010101;
+    background: #85e3c5;
+    font-size: 12pt;
+}
+.linkbox{
+    height: 130px;
+    line-height: 20pt;
+}
+.link{
+    text-align: left;
+    margin-top: 10px;
 }
 /*文字設定*/
 .title{
     align-items: start;
     margin-bottom: 20px;
-    font-size: 30px;
+    font-size: 25pt;
     font-weight: bold;
     color: #85e3c5;
     opacity: 0;
@@ -55,7 +73,13 @@ body {
 .word{
     text-align: left;
     line-height: 1.8;
-    font-size: 16px;
+    font-size: 15pt;
+    font-weight:lighter;
+}
+.word-info{
+    text-align: left;
+    line-height: 1.8;
+    font-size: 12pt;
     font-weight:lighter;
 }
 ul{
@@ -64,44 +88,32 @@ ul{
 }
 /*圖片設定*/
 .work-info-big{
-    margin-top: 100px;
-    margin-bottom: 30px;
     width: 100%;
     border-radius:10px;
+    margin:40px 0 0 0 ;
 }
 .work-info-small{
     width: 50%;
-    margin: 10px;
+    margin:0 10% 0 10%;
     border-radius:10px;
 }
 
 /*互動設定*/
 .back{
+    margin:30px 0 -6px 0;
     text-align: center;
     color:#85e3c5;
     display: block;
 }
+.back:hover{cursor: n-resize;}
 .back2{
+    margin:30px 0 -6px 0;
     text-align: center;
     color:#85e3c5;
     display:none;
 }
-.footer{
-    display: flex;
-    justify-content: left;
-    padding-left: 10%;
-    color:#010101;
-    background: #85e3c5;
-    font-size: 15px;
-}
-.linkbox{
-    width: 35%;
-    height: 130px;
-}
-.link{
-    text-align: left;
-    margin-top: 10px;
-}
+.back2:hover{cursor: n-resize;}
+
 a{text-decoration: none;}
 a:visited{ color:#010101;}
 a:link{ color:#010101;}
@@ -114,22 +126,36 @@ a:link{ color:#010101;}
         height: 250px;
         width: 350px;
     }
+    /*文字設定*/
+    .title{font-size: 20pt;}
+    .word{font-size: 12pt;}
+    .word-info{font-size: 10pt}
 }
 
 /*手機設定*/
 @media(max-width:500px){
-    .word{
-        font-size: 14px;
-    }
     .work{
         height: 200px;
         width: 300px;
         border-radius:10px;
     }
+    .article{
+        display: flex;
+        flex-direction: column;
+    }
+    .footer{font-size: 10pt}
     .back{
         display: none;
     }
     .back2{
         display: block;
+    }
+    /*文字設定*/
+    .title{font-size: 18pt;}
+    .word{font-size: 10pt;}
+    /*圖片設定*/
+    .work-info-big{
+        margin:40px 0 0 0;
+        border-radius: 0;
     }
 }

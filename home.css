@@ -82,7 +82,8 @@ body {
 .works{
     display: flex;
     flex-wrap: wrap;
-    justify-content:start;
+    justify-content:center;
+    gap: 10px;
 }
 .area2{
     margin-top: 100px;
@@ -128,8 +129,8 @@ body {
 .article .word{mix-blend-mode: difference;}
 /*圖片設定*/
 .work{
-    height: 300px;
-    width: 350px;
+    height: 250px;
+    width: 300px;
     border-radius:10px;
 }
 .porfile-picture{
@@ -212,7 +213,7 @@ a:link{ color:#010101;}
     }
     .work{
         height: 250px;
-        width: 350px;
+        width: 300px;
     }
     .porfile-picture{
         height: 100px;
