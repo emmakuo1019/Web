@@ -37,12 +37,18 @@ body {
 .article{
     margin:50px 10% 30px 10%;
     display: flex;
+    flex-direction: column;
+}
+.section{
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
 }
 .footer{
     display: flex;
     justify-content: left;
-    gap: 30px;
-    padding:30px 0 30px 10%;
+    gap: 35px;
+    padding:30px 0 50px 10%;
     color:#010101;
     background: #85e3c5;
     font-size: 12pt;
@@ -53,7 +59,6 @@ body {
 }
 .link{
     text-align: left;
-    margin-top: 10px;
 }
 /*文字設定*/
 .title{
@@ -71,6 +76,7 @@ body {
     transform: translateY(0);
 }
 .word{
+    width: 70%;
     text-align: left;
     line-height: 1.8;
     font-size: 15pt;
@@ -143,6 +149,9 @@ a:link{ color:#010101;}
         display: flex;
         flex-direction: column;
     }
+    .section{
+        flex-direction: column;
+    }
     .footer{font-size: 10pt}
     .back{
         display: none;
@@ -152,7 +161,10 @@ a:link{ color:#010101;}
     }
     /*文字設定*/
     .title{font-size: 18pt;}
-    .word{font-size: 10pt;}
+    .word{
+        font-size: 10pt;
+        width: 100%;
+    }
     /*圖片設定*/
     .work-info-big{
         margin:40px 0 0 0;

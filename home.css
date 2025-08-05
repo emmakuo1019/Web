@@ -113,7 +113,7 @@ body {
     transform: translateY(0);
 }
 .title-phone{
-    font-size: 30px;
+    font-size: 20pt;
     font-weight: bold;
     color: #85e3c5;
     display: none;
