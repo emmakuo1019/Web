@@ -86,16 +86,15 @@ body {
     gap: 10px;
 }
 .area2{
-    margin-top: 100px;
-    margin-bottom: 100px;
+    margin:100px 0 100px 0;
     display: flex;
     align-items: start;
 }
 .title-space{
-    padding-left: 8%;
+    padding:0 8% 0 8%;
     display: flex;
     flex-direction:column;
-    width: 20%;
+    
     margin-bottom: 40px;
 }
 /*文字設定*/
@@ -125,6 +124,11 @@ body {
     line-height: 1.8;
     font-size: 18px;
     font-weight:lighter;
+}
+.porfile-word{
+    gap:20px;
+    display:flex;
+    flex-direction: row
 }
 .article .word{mix-blend-mode: difference;}
 /*圖片設定*/
@@ -208,9 +212,6 @@ a:link{ color:#010101;}
    .Navoption{
         font-size: 14px;
     }
-    .title-space{
-        width: 30%
-    }
     .work{
         height: 250px;
         width: 300px;
@@ -231,6 +232,9 @@ a:link{ color:#010101;}
     }
     .word{
         font-size: 15px;
+    }
+    .porfile-word{
+        flex-direction: column;
     }
     #profile-area{
         flex-direction: column;
