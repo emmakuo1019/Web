@@ -122,6 +122,7 @@ ul{
 a{text-decoration: none;}
 a:visited{ color:#010101;}
 a:link{ color:#010101;}
+
 /*平板設定*/
 @media(max-width:1250px){
     .Navoption{

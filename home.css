@@ -82,7 +82,7 @@ body {
 .works{
     display: flex;
     flex-wrap: wrap;
-    justify-content:center;
+    justify-content:left;
     gap: 10px;
 }
 .area2{
@@ -132,10 +132,14 @@ body {
 }
 .article .word{mix-blend-mode: difference;}
 /*圖片設定*/
-.work{
+.work-picture{
     height: 250px;
     width: 300px;
+    overflow: hidden;
     border-radius:10px;
+}
+.work-picture-NotSleeping:hover{
+    content: url("picture/NotSleepingYet_Logo2.svg");
 }
 .porfile-picture{
     height: 180px;width: 180px;
@@ -207,6 +211,7 @@ body {
 a{text-decoration: none;}
 a:visited{ color:#010101;}
 a:link{ color:#010101;}
+
 /*平板設定*/
 @media(max-width:1250px){
    .Navoption{
@@ -247,6 +252,7 @@ a:link{ color:#010101;}
         display: none;
     }
     .title-phone{
+        margin-top: 50px;
         display: block;
     }
     .word{
