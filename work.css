@@ -1,7 +1,5 @@
 @font-face {
-    font-family: 'MyCustomFont';
-    src: url('NotoSansTC-VariableFont_wght.ttf') format('woff2'),
-    url('NotoSansTC-VariableFont_wght.ttf') format('woff');
+    font-family: "Noto Sans", sans-serif;
 }
 body {
     margin: 0;
