@@ -81,7 +81,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content:left;
-    gap: 10px;
+    
 }
 .area2{
     margin:100px 0 100px 0;
@@ -185,11 +185,13 @@ body {
     color:#85e3c5;
     display: block;
 }
+.back:hover{cursor: pointer;}
 .back2{
     text-align: center;
     color:#85e3c5;
     display:none;
 }
+.back2:hover{cursor: pointer;}
 .footer{
     display: flex;
     justify-content: left;

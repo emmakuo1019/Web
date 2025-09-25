@@ -108,14 +108,14 @@ ul{
     color:#85e3c5;
     display: block;
 }
-.back:hover{cursor: n-resize;}
+.back:hover{cursor: pointer;}
 .back2{
     margin:30px 0 -6px 0;
     text-align: center;
     color:#85e3c5;
     display:none;
 }
-.back2:hover{cursor: n-resize;}
+.back2:hover{cursor: pointer;}
 
 a{text-decoration: none;}
 a:visited{ color:#010101;}
