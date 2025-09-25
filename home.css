@@ -80,20 +80,19 @@ body {
 .works{
     display: flex;
     flex-wrap: wrap;
-    justify-content:center;
+    justify-content:left;
     gap: 10px;
 }
 .area2{
-    margin-top: 100px;
-    margin-bottom: 100px;
+    margin:100px 0 100px 0;
     display: flex;
     align-items: start;
 }
 .title-space{
-    padding-left: 8%;
+    padding:0 8% 0 8%;
     display: flex;
     flex-direction:column;
-    width: 20%;
+    
     margin-bottom: 40px;
 }
 /*文字設定*/
@@ -111,7 +110,7 @@ body {
     transform: translateY(0);
 }
 .title-phone{
-    font-size: 30px;
+    font-size: 20pt;
     font-weight: bold;
     color: #85e3c5;
     display: none;
@@ -124,12 +123,21 @@ body {
     font-size: 18px;
     font-weight:lighter;
 }
+.porfile-word{
+    gap:20px;
+    display:flex;
+    flex-direction: row
+}
 .article .word{mix-blend-mode: difference;}
 /*圖片設定*/
-.work{
+.work-picture{
     height: 250px;
     width: 300px;
+    overflow: hidden;
     border-radius:10px;
+}
+.work-picture-NotSleeping:hover{
+    content: url("picture/NotSleepingYet_Logo2.svg");
 }
 .porfile-picture{
     height: 180px;width: 180px;
@@ -201,13 +209,11 @@ body {
 a{text-decoration: none;}
 a:visited{ color:#010101;}
 a:link{ color:#010101;}
+
 /*平板設定*/
 @media(max-width:1250px){
    .Navoption{
         font-size: 14px;
-    }
-    .title-space{
-        width: 30%
     }
     .work{
         height: 250px;
@@ -230,6 +236,9 @@ a:link{ color:#010101;}
     .word{
         font-size: 15px;
     }
+    .porfile-word{
+        flex-direction: column;
+    }
     #profile-area{
         flex-direction: column;
         padding: 30px;
@@ -241,6 +250,7 @@ a:link{ color:#010101;}
         display: none;
     }
     .title-phone{
+        margin-top: 50px;
         display: block;
     }
     .word{
