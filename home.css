@@ -1,19 +1,43 @@
-@font-face {
-    font-family: "Noto Sans", sans-serif;
+/*PRIMITIVES*/
+:root {
+    --color-white: #F0F5E2;
+    --color-black: #141413;
+    --color-light: #77f870;
+    
+    --font-weight-regular: 400;
+    --font-weight-bold: 700;
+    
 }
+/*SEMANTIC TOKENS*/
+:root {
+    --bg-page: var(--color-white);
+    --text-color: var(--color-black);
+    --text-color-hover: var(--color-light);
+}
+/*SEMANTIC TOKENS__DARK*/
+[data-theme="dark"] {
+    --bg-page: var(--color-black);
+    --text-color: var(--color-white);
+    --text-color-hover: var(--color-light);
+}
+
 body {
+    background: var(--bg-page);
+    color: var(--text-color);
     margin: 0;
-    background: #010101;
-    color: #F7F7F7;
-    font-family: 'NotoSansTC-VariableFont_wght.ttf', sans-serif;
+    font-family: "Ubuntu","Noto Sans", sans-serif;
+}
+/*平滑轉換主題*/
+body, .card {
+    transition: background 0.3s ease, color 0.3s ease;
 }
 .header{
     display: flex;
-    justify-content:center;
-    align-items: end;
-    height: 500px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 700px;
     overflow: hidden;
-    background-color: #F7F7F7;color: #010101;
 }
 .nav{
     z-index: 50;
@@ -22,8 +46,6 @@ body {
     width: 100%;
     justify-content: flex-end;
     font-size: 15px;
-    background: #85e3c5;
-    color: #010101;
 }
 .logo{
     z-index: 60;
@@ -31,40 +53,15 @@ body {
     font-size:25px;
     margin-top: 5px;
     margin-left: 5px;
-    color: #010101;
 }
 .Navoption{
     margin: 12px;
 }
 .Navoption:hover{
-    background: #010101;
-    color:#85e3c5;
-}
-.dec01{
-    height: 100px;
-    background: #85e3c5;
-}
-.dec02{
-    height: 60px;
-    background: #85e3c5;
-    overflow: hidden;
-    white-space: nowrap;
-    box-sizing: border-box;
-}
-.dec02 div{
-    color: #010101;
-    font-size: 50px;
-    display: inline-block;
-    padding-left: 100%;
-    animation: marquee 8s linear infinite;
-}
-@keyframes marquee {
-    0%   { transform: translateX(0%); }
-    100% { transform: translateX(-100%); }
+    background:var(--text-color-hover);
 }
 .article{
-    padding: 30px;
-    display: flex;
+    padding: 25px;
     flex-direction: column;
     /*擴散顏色效果*/
     background: radial-gradient(circle at center, #ffffff 0%, #ffffff 0%, #ffffff 100%);
@@ -100,7 +97,6 @@ body {
     align-items: start;
     font-size: 30px;
     font-weight: bold;
-    color: #85e3c5;
     opacity: 0;
     transform: translateY(-50px);
     transition: all 0.8s ease;
@@ -112,7 +108,6 @@ body {
 .title-phone{
     font-size: 20pt;
     font-weight: bold;
-    color: #85e3c5;
     display: none;
     margin-top: 20px;
     margin-left: 30px;
@@ -121,14 +116,12 @@ body {
     text-align: left;
     line-height: 1.8;
     font-size: 18px;
-    font-weight:lighter;
 }
 .porfile-word{
     gap:20px;
     display:flex;
     flex-direction: row
 }
-.article .word{mix-blend-mode: difference;}
 /*圖片設定*/
 .work-picture{
     height: 250px;
@@ -136,59 +129,34 @@ body {
     overflow: hidden;
     border-radius:10px;
 }
-.work-picture-NotSleeping:hover{
-    content: url("picture/NotSleepingYet_Logo2.svg");
-}
-.porfile-picture{
-    height: 180px;width: 180px;
-    border: 3px solid white ;
-    border-radius: 10px;
-    margin-top: 30px;
-}
-.porfile-picture:hover{
-    content: url("picture/me-ya.png");
-}
-.crying{
-    height: 200px;
-    width: 200px;
-    margin-top: 180px;
-}
-.crying:hover{
-    content: url("picture/me-aaa.png");
-}
 /*互動設定*/
 .form{
     justify-content: center;
 }
 .contact{
-    margin-top: 10px;margin-bottom: 10px;
+    margin: 10px 0 10px 0;
     height: 40px;width: 300px;
-    background: #F7F7F7;
-    border: 0;
+    border: var(--text-color) solid 1px;
     border-radius: 3px;
-    outline:none;
 }
 .contact:hover{
-    background: #85e3c5;
+    background: var(--color-light);
 }
 .button {
-    margin-top: 20px;
-    margin-right: 20px;
+    margin: 20px 0 0 0;
     height: 40px;width: 100px;
-    background: #85e3c5;
-    border: 0;
+    border: var(--text-color) solid 1px;
     border-radius: 3px;
-    outline:none;
 }
 .back{
     text-align: center;
-    color:#85e3c5;
+    color:var(--text-color);
     display: block;
 }
 .back:hover{cursor: pointer;}
 .back2{
     text-align: center;
-    color:#85e3c5;
+    color:var(--text-color);
     display:none;
 }
 .back2:hover{cursor: pointer;}
@@ -196,8 +164,6 @@ body {
     display: flex;
     justify-content: left;
     padding-left: 10%;
-    color:#010101;
-    background: #85e3c5;
     font-size: 15px;
 }
 .linkbox{
@@ -209,8 +175,8 @@ body {
     margin-top: 10px;
 }
 a{text-decoration: none;}
-a:visited{ color:#010101;}
-a:link{ color:#010101;}
+a:visited{ color:var(--text-color); }
+a:link{ color:var(--text-color); }
 
 /*平板設定*/
 @media(max-width:1250px){

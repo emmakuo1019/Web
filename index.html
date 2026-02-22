@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html>
-<home>
+<head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-</home>
-<head>
     <title>郭青蛙的作品集</title>
     <link rel="stylesheet" href="home.css">
+    <!--字體API Ubuntu和Noto-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body style="margin: 0">
 <!--nav-->
 <div class="logo" id="emma">.EMMA</div>
 <nav class="nav">
-    <div class="Navoption" id="top">TOP</div>
+    <div class="Navoption" id="home">HOME</div>
     <div class="Navoption" id="works">WORKS</div>
     <div class="Navoption" id="profile">PROFILE</div>
     <div class="Navoption" id="contact">CONTACT</div>
 </nav>
 <!--頁首-->
-<header class="header" id="top-area">
-    <img src="picture/A001-01.png" style="z-index: 30;height: 450px"/>
-    <img src="picture/A001-02.png" style="z-index: 20;position: absolute;width: 80%;top:200px"/>
+<header class="header" id="home-area">
+    <div class="title">
+        EMMA<br>KUO'S
+    </div>
+    <div>
+        <img style="height: 500px;width: auto" src="picture/MeOnHeader.png">
+    </div>
+    <div style="width: 200px;height: 200px;background: brown" id="themeToggle">Change Theme</div>
 </header>
 
 <!--works-->
@@ -32,61 +39,49 @@
     </div>
     <div class="works">
         <article class="article">
-            <a href="ching.html"><img class="work-picture" src="picture/ching_Logo.svg"/></a><br>
+            <a href="ching.html"><img class="work-picture" src="picture/Ching-Mockup.png"/></a><br>
             <div class="word">2025臺中青川影展</div>
         </article>
         <article class="article">
-            <a href="exhibition-01.html"><img class="work-picture" src="picture/exhibition1-Logo.svg"/></a><br>
+            <a href="exhibition-01.html"><img class="work-picture" src="picture/exhibition-follow.png"/></a><br>
             <div class="word">嶺東數媒112級班級聯展</div>
         </article>
         <article class="article">
-            <a href="exhibition-02.html"><img class="work-picture" src="picture/exhibition02-Logo.svg"/></a><br>
+            <a href="exhibition-02.html"><img class="work-picture" src="picture/exhibition02-follow.png"/></a><br>
             <div class="word">嶺東數媒113級班級聯展</div>
         </article>
         <article class="article">
-            <a href="NotSleepingYet.html"><img class="work-picture work-picture-NotSleeping" src="picture/NotSleepingYet_Logo1.svg"/></a><br>
+            <a href="NotSleepingYet.html"><img class="work-picture work-picture-NotSleeping" src="picture/Book-Mockup.png"/></a><br>
             <div class="word">猶未睏遊戲工作室</div>
         </article>
         <article class="article">
-            <a href="book01.html"><img class="work-picture" src="picture/Book_Logo.svg"/></a><br>
+            <a href="book01.html"><img class="work-picture" src="picture/Book-02.png"/></a><br>
             <div class="word">士林高商68屆畢業紀念冊</div>
         </article>
     </div>
 </main>
-
-<!--Dec01-->
-<div class="dec02">
-    <div>.EMMA.EMMA</div>
-</div>
 
 <!--profile-->
 <div class="title-phone">關於我  PROFILE</div>
 <main id="profile-area" class="area2">
     <div class="title-space">
         <div class="title">關於我<br>PROFILE</div>
-        <img class="porfile-picture" src="picture/me.png">
     </div>
     <article style="display:flex;flex-direction: column">
-        <div style="font-size: 30pt;font-weight: bold;color: #85e3c5;">郭羽棠</div>
+        <div style="font-size: 30pt;font-weight: bold;">郭羽棠</div>
         <section class="porfile-word">
-            <div class="word"><h3>基本資訊</h3>家鄉在台北市<br>目前就讀嶺東科技大學<br>喜歡各式怪東西</div>
-            <div class="word"><h3>專長</h3>平面設計<br>網頁前端設計<br>Ai Ps Pr</div>
-            <div class="word"><h3>經歷</h3>嶺東科大數媒系系學會美宣長<br>青川影展主視覺負責人<br>嶺東數媒112級班級聯展主視覺負責人<br>嶺東數媒113級班級聯展主視覺負責人</div>
+            <div class="word"><h3>基本資訊</h3>產地：台北市<br>目前就讀嶺東科技大學</div>
+            <div class="word"><h3>專長</h3>平面設計<br>網頁前端<br></div>
+            <div class="word"><h3>經歷</h3>嶺東數媒24屆系學會美宣長<br>第二屆青川影展主視覺設計<br>嶺東數媒112級班級聯展主視覺設計<br>嶺東數媒113級班級聯展主視覺設計<br>嶺東數媒24屆畢委會專刊組長</div>
         </section>
     </article>
 </main>
-
-<!--Dec02-->
-<div class="dec02">
-    <div>.EMMA.EMMA</div>
-</div>
 
 <!--contact-->
 <div class="title-phone">聯繫我 CONTACT ME</div>
 <main id="contact-area" class="area2">
     <div class="title-space">
         <div class="title">聯繫我<br>CONTACT ME</div>
-        <img class="crying" src="picture/me-ooo.png">
     </div>
     <form class="form" id="myForm">
         <label>*NAME</label><br>

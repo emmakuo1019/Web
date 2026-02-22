@@ -1,15 +1,15 @@
 $(document).ready(function () {
     console.log('home.js 載入成功');
 
-
+/*快速跳轉*/
     $("#emma").on("click", function () {
-        $("#top-area").get(0).scrollIntoView(
+        $("#home-area").get(0).scrollIntoView(
             {behavior: "smooth"}
         )
     });
 
-    $("#top").on("click", function () {
-        $("#top-area").get(0).scrollIntoView(
+    $("#home").on("click", function () {
+        $("#home-area").get(0).scrollIntoView(
             {behavior: "smooth"}
         )
     });
@@ -32,8 +32,27 @@ $(document).ready(function () {
         );
     });
 
-    const elements = document.querySelectorAll(".title");
+    $(".back").on("click", function () {
+        $("html,body").animate(
+            {
+                scrollTop: 0
+            })
+    });
 
+    $(".back2").on("click", function () {
+        $("html,body").animate(
+            {
+                scrollTop: 0
+            })
+    });
+    /*作品頁*/
+    $("#work-top").on("click", function () {
+        $(".work-info-big").get(0).scrollIntoView(
+            {behavior: "smooth"}
+        )
+    });
+
+    const elements = document.querySelectorAll(".title");
     function observeHandler(entries, observer) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -76,25 +95,24 @@ $(document).ready(function () {
     } else {
         console.error('找不到表單myForm');
     }
-    
-    $(".back").on("click", function () {
-        $("html,body").animate(
-            {
-                scrollTop: 0
-            })
-    });
+/*切換主題*/
+    const toggleBtn = document.getElementById("themeToggle");
 
-    $(".back2").on("click", function () {
-        $("html,body").animate(
-            {
-                scrollTop: 0
-            })
+    toggleBtn.addEventListener("click", () => {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+
+        if (currentTheme === "dark") {
+            document.documentElement.removeAttribute("data-theme");
+            localStorage.setItem("theme", "light");
+        } else {
+            document.documentElement.setAttribute("data-theme", "dark");
+            localStorage.setItem("theme", "dark");
+        }
     });
-/*作品頁*/
-    $("#work-top").on("click", function () {
-        $(".work-info-big").get(0).scrollIntoView(
-            {behavior: "smooth"}
-        )
-    });
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+    }
     
 })
