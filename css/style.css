@@ -1,12 +1,14 @@
 /*PRIMITIVES*/
 :root {
-    --color-white: #F0F5E2;
+    --color-white: #f4f5e2;
+    --color-secnd-white: #cfcec4;
     --color-black: #141413;
+    --color-secnd-black: #605f54;
     --color-light: #A52A2AFF;
 
-    --font-size-xs: 12pt;
-    --font-size-sm: 14pt;
-    --font-size-md: 24pt;
+    --font-size-xs: 10pt;
+    --font-size-sm: 12pt;
+    --font-size-md: 20pt;
     --font-size-lg: 30pt;
     --font-size-xl: 45pt;
 
@@ -19,11 +21,13 @@
 :root{
     --bg-page: var(--color-white);
     --text-color: var(--color-black);
+    --text-secnd-color: var(--color-secnd-black);
     --text-color-hover: var(--color-light);
 }
 [data-theme="dark"] {
     --bg-page: var(--color-black);
     --text-color: var(--color-white);
+    --text-secnd-color: var(--color-secnd-white);
     --text-color-hover: var(--color-light);
 }
 
@@ -50,10 +54,13 @@ hr {
     height: 700px;
 }
 .nav{
+    position: fixed;top: 0;
+    z-index: 100;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding:var(--space-1) var(--space-2) 0 var(--space-2);
+    width: 95%;
+    padding:0 var(--space-2);
 }
 .nav li {
     margin-left: 20px;
@@ -68,17 +75,23 @@ hr {
     background:var(--text-color-hover);
 }
 main{
-    padding:var(--space-3)
+    padding:var(--space-4)
 }
 #projects {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px;
+    gap: 20px;
 }
 .card{
     padding: 25px;
     flex-direction: column;
     border-radius: 10px;
+}
+#profile-area{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10%;
 }
 /*-----文字設定-----*/
 .title{
@@ -100,28 +113,40 @@ main{
     align-items: start;
     font-size: var(--font-size-lg);
     font-weight: bold;
-    margin: var(--space-2) var(--space-2)  var(--space-2)  var(--space-3);
+    margin: var(--space-2);
 }
 .word{
     text-align: left;
     line-height: 1.8;
     font-size: var(--font-size-sm);
 }
+h2{
+    font-size: var(--font-size-md);
+    margin: var(--space-1) 0;
+}
+h3{
+    font-size: var(--font-size-sm);
+    margin: var(--space-1) 0;
+}
 .detail{
+    color: var(--text-secnd-color);
     font-size: var(--font-size-xs);
     margin: 0;
 }
 /*-----圖片設定------*/
+.profile-picture{
+    width: 400px;height: 330px;position: sticky;top:0
+}
 .work-picture{
     height: 250px;
-    width: 300px;
+    width: 290px;
     overflow: hidden;
-    border-radius:10px;
+    border-radius:12px;
     transform: translateX(0);
     transition: all 0.5s ease;
 }
 .work-picture:hover{
-    transform: translateX(-10px)
+    transform: translateX(10px)
 }
 /*-----互動設定------*/
 .form{
@@ -170,23 +195,22 @@ a:link{ color:var(--text-color); }
 
 /*-----平板(1250)設定------*/
 @media(max-width:1250px){
-    .work{
-        height: 250px;
-        width: 300px;
-    }
+    
 }
-
-/*-------手機設定(500)------*/
-@media(max-width:500px){
-    .works{
-        margin-left: 30px;
-    }
-    .word{
-        font-size: 15px;
-    }
+/*-----平板(800)設定------*/
+@media(max-width:800px){
     #profile-area{
         flex-direction: column;
         padding: 30px;
+    }
+    .profile-picture{
+        position: relative;
+    }
+}
+/*-------手機設定(500)------*/
+@media(max-width:500px){
+    .word{
+        font-size: 15px;
     }
     .title{
         font-size: var(--font-size-md);
@@ -198,9 +222,6 @@ a:link{ color:var(--text-color); }
         height: 200px;
         width: 300px;
         border-radius:10px;
-    }
-    .crying{
-        display: none;
     }
     .form{
         margin-left: 30px;
