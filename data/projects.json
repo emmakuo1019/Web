@@ -1,0 +1,80 @@
+[
+  {
+    "id": "ccce-game2025",
+    "title": "CCCE2025全國科藝電競大賽<br>遊戲設計",
+    "description": "介紹...",
+    "cover": "picture/exhibition-long.png",
+    "view":"picture/exhibition-follow.png",
+    "type": "遊戲設計 Game Design",
+    "designer": "郭羽棠、林亭萱、余羑燊、林羽堂",
+    "teacher": "吳柏瀧老師",
+    "year": "2025",
+    "hold": "台北市政府教育局",
+    "link": "#"
+  },
+  {
+    "id": "notsleepingyet-cis",
+    "title": "猶未睏遊戲工作室",
+    "description": "這我以前小組的遊戲工作室名稱，甲方是我，乙方也是我，我的組員沒意見。持續更新中...",
+    "cover": "picture/exhibition-long.png",
+    "view":"picture/exhibition02-follow.png",
+    "type": "品牌識別 Brand Identity",
+    "designer": "郭羽棠",
+    "teacher": "",
+    "year": "2025",
+    "hold": "嶺東科大數媒系",
+    "link": "#"
+  },
+  {
+    "id": "exhibition-poster113",
+    "title": "MEG DANGER<br>嶺東數媒113級班級聯展",
+    "description": "老師說要大膽一點，最好讓人一看就記住",
+    "cover": "picture/exhibition-long.png",
+    "view":"picture/exhibition02-follow.png",
+    "type": "主視覺 Key Visual",
+    "designer": "郭羽棠",
+    "teacher": "",
+    "year": "2025",
+    "hold": "嶺東科大數媒系",
+    "link": "#"
+  },
+  {
+    "id": "ching-poster2ed",
+    "title": "2025臺中青川影展",
+    "description": "「青川夢影、柳橋映河、白鹿逐光」由嶺東科技大學數位媒體設計系與臺中市政府影視發展基金會聯合主辦的「2025臺中青川影展」，精選臺灣新生代動畫與影視創作，呈現嶺東科技大學數位媒體設計系影視與動畫專業的精彩作品，為推動大臺中影像藝術的發展與交流，本次影展特邀請國立臺灣藝術大學多媒體動畫藝術學系學生作品共同展出。\n                本次影展延續「青青河水，川流不息」的策展概念，主題定為「青川夢影、柳橋映河、白鹿逐光」，象徵創作者對光影與夢想的追尋。策展單元圍繞「水、川流、記憶、光影」四大主題，結合臺中城市地景與詩意敘事，帶領觀眾踏上一場穿越生命、思念、青春與現實交錯的影像旅程。",
+    "cover": "picture/exhibition-long.png",
+    "view":"picture/Ching-Mockup.png",
+    "type": "主視覺 Key Visual",
+    "designer": "郭羽棠",
+    "teacher": "蕭弘林老師",
+    "year": "2025",
+    "hold": "嶺東科大數媒系",
+    "link": "#"
+  },
+  {
+    "id": "exhibition-poster112",
+    "title": "逐夢之痕<br>嶺東數媒112級班級聯展",
+    "description": "在人生中總會有想要實現的夢想，想對未來有所期望，想修改過去的遺憾，以及想要暫停的美好時刻。做一場不被打擾的夢，改變過去的不如意，無論時間如何流轉，我們始終保持著不變的初衷。讓遺憾成為前進的動力，讓夢想成為現實的引路人。",
+    "cover": "picture/exhibition-long.png",
+    "view":"picture/exhibition-follow.png",
+    "type": "主視覺 Key Visual",
+    "designer": "郭羽棠",
+    "teacher": "",
+    "year": "2024",
+    "hold": "嶺東科大數媒系",
+    "link": "#"
+  },
+  {
+    "id": "book-cover001",
+    "title": "士林高商68屆畢業紀念冊",
+    "description": "隨著畢業季到來,畢業紀念冊必然是大家為一段求學生涯留下珍貴回憶的重要紀念品。我希望能為這三 年的回憶留下個完美的句號，也為大家的回憶增添更多青春色彩，所以參加了學校的畢業紀念冊封面徵稿競賽。 雖然最後並未成功被選用，但在製作的過程回憶起學校生活中很多有趣的細節，同時這個作品也獲得很多同儕、老師的肯定，是個相當寶貴的經驗。",
+    "cover": "picture/Book-long.png",
+    "view":"picture/Book-02.png", 
+    "type": "封面設計 Cover Design",
+    "designer": "郭羽棠",
+    "teacher": "",
+    "year": "2023",
+    "hold": "士林高級商業職業學校",
+    "link": "#"
+  }
+]

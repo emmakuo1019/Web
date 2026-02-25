@@ -4,85 +4,65 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <title>郭青蛙的作品集</title>
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="css/style.css">
     <!--字體API Ubuntu和Noto-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
-<body style="margin: 0">
+<body>
 <!--nav-->
-<div class="logo" id="emma">.EMMA</div>
-<nav class="nav">
-    <div class="Navoption" id="home">HOME</div>
-    <div class="Navoption" id="works">WORKS</div>
-    <div class="Navoption" id="profile">PROFILE</div>
-    <div class="Navoption" id="contact">CONTACT</div>
-</nav>
+<div class="nav">
+    <h2 class="logo" id="emma">.EMMA</h2>
+    <ul class="navbar">
+        <li class="Navoption" id="home">HOME</li>
+        <li class="Navoption" id="works">WORKS</li>
+        <li class="Navoption" id="profile">PROFILE</li>
+        <li class="Navoption" id="contact">CONTACT</li>
+    </ul>
+</div>
 <!--頁首-->
 <header class="header" id="home-area">
     <div class="title">
         EMMA<br>KUO'S
     </div>
+    <!--暫時的圖-->
     <div>
         <img style="height: 500px;width: auto" src="picture/MeOnHeader.png">
     </div>
+    <!--暫時的按鈕-->
     <div style="width: 200px;height: 200px;background: brown" id="themeToggle">Change Theme</div>
 </header>
-
 <!--works-->
-<div class="title-phone">作品 WORKS</div>
-<main id="works-area" class="area2">
-    <div class="title-space">
-        <div class="title">作品<br>WORKS</div>
-    </div>
-    <div class="works">
-        <article class="article">
-            <a href="ching.html"><img class="work-picture" src="picture/Ching-Mockup.png"/></a><br>
-            <div class="word">2025臺中青川影展</div>
-        </article>
-        <article class="article">
-            <a href="exhibition-01.html"><img class="work-picture" src="picture/exhibition-follow.png"/></a><br>
-            <div class="word">嶺東數媒112級班級聯展</div>
-        </article>
-        <article class="article">
-            <a href="exhibition-02.html"><img class="work-picture" src="picture/exhibition02-follow.png"/></a><br>
-            <div class="word">嶺東數媒113級班級聯展</div>
-        </article>
-        <article class="article">
-            <a href="NotSleepingYet.html"><img class="work-picture work-picture-NotSleeping" src="picture/Book-Mockup.png"/></a><br>
-            <div class="word">猶未睏遊戲工作室</div>
-        </article>
-        <article class="article">
-            <a href="book01.html"><img class="work-picture" src="picture/Book-02.png"/></a><br>
-            <div class="word">士林高商68屆畢業紀念冊</div>
-        </article>
-    </div>
+<hr/>
+    <div class="title">作品 WORKS ➔ ➔ ➔</div>
+<hr/>
+<main id="works-area">
+    <div id="projects"></div>
 </main>
-
 <!--profile-->
-<div class="title-phone">關於我  PROFILE</div>
-<main id="profile-area" class="area2">
-    <div class="title-space">
-        <div class="title">關於我<br>PROFILE</div>
-    </div>
-    <article style="display:flex;flex-direction: column">
-        <div style="font-size: 30pt;font-weight: bold;">郭羽棠</div>
-        <section class="porfile-word">
-            <div class="word"><h3>基本資訊</h3>產地：台北市<br>目前就讀嶺東科技大學</div>
-            <div class="word"><h3>專長</h3>平面設計<br>網頁前端<br></div>
-            <div class="word"><h3>經歷</h3>嶺東數媒24屆系學會美宣長<br>第二屆青川影展主視覺設計<br>嶺東數媒112級班級聯展主視覺設計<br>嶺東數媒113級班級聯展主視覺設計<br>嶺東數媒24屆畢委會專刊組長</div>
-        </section>
+<hr/>
+    <div class="title">關於我 PROFILE ➔ ➔ ➔</div>
+<hr/>
+<main id="profile-area">
+    <img src="picture/MeOnHeader.png" style="width: 400px;height: 400px;position: sticky;top:0px">
+    <article>
+        <h1>郭羽棠</h1>
+        <div class="word"><h3>基本資訊</h3>目前就讀嶺東科技大學三年級<br>大家都叫我郭雨棠<br>目前在做專題ㄌ</div>
+        <div class="word"><h3>專長</h3>平面設計<br>網頁前端<br>遊戲設計</div>
+        <div class="word"><h3>經歷</h3>嶺東數媒<br>➭ 24屆系學會美宣長<br>➭ 112級班級聯展主視覺設計
+            <br>➭ 113級班級聯展主視覺設計<br>➭ 24屆畢委會專刊組長<br>
+            第二屆青川影展主視覺設計<br>曾於台中影視基金會實習<br>CCCE遊戲設計全國第三名
+        </div>
     </article>
 </main>
 
 <!--contact-->
-<div class="title-phone">聯繫我 CONTACT ME</div>
-<main id="contact-area" class="area2">
-    <div class="title-space">
-        <div class="title">聯繫我<br>CONTACT ME</div>
-    </div>
+<hr/>
+    <div class="title">聯繫我 CONTACT ME  ➔ ➔ ➔</div>
+<hr/>
+<main id="contact-area">
     <form class="form" id="myForm">
         <label>*NAME</label><br>
         <input type="text" name="name" class="contact"><br>
@@ -100,14 +80,15 @@
 <div class="back2"> ⬆︎ </div>
 
 <!--頁尾-->
+<hr/>
 <footer class="footer">
     <div class="linkbox">
-        <h4>CONTACT ME</h4>
+        <h3>CONTACT ME</h3>
         <div class="link"><a href="https://www.instagram.com/emmakuo1019/">INSTAGRAM</a></div>
         <div class="link"><a href="https://www.facebook.com/EmmaKuo1019?locale=zh_TW">FACE BOOK</a></div>
     </div>
     <div class="linkbox">
-        <h4>關於這個網頁</h4>
+        <h3>關於這個網頁</h3>
         <div class="link">他是我一手拉拔長大的(感動</div>
     </div>
 </footer>
@@ -117,6 +98,7 @@
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous">
 </script>
-<script src="/home.js"></script>
+<script src="js/home.js"></script>
+<script src="js/list.js"></script>
 </body>
 </html>

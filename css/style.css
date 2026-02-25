@@ -2,19 +2,25 @@
 :root {
     --color-white: #F0F5E2;
     --color-black: #141413;
-    --color-light: #77f870;
-    
-    --font-weight-regular: 400;
-    --font-weight-bold: 700;
-    
+    --color-light: #A52A2AFF;
+
+    --font-size-xs: 12pt;
+    --font-size-sm: 14pt;
+    --font-size-md: 24pt;
+    --font-size-lg: 30pt;
+    --font-size-xl: 45pt;
+
+    --space-1: 4px;
+    --space-2: 20px;
+    --space-3: 40px;
+    --space-4: 70px;
 }
 /*SEMANTIC TOKENS*/
-:root {
+:root{
     --bg-page: var(--color-white);
     --text-color: var(--color-black);
     --text-color-hover: var(--color-light);
 }
-/*SEMANTIC TOKENS__DARK*/
 [data-theme="dark"] {
     --bg-page: var(--color-black);
     --text-color: var(--color-white);
@@ -27,9 +33,14 @@ body {
     margin: 0;
     font-family: "Ubuntu","Noto Sans", sans-serif;
 }
-/*平滑轉換主題*/
 body, .card {
     transition: background 0.3s ease, color 0.3s ease;
+}
+hr {
+    border: none;
+    height: 2px;
+    margin: 0;
+    background-color: var(--text-color);
 }
 .header{
     display: flex;
@@ -37,99 +48,82 @@ body, .card {
     justify-content: center;
     align-items: center;
     height: 700px;
-    overflow: hidden;
 }
 .nav{
-    z-index: 50;
-    position: fixed;
     display: flex;
-    width: 100%;
-    justify-content: flex-end;
-    font-size: 15px;
+    justify-content: space-between;
+    align-items: center;
+    padding:var(--space-1) var(--space-2) 0 var(--space-2);
 }
-.logo{
-    z-index: 60;
-    position: fixed;
-    font-size:25px;
-    margin-top: 5px;
-    margin-left: 5px;
+.nav li {
+    margin-left: 20px;
 }
-.Navoption{
-    margin: 12px;
+.navbar{
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 .Navoption:hover{
     background:var(--text-color-hover);
 }
-.article{
+main{
+    padding:var(--space-3)
+}
+#projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+}
+.card{
     padding: 25px;
     flex-direction: column;
-    /*擴散顏色效果*/
-    background: radial-gradient(circle at center, #ffffff 0%, #ffffff 0%, #ffffff 100%);
-    background-size: 0% 0%;
-    background-repeat: no-repeat;
-    background-position: center;
-    transition: background-size 1s ease;
-    border-radius:10px;
+    border-radius: 10px;
 }
-.article:hover {
-    background-size: 200% 200%;
-}
-.works{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content:left;
-    
-}
-.area2{
-    margin:100px 0 100px 0;
-    display: flex;
-    align-items: start;
-}
-.title-space{
-    padding:0 8% 0 8%;
-    display: flex;
-    flex-direction:column;
-    
-    margin-bottom: 40px;
-}
-/*文字設定*/
+/*-----文字設定-----*/
 .title{
+    color: var(--text-color);
     align-items: start;
-    font-size: 30px;
+    font-size: var(--font-size-lg);
     font-weight: bold;
+    margin: var(--space-2) var(--space-2)  var(--space-2)  var(--space-3);
     opacity: 0;
-    transform: translateY(-50px);
+    transform: translateX(-50px);
     transition: all 0.8s ease;
 }
 .title.visible {
     opacity: 1;
     transform: translateY(0);
 }
-.title-phone{
-    font-size: 20pt;
+.project-title{
+    color: var(--text-color);
+    align-items: start;
+    font-size: var(--font-size-lg);
     font-weight: bold;
-    display: none;
-    margin-top: 20px;
-    margin-left: 30px;
+    margin: var(--space-2) var(--space-2)  var(--space-2)  var(--space-3);
 }
 .word{
     text-align: left;
     line-height: 1.8;
-    font-size: 18px;
+    font-size: var(--font-size-sm);
 }
-.porfile-word{
-    gap:20px;
-    display:flex;
-    flex-direction: row
+.detail{
+    font-size: var(--font-size-xs);
+    margin: 0;
 }
-/*圖片設定*/
+/*-----圖片設定------*/
 .work-picture{
     height: 250px;
     width: 300px;
     overflow: hidden;
     border-radius:10px;
+    transform: translateX(0);
+    transition: all 0.5s ease;
 }
-/*互動設定*/
+.work-picture:hover{
+    transform: translateX(-10px)
+}
+/*-----互動設定------*/
 .form{
     justify-content: center;
 }
@@ -164,65 +158,41 @@ body, .card {
     display: flex;
     justify-content: left;
     padding-left: 10%;
-    font-size: 15px;
 }
 .linkbox{
     width: 35%;
     height: 130px;
-}
-.link{
     text-align: left;
-    margin-top: 10px;
 }
 a{text-decoration: none;}
 a:visited{ color:var(--text-color); }
 a:link{ color:var(--text-color); }
 
-/*平板設定*/
+/*-----平板(1250)設定------*/
 @media(max-width:1250px){
-   .Navoption{
-        font-size: 14px;
-    }
     .work{
         height: 250px;
         width: 300px;
     }
-    .porfile-picture{
-        height: 100px;
-        width: 100px;
-    }
 }
 
-/*手機設定*/
+/*-------手機設定(500)------*/
 @media(max-width:500px){
-    .area2{
-        margin-top: 20px;
-    }
     .works{
         margin-left: 30px;
     }
     .word{
         font-size: 15px;
     }
-    .porfile-word{
-        flex-direction: column;
-    }
     #profile-area{
         flex-direction: column;
         padding: 30px;
     }
     .title{
-        display: none;
-    }
-    .title-space{
-        display: none;
-    }
-    .title-phone{
-        margin-top: 50px;
-        display: block;
+        font-size: var(--font-size-md);
     }
     .word{
-        font-size: 14px;
+        font-size: var(--font-size-xs);
     }
     .work{
         height: 200px;
