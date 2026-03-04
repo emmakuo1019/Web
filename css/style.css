@@ -1,21 +1,24 @@
 /*PRIMITIVES*/
 :root {
-    --color-white: #f4f5e2;
+    --color-white: #f8f5e4;
     --color-secnd-white: #cfcec4;
-    --color-black: #141413;
+    --color-black: #221f1b;
     --color-secnd-black: #605f54;
-    --color-light: #A52A2AFF;
+    --color-light: #a57a2a;
 
-    --font-size-xs: 10pt;
-    --font-size-sm: 12pt;
+    --font-size-xs: 12pt;
+    --font-size-sm: 14pt;
     --font-size-md: 20pt;
     --font-size-lg: 30pt;
     --font-size-xl: 45pt;
 
+    --font-weight-bold:900;
+    --font-weight-medium:600;
+
     --space-1: 4px;
     --space-2: 20px;
-    --space-3: 40px;
-    --space-4: 70px;
+    --space-3: 60px;
+    --space-4: 100px;
 }
 /*SEMANTIC TOKENS*/
 :root{
@@ -51,6 +54,7 @@ hr {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     height: 700px;
 }
 .nav{
@@ -79,7 +83,7 @@ main{
 }
 #projects {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
     gap: 20px;
 }
 .card{
@@ -99,7 +103,7 @@ main{
     align-items: start;
     font-size: var(--font-size-lg);
     font-weight: bold;
-    margin: var(--space-2) var(--space-2)  var(--space-2)  var(--space-3);
+    margin: var(--space-2) var(--space-2)  var(--space-2)  var(--space-4);
     opacity: 0;
     transform: translateX(-50px);
     transition: all 0.8s ease;
@@ -107,6 +111,11 @@ main{
 .title.visible {
     opacity: 1;
     transform: translateY(0);
+}
+.big-title{
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    justify-self: start;
 }
 .project-title{
     color: var(--text-color);
@@ -121,10 +130,12 @@ main{
     font-size: var(--font-size-sm);
 }
 h2{
+    font-weight: var(--font-weight-bold);
     font-size: var(--font-size-md);
     margin: var(--space-1) 0;
 }
 h3{
+    font-weight: var(--font-weight-medium);
     font-size: var(--font-size-sm);
     margin: var(--space-1) 0;
 }
@@ -135,7 +146,9 @@ h3{
 }
 /*-----圖片設定------*/
 .profile-picture{
-    width: 400px;height: 330px;position: sticky;top:0
+    width: 400px;height: 330px;position: sticky;top:0;
+    border-radius:15px;
+    border: 2px solid var(--text-color);
 }
 .work-picture{
     height: 250px;
