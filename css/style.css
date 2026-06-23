@@ -1,4 +1,3 @@
-/*PRIMITIVES*/
 :root {
     --color-white: #f8f5e4;
     --color-secnd-white: #cfcec4;
@@ -19,9 +18,8 @@
     --space-2: 20px;
     --space-3: 60px;
     --space-4: 100px;
-}
+
 /*SEMANTIC TOKENS*/
-:root{
     --bg-page: var(--color-white);
     --text-color: var(--color-black);
     --text-secnd-color: var(--color-secnd-black);
@@ -43,11 +41,11 @@ body {
 body, .card {
     transition: background 0.3s ease, color 0.3s ease;
 }
+main {
+    padding: 120px var(--space-4);
+}
 hr {
-    border: none;
-    height: 2px;
-    margin: 0;
-    background-color: var(--text-color);
+    display: none;
 }
 .header{
     display: flex;
@@ -55,7 +53,8 @@ hr {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    height: 700px;
+    min-height: 100vh;
+    padding-top: 60px;
 }
 .nav{
     position: fixed;top: 0;
@@ -69,13 +68,13 @@ hr {
 .nav li {
     margin-left: 20px;
 }
-.navbar{
+.nav__list{
     display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
 }
-.Navoption:hover{
+.nav__item:hover{
     background:var(--text-color-hover);
 }
 main{
@@ -113,9 +112,10 @@ main{
     transform: translateY(0);
 }
 .big-title{
-    font-size: var(--font-size-xl);
+    /* 使用 clamp(最小值, 推薦值, 最大值) 讓字體隨螢幕動態放大 */
+    font-size: clamp(4rem, 10vw, 8rem);
     font-weight: var(--font-weight-bold);
-    justify-self: start;
+    line-height: 1.1; /* 大字體需要縮小行距才好看 */
 }
 .project-title{
     color: var(--text-color);
