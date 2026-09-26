@@ -1,3 +1,8 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
 :root {
     --color-white: #f8f5e4;
     --color-secnd-white: #cfcec4;
@@ -14,10 +19,11 @@
     --font-weight-bold:900;
     --font-weight-medium:600;
 
-    --space-1: 4px;
-    --space-2: 20px;
-    --space-3: 60px;
-    --space-4: 100px;
+    --space-xs: 4px;
+    --space-sm: 20px;
+    --space-md: 60px;
+
+    --section-space: clamp(50px, 6vw, 100px);
 
 /*SEMANTIC TOKENS*/
     --bg-page: var(--color-white);
@@ -36,25 +42,31 @@ body {
     background: var(--bg-page);
     color: var(--text-color);
     margin: 0;
-    font-family: "Ubuntu","Noto Sans", sans-serif;
+    /*font-family: "Ubuntu","Noto Sans", sans-serif;*/
+    font-family: "TASA","Explorer", sans-serif;
 }
 body, .card {
     transition: background 0.3s ease, color 0.3s ease;
 }
 main {
-    padding: 120px var(--space-4);
+    width: min(
+            calc(100% - clamp(40px, 8vw, 120px)),
+            1200px
+    );
+    margin: 0 auto;
+    padding: var(--section-space) 0;
 }
 hr {
     display: none;
 }
-.header{
+.header {
     display: flex;
-    flex-direction: row;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     min-height: 100vh;
     padding-top: 60px;
+    box-sizing: border-box;
 }
 .nav{
     position: fixed;top: 0;
@@ -63,7 +75,7 @@ hr {
     justify-content: space-between;
     align-items: center;
     width: 95%;
-    padding:0 var(--space-2);
+    padding:0 var(--space-md);
 }
 .nav li {
     margin-left: 20px;
@@ -77,9 +89,6 @@ hr {
 .nav__item:hover{
     background:var(--text-color-hover);
 }
-main{
-    padding:var(--space-4)
-}
 #projects {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
@@ -90,19 +99,17 @@ main{
     flex-direction: column;
     border-radius: 10px;
 }
-#profile-area{
+#profile-area {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
     gap: 10%;
+    align-items: flex-start;
 }
 /*-----文字設定-----*/
-.title{
+.title {
     color: var(--text-color);
-    align-items: start;
     font-size: var(--font-size-lg);
     font-weight: bold;
-    margin: var(--space-2) var(--space-2)  var(--space-2)  var(--space-4);
+    margin: var(--space-sm) 0;
     opacity: 0;
     transform: translateX(-50px);
     transition: all 0.8s ease;
@@ -122,7 +129,6 @@ main{
     align-items: start;
     font-size: var(--font-size-lg);
     font-weight: bold;
-    margin: var(--space-2);
 }
 .word{
     text-align: left;
@@ -132,12 +138,10 @@ main{
 h2{
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-md);
-    margin: var(--space-1) 0;
 }
 h3{
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-sm);
-    margin: var(--space-1) 0;
 }
 .detail{
     color: var(--text-secnd-color);
@@ -145,15 +149,18 @@ h3{
     margin: 0;
 }
 /*-----圖片設定------*/
-.profile-picture{
-    width: 400px;height: 330px;position: sticky;top:0;
-    border-radius:15px;
-    border: 2px solid var(--text-color);
+.profile-picture {
+    width: clamp(280px, 30vw, 400px);
+    height: auto;
+    position: sticky;
+    top: clamp(80px, 10vh, 120px);
+    border-radius: 15px;
+    border: 3px solid var(--text-color);
 }
-.work-picture{
-    height: 250px;
-    width: 290px;
-    overflow: hidden;
+.work-picture {
+    width: 100%;
+    aspect-ratio: 290 / 250;
+    object-fit: cover;
     border-radius:12px;
     transform: translateX(0);
     transition: all 0.5s ease;
@@ -166,8 +173,10 @@ h3{
     justify-content: center;
 }
 .contact{
-    margin: 10px 0 10px 0;
-    height: 40px;width: 300px;
+    margin: var(--space-sm) 0;
+    height: 40px;
+    width: 100%;
+    max-width: 500px;
     border: var(--text-color) solid 1px;
     border-radius: 3px;
 }
@@ -194,13 +203,9 @@ h3{
 .back2:hover{cursor: pointer;}
 .footer{
     display: flex;
+    flex-direction: column;
     justify-content: left;
-    padding-left: 10%;
-}
-.linkbox{
-    width: 35%;
-    height: 130px;
-    text-align: left;
+    padding: clamp(30px, 30vw, 100px);
 }
 a{text-decoration: none;}
 a:visited{ color:var(--text-color); }
