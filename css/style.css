@@ -23,7 +23,11 @@
     --space-sm: 20px;
     --space-md: 60px;
 
-    --section-space: clamp(50px, 6vw, 100px);
+    /* RWD Layout Tokens */
+    --container-max: 1200px;
+    --gutter: clamp(16px, 4vw, 32px);
+    --nav-height: 70px;
+    --section-space: clamp(40px, 6vw, 80px);
 
 /*SEMANTIC TOKENS*/
     --bg-page: var(--color-white);
@@ -49,12 +53,13 @@ body, .card {
     transition: background 0.3s ease, color 0.3s ease;
 }
 main {
-    width: min(
-            calc(100% - clamp(40px, 8vw, 120px)),
-            1200px
-    );
+    width: min(calc(100% - var(--gutter) * 2), var(--container-max));
     margin: 0 auto;
     padding: var(--section-space) 0;
+    scroll-margin-top: var(--nav-height);
+}
+.project-page {
+    padding-top: calc(var(--nav-height) + var(--section-space));
 }
 hr {
     display: none;
@@ -65,39 +70,79 @@ hr {
     align-items: center;
     flex-wrap: wrap;
     min-height: 100vh;
-    padding-top: 60px;
+    padding-top: var(--nav-height);
     box-sizing: border-box;
 }
 .nav{
-    position: fixed;top: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
     z-index: 100;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 95%;
-    padding:0 var(--space-md);
+    padding: 14px var(--gutter);
+    background-color: var(--bg-page);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-sizing: border-box;
 }
-.nav li {
-    margin-left: 20px;
+.nav .logo {
+    margin: 0;
+}
+.nav a {
+    color: inherit;
+    text-decoration: none;
 }
 .nav__list{
     display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
+    gap: 16px;
+    align-items: center;
 }
-.nav__item:hover{
-    background:var(--text-color-hover);
+.nav__item{
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.nav__item a {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+.nav__item:hover,
+.nav__item:focus-within {
+    background: var(--text-color-hover);
+}
+.nav__item:hover a,
+.nav__item:focus-within a {
+    color: var(--color-white);
 }
 #projects {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 20px;
 }
 .card{
+    min-width: 0;
     padding: 25px;
     flex-direction: column;
     border-radius: 10px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+.card a {
+    min-width: 0;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    overflow-wrap: break-word;
+}
+article {
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 #profile-area {
     display: flex;
@@ -168,6 +213,30 @@ h3{
 .work-picture:hover{
     transform: translateX(10px)
 }
+.work-info-big {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    margin-bottom: var(--space-sm);
+}
+.word-info {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-md) 0 var(--space-sm) 0;
+    line-height: 1.8;
+    overflow-wrap: break-word;
+}
+.word-info li {
+    padding-left: 1.2rem;
+    margin-top: var(--space-xs);
+    color: var(--text-secnd-color);
+}
+.word-info li span {
+    color: var(--text-color);
+}
 /*-----互動設定------*/
 .form{
     justify-content: center;
@@ -214,6 +283,27 @@ a:link{ color:var(--text-color); }
 /*-----平板(1250)設定------*/
 @media(max-width:1250px){
     
+}
+/*-----窄螢幕／手機導覽列設定(600)------*/
+@media(max-width:600px){
+    :root {
+        --nav-height: 96px;
+    }
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 10px var(--gutter);
+    }
+    .nav__list {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px 12px;
+    }
+    .nav__item a {
+        padding: 4px 6px;
+    }
 }
 /*-----平板(800)設定------*/
 @media(max-width:800px){

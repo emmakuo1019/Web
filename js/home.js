@@ -17,8 +17,12 @@ $(document).ready(function () {
         const target = document.getElementById(targetId);
 
         if (btn && target) {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
                 target.scrollIntoView({ behavior: "smooth" });
+                if (window.history && window.history.pushState) {
+                    window.history.pushState(null, '', `#${targetId}`);
+                }
             });
         }
     }
