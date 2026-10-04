@@ -68,28 +68,39 @@
     <section class="section" id="contact-area">
         <div class="title">聯繫我 CONTACT ME  ➔ ➔ ➔</div>
         <form class="form" id="myForm">
-            <label>*NAME</label><br>
-            <input type="text" name="name" class="contact"><br>
-            <label>COMPANY</label><br>
-            <input type="text" name="company" class="contact"><br>
-            <label>*EMAIL</label><br>
-            <input type="email" name="email" class="contact"><br>
-            <label>*INFORMATION</label><br>
-            <textarea name="information" class="contact" style="height: 50px"></textarea><br>
+            <div class="form-group">
+                <label for="contact-name">*NAME</label>
+                <input type="text" id="contact-name" name="name" class="contact" required>
+            </div>
+            <div class="form-group">
+                <label for="contact-company">COMPANY</label>
+                <input type="text" id="contact-company" name="company" class="contact">
+            </div>
+            <div class="form-group">
+                <label for="contact-email">*EMAIL</label>
+                <input type="email" id="contact-email" name="email" class="contact" required>
+            </div>
+            <div class="form-group">
+                <label for="contact-info">*INFORMATION</label>
+                <textarea id="contact-info" name="information" class="contact textarea" required></textarea>
+            </div>
             <button type="submit" class="button" id="send">送出</button>
         </form>
     </section>
 </main>
 
-<div class="back"> ⬆︎ BACK TO TOP ⬆︎</div>
-<div class="back2"> ⬆︎ </div>
+<div class="back-to-top-wrapper">
+    <button type="button" class="back" aria-label="回到頁首">⬆︎ BACK TO TOP ⬆︎</button>
+    <button type="button" class="back2" aria-label="回到頁首">⬆︎</button>
+</div>
 
 <!--頁尾-->
-<hr/>
 <footer class="footer">
-    <h3>CONTACT ME</h3>
-    <div class="link"><a href="https://www.instagram.com/emmakuo1019/">INSTAGRAM</a></div>
-    <div class="link"><a href="https://www.facebook.com/EmmaKuo1019?locale=zh_TW">FACE BOOK</a></div>
+    <div class="linkbox">
+        <h3>CONTACT ME</h3>
+        <div class="link"><a href="https://www.instagram.com/emmakuo1019/" target="_blank" rel="noopener noreferrer">INSTAGRAM</a></div>
+        <div class="link"><a href="https://www.facebook.com/EmmaKuo1019?locale=zh_TW" target="_blank" rel="noopener noreferrer">FACEBOOK</a></div>
+    </div>
 </footer>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="

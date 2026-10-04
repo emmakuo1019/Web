@@ -12,8 +12,9 @@ fetch('data/projects.json')
             return
         }
 
+        const cleanTitle = project.title.replace(/<br\s*[\/]?>/gi, ' ')
         container.innerHTML = `
-    <img class="work-info-big" src="${project.cover}">
+    <img class="work-info-big" src="${project.cover}" alt="${cleanTitle} 作品詳細大圖">
     <div class="project-title">${project.title}</div>
     <div class="word">
         ${project.description}
