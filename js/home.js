@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
 
     // ==========================================
     // 1. 導覽列平滑捲動 (Nav Scroll)
@@ -11,7 +13,7 @@ $(document).ready(function () {
         'contact': 'contact-area'
     };
 
-    // 迴圈綁定點擊事件 (不需要再包一層 DOMContentLoaded 了！)
+    // 迴圈綁定點擊事件
     for (const [btnId, targetId] of Object.entries(scrollLinks)) {
         const btn = document.getElementById(btnId);
         const target = document.getElementById(targetId);
@@ -19,7 +21,7 @@ $(document).ready(function () {
         if (btn && target) {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                target.scrollIntoView({ behavior: "smooth" });
+                target.scrollIntoView({ behavior: scrollBehavior });
                 if (window.history && window.history.pushState) {
                     window.history.pushState(null, '', `#${targetId}`);
                 }
@@ -31,7 +33,7 @@ $(document).ready(function () {
     const backBtns = document.querySelectorAll('.back, .back2');
     backBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: scrollBehavior });
         });
     });
 
@@ -154,21 +156,23 @@ $(document).ready(function () {
     
 
     const elements = document.querySelectorAll(".title");
-    function observeHandler(entries, observer) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("visible");
-            } else {
-                entry.target.classList.remove("visible"); // 離開視窗就移除 class，讓它可以再次觸發
-            }
+    if (elements.length > 0 && 'IntersectionObserver' in window && !prefersReducedMotion) {
+        document.documentElement.classList.add("js-reveal");
+        function observeHandler(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                } else {
+                    entry.target.classList.remove("visible");
+                }
+            });
+        }
+
+        const observer = new IntersectionObserver(observeHandler, { threshold: 0.1 });
+        elements.forEach(element => {
+            observer.observe(element);
         });
     }
-
-    const observer = new IntersectionObserver(observeHandler);
-
-    elements.forEach(element => {
-        observer.observe(element);
-    });
     
 /*表單訊息*/
     const form = document.getElementById("myForm");
