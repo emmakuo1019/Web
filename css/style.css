@@ -52,14 +52,18 @@ body {
 body, .card {
     transition: background 0.3s ease, color 0.3s ease;
 }
-main {
+main, .main-container {
     width: min(calc(100% - var(--gutter) * 2), var(--container-max));
     margin: 0 auto;
+}
+.section {
     padding: var(--section-space) 0;
     scroll-margin-top: var(--nav-height);
 }
 .project-page {
-    padding-top: calc(var(--nav-height) + var(--section-space));
+    width: min(calc(100% - var(--gutter) * 2), var(--container-max));
+    margin: 0 auto;
+    padding: calc(var(--nav-height) + var(--section-space)) 0 var(--section-space) 0;
 }
 hr {
     display: none;
@@ -68,10 +72,48 @@ hr {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
     min-height: 100vh;
+    min-height: 100svh;
     padding-top: var(--nav-height);
+    padding-bottom: var(--space-sm);
     box-sizing: border-box;
+    width: 100%;
+}
+.header-inner {
+    width: min(calc(100% - var(--gutter) * 2), var(--container-max));
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: clamp(20px, 4vw, 50px);
+}
+.illustration-group {
+    position: relative;
+    width: clamp(240px, 42vw, 480px);
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+}
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+#rope-container {
+    position: absolute;
+    top: 18%;
+    left: 70%;
+    width: 20%;
+    height: 70%;
+    z-index: 10;
+    touch-action: none;
+}
+#rope-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
 }
 .nav{
     position: fixed;
@@ -144,10 +186,14 @@ article {
     min-width: 0;
     overflow-wrap: break-word;
 }
-#profile-area {
+.profile-container {
     display: flex;
-    gap: 10%;
+    gap: clamp(24px, 5vw, 60px);
     align-items: flex-start;
+}
+.profile-article {
+    flex: 1 1 0;
+    min-width: 0;
 }
 /*-----文字設定-----*/
 .title {
@@ -195,12 +241,18 @@ h3{
 }
 /*-----圖片設定------*/
 .profile-picture {
-    width: clamp(280px, 30vw, 400px);
+    flex: 0 0 clamp(240px, 30vw, 380px);
+    width: clamp(240px, 30vw, 380px);
+    max-width: 100%;
     height: auto;
-    position: sticky;
-    top: clamp(80px, 10vh, 120px);
     border-radius: 15px;
     border: 3px solid var(--text-color);
+}
+@media (min-width: 801px) and (min-height: 600px) {
+    .profile-picture {
+        position: sticky;
+        top: calc(var(--nav-height) + 20px);
+    }
 }
 .work-picture {
     width: 100%;
@@ -305,14 +357,21 @@ a:link{ color:var(--text-color); }
         padding: 4px 6px;
     }
 }
-/*-----平板(800)設定------*/
+/*-----平板／小螢幕(800)設定------*/
 @media(max-width:800px){
-    #profile-area{
+    .profile-container{
         flex-direction: column;
-        padding: 30px;
+        align-items: center;
+        gap: 24px;
     }
     .profile-picture{
-        position: relative;
+        position: static;
+        top: auto;
+        width: 100%;
+        max-width: 340px;
+    }
+    .profile-article{
+        width: 100%;
     }
 }
 /*-------手機設定(500)------*/
@@ -332,8 +391,7 @@ a:link{ color:var(--text-color); }
         border-radius:10px;
     }
     .form{
-        margin-left: 30px;
-        padding-top: 50px;
+        padding-top: 20px;
     }
     .back{
         display: none;

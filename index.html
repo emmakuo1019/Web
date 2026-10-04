@@ -27,51 +27,58 @@
 </nav>
 <!--頁首-->
 <header class="header" id="home-area">
-    <div class="big-title">
-        EMMA<br>KUO'S
-    </div>
-    <div class="illustration-group" style="position: relative; display: inline-block;">
-        <img style="height: 500px;width: auto" src="picture/MeOnHeader.png">
-        <div id="rope-container" style="position: absolute; top: 90px; left: 350px; width: 100px; height: 450px; z-index: 10;"></div>
+    <div class="header-inner">
+        <div class="big-title">
+            EMMA<br>KUO'S
+        </div>
+        <div class="illustration-group">
+            <img class="hero-image" src="picture/MeOnHeader.png" alt="Emma Kuo 頁首插圖">
+            <div id="rope-container" class="rope-wrapper" aria-label="切換深淺色拉繩"></div>
+        </div>
     </div>
 </header>
-<!--works-->
-<main id="works-area">
-    <div class="title">作品 WORKS ➔ ➔ ➔</div>
-    <div id="projects"></div>
-</main>
-<!--profile-->
 
-<main id="profile-area">
-    <!--<div class="title">關於我 PROFILE ➔ ➔ ➔</div>-->
-    <img src="picture/MeProfilePic.png" class="profile-picture">
-    <article>
-        <h1>郭羽棠</h1>
-        <div class="word"><h3>基本資訊</h3>目前就讀嶺東科技大學<br>大家都叫我郭雨棠<br>目前在做專題ㄌ</div>
-        <div class="word"><h3>專長</h3>平面設計<br>網頁前端<br>遊戲設計</div>
-        <div class="word"><h3>經歷</h3>嶺東數媒＿<br>➭ 112級班級聯展主視覺設計
-            <br>➭ 113級班級聯展主視覺設計<br>➭ 第 24 屆數位媒體設計系系學會 — 美宣組長（2024 ~ 2025）
-            <br>➭ 第 24 屆畢業籌備委員會 — 專刊組長（2025 ~ 現在）<br>➭第 24 屆畢業專題遊戲組測試展主辦
-            <br>
-            第二屆青川影展主視覺設計<br>曾於台中影視基金會 推廣組 實習<br>2025年 CCCE 遊戲設計全國第三名
+<main class="main-container">
+    <!--works-->
+    <section class="section" id="works-area">
+        <div class="title">作品 WORKS ➔ ➔ ➔</div>
+        <div id="projects"></div>
+    </section>
+
+    <!--profile-->
+    <section class="section" id="profile-area">
+        <div class="title">關於我 PROFILE ➔ ➔ ➔</div>
+        <div class="profile-container">
+            <img src="picture/MeProfilePic.png" class="profile-picture" alt="郭羽棠個人照">
+            <article class="profile-article">
+                <h1>郭羽棠</h1>
+                <div class="word"><h3>基本資訊</h3>目前就讀嶺東科技大學<br>大家都叫我郭雨棠<br>目前在做專題ㄌ</div>
+                <div class="word"><h3>專長</h3>平面設計<br>網頁前端<br>遊戲設計</div>
+                <div class="word"><h3>經歷</h3>嶺東數媒＿<br>➭ 112級班級聯展主視覺設計
+                    <br>➭ 113級班級聯展主視覺設計<br>➭ 第 24 屆數位媒體設計系系學會 — 美宣組長（2024 ~ 2025）
+                    <br>➭ 第 24 屆畢業籌備委員會 — 專刊組長（2025 ~ 現在）<br>➭第 24 屆畢業專題遊戲組測試展主辦
+                    <br>
+                    第二屆青川影展主視覺設計<br>曾於台中影視基金會 推廣組 實習<br>2025年 CCCE 遊戲設計全國第三名
+                </div>
+            </article>
         </div>
-    </article>
-</main>
+    </section>
 
-<!--contact-->
-<main id="contact-area">
-    <div class="title">聯繫我 CONTACT ME  ➔ ➔ ➔</div>
-    <form class="form" id="myForm">
-        <label>*NAME</label><br>
-        <input type="text" name="name" class="contact"><br>
-        <label>COMPANY</label><br>
-        <input type="text" name="company" class="contact"><br>
-        <label>*EMAIL</label><br>
-        <input type="email" name="email" class="contact"><br>
-        <label>*INFORMATION</label><br>
-        <textarea name="information" class="contact" style="height: 50px"></textarea><br>
-        <button type="submit" class="button" id="send">送出</button>
-    </form>
+    <!--contact-->
+    <section class="section" id="contact-area">
+        <div class="title">聯繫我 CONTACT ME  ➔ ➔ ➔</div>
+        <form class="form" id="myForm">
+            <label>*NAME</label><br>
+            <input type="text" name="name" class="contact"><br>
+            <label>COMPANY</label><br>
+            <input type="text" name="company" class="contact"><br>
+            <label>*EMAIL</label><br>
+            <input type="email" name="email" class="contact"><br>
+            <label>*INFORMATION</label><br>
+            <textarea name="information" class="contact" style="height: 50px"></textarea><br>
+            <button type="submit" class="button" id="send">送出</button>
+        </form>
+    </section>
 </main>
 
 <div class="back"> ⬆︎ BACK TO TOP ⬆︎</div>
