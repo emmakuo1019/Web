@@ -531,3 +531,52 @@ a:link {
         transform: none !important;
     }
 }
+
+/* PET-01: Pet guide styles */
+.pet-guide {
+  position: fixed;
+  right: clamp(16px, 3vw, 32px);
+  bottom: clamp(16px, 3vw, 32px);
+  z-index: 1000;
+}
+.pet {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #7c4dff; /* 紫色 */
+  cursor: pointer;
+}
+/* Mobile size */
+@media (max-width: 500px) {
+  .pet {
+    width: 52px;
+    height: 52px;
+  }
+}
+.pet-dialog {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  background: var(--bg-page);
+  color: var(--text-color);
+  padding: 12px 16px;
+  border: 1px solid var(--text-secnd-color);
+  border-radius: 8px;
+  white-space: nowrap;
+  /* 隱藏時不顯示、不攔截事件 */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.pet-dialog.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+/* 不喜歡動畫的使用者 */
+@media (prefers-reduced-motion: reduce) {
+  .pet-dialog {
+    transition: none;
+  }
+}

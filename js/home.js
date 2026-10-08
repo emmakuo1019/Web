@@ -201,4 +201,18 @@ $(document).ready(function () {
         console.error('找不到表單myForm');
     }
 
+
+    // ==========================================
+    // PET-02: 寵物球對話框開關
+    // ==========================================
+    const petBtn = document.getElementById('pet');
+    const petDialog = document.getElementById('pet-dialog');
+    if (petBtn && petDialog) {
+        petBtn.addEventListener('click', () => {
+            const isOpen = petDialog.classList.toggle('is-open');
+            petBtn.setAttribute('aria-expanded', String(isOpen));
+            petDialog.setAttribute('aria-hidden', String(!isOpen));
+        });
+    }
+
 }); // $(document).ready 結束
