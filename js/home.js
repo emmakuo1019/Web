@@ -207,6 +207,13 @@ $(document).ready(function () {
     // ==========================================
     const petBtn = document.getElementById('pet');
     const petDialog = document.getElementById('pet-dialog');
+
+    function closePetDialog() {
+        petDialog.classList.remove('is-open');
+        petBtn.setAttribute('aria-expanded', 'false');
+        petDialog.setAttribute('aria-hidden', 'true');
+    }
+
     if (petBtn && petDialog) {
         petBtn.addEventListener('click', () => {
             const isOpen = petDialog.classList.toggle('is-open');
@@ -214,5 +221,17 @@ $(document).ready(function () {
             petDialog.setAttribute('aria-hidden', String(!isOpen));
         });
     }
+
+    // ==========================================
+    // PET-03: 三個導覽按鈕
+    // ==========================================
+    document.querySelectorAll('.pet-options button').forEach(option => {
+        option.addEventListener('click', () => {
+            const target = document.getElementById(option.dataset.target);
+            if (!target) return;
+            target.scrollIntoView({ behavior: scrollBehavior });
+            closePetDialog();
+        });
+    });
 
 }); // $(document).ready 結束
