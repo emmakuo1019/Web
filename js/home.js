@@ -203,22 +203,46 @@ $(document).ready(function () {
 
 
     // ==========================================
-    // PET-02: 寵物球對話框開關
+    // PET-02/PET-04: 寵物球對話框開關
     // ==========================================
     const petBtn = document.getElementById('pet');
     const petDialog = document.getElementById('pet-dialog');
+    const petOptions = petDialog ? petDialog.querySelectorAll('.pet-options button') : [];
+
+    /** PET-04: 同步 tabindex，確保隱藏 dialog 內的按鈕不被 Tab 聚焦 */
+    function setPetOptionsTabIndex(accessible) {
+        petOptions.forEach(btn => {
+            btn.setAttribute('tabindex', accessible ? '0' : '-1');
+        });
+    }
 
     function closePetDialog() {
         petDialog.classList.remove('is-open');
         petBtn.setAttribute('aria-expanded', 'false');
         petDialog.setAttribute('aria-hidden', 'true');
+        setPetOptionsTabIndex(false); // PET-04: 關閉時移出 tab 順序
     }
 
     if (petBtn && petDialog) {
+        // 初始化：隱藏狀態下不可 Tab
+        setPetOptionsTabIndex(false);
+
         petBtn.addEventListener('click', () => {
             const isOpen = petDialog.classList.toggle('is-open');
             petBtn.setAttribute('aria-expanded', String(isOpen));
             petDialog.setAttribute('aria-hidden', String(!isOpen));
+            setPetOptionsTabIndex(isOpen); // PET-04: 開啟時允許 Tab
+        });
+
+        // PET-04: 點擊外部關閉（注意不讓 pet click 同時觸發）
+        document.addEventListener('click', (e) => {
+            if (
+                petDialog.classList.contains('is-open') &&
+                !petBtn.contains(e.target) &&
+                !petDialog.contains(e.target)
+            ) {
+                closePetDialog();
+            }
         });
     }
 
