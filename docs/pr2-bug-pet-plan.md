@@ -33,7 +33,12 @@ Pet Visual & Behavior Integration · .EMMA 個人作品集
 允許實作檔案：index.html、css/style.css、js/home.js（僅搬移 pet 區段）、新增 js/pet.js、picture/pet/ 指定素材、本文件，以及最終 docs/pr2-bug-pet-verification.md。不新增框架或建置系統。
 
 ## 3. 美術與初始參數
-素材原始比例、透明背景不可破壞。實際圖像內容、GIF 初始朝向、三張圖的透明邊界與檔案大小尚未檢查，05A 必須記錄；不得自行重畫或壓縮覆寫原圖。
+素材原始比例、透明背景不可破壞。PR2-PET-05A 已完成盤點並記錄如下；不得自行重畫或壓縮覆寫原圖。
+
+### PR2-PET-05A 素材盤點結果
+- **`picture/pet/pet.gif`**：17,297 bytes、100×100 px（1:1）、GIF (Mode P)、透明背景。8 幀（120/130ms，循環 1000ms，無限循環 loop 0），Alpha BBox 約 (21~28, 4~9, 78~86, 96~98)。朝向：正向面對（Front-facing）擺腿步伐。
+- **`picture/pet/pet.png`**：4,694 bytes、100×100 px（1:1）、PNG (RGBA)、透明背景。Alpha BBox (20, 5, 84, 97)。朝向：正向面對（Front-facing），待機狀態。
+- **`picture/pet/pethappy.png`**：4,833 bytes、100×100 px（1:1）、PNG (RGBA)、透明背景。Alpha BBox (20, 5, 84, 97) 與 pet.png 底線及邊界完全一致，僅嘴部表情差異（221 像素開口笑）。朝向：正向面對（Front-facing），開心狀態。
 
 | 項目 | 初始設定 | 調整原則 |
 | --- | --- | --- |
@@ -130,9 +135,9 @@ Footer 按鈕顯示 #@$%_BUG?!，可附 title，accessible name 為「召回 Bug
 
 ### PR2-PET-05A｜素材盤點與靜態換圖
 前置：PR1 基線；範圍：index.html、CSS Pet 區、picture/pet/、本文件。
-- [ ] 檢查三個本地檔案存在、大小、尺寸、透明邊界、GIF 動畫與原始朝向，記錄結果；納入 git。找不到就回報確切缺件，不拿其他圖假裝完成。
-- [ ] #pet 中放 Idle 圖；提供穩定容器、桌面64px／手機48px與至少44px hitbox；圖片 alt=""，名稱交給按鈕。
-- [ ] 移除紫球常態背景與圓形裁切；保留 focus，沿用現有點擊，不寫移动/FSM。
+- [x] 檢查三個本地檔案存在、大小、尺寸、透明邊界、GIF 動畫與原始朝向，記錄結果；納入 git。找不到就回報確切缺件，不拿其他圖假裝完成。
+- [x] #pet 中放 Idle 圖；提供穩定容器、桌面64px／手機48px與至少44px hitbox；圖片 alt=""，名稱交給按鈕。
+- [x] 移除紫球常態背景與圓形裁切；保留 focus，沿用現有點擊，不寫移动/FSM。
 驗收：桌面與375px三張素材路徑可載入；静態圖不變形；點角色與三個導覽正常。
 STOP → 05B。
 
