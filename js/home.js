@@ -217,6 +217,7 @@ $(document).ready(function () {
     }
 
     function closePetDialog() {
+        if (!petBtn || !petDialog) return; // PET-05: guard，防止在無 pet DOM 的頁面呼叫時出錯
         petDialog.classList.remove('is-open');
         petBtn.setAttribute('aria-expanded', 'false');
         petDialog.setAttribute('aria-hidden', 'true');
