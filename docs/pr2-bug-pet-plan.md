@@ -143,9 +143,9 @@ STOP → 05B。
 
 ### PR2-PET-05B｜隔離角色程式與失敗降級
 範圍：js/home.js 尾端 pet 區、新增 js/pet.js、index.html script、必要 Pet CSS。
-- [ ] 把現有 pet 開關／導覽／外部關閉搬到專用檔；在 DOM 可用時初始化，無 pet DOM 直接退出。
-- [ ] 保留三個導覽、Reduced Motion 捲動與 ARIA 同步；不動 Matter.js。
-- [ ] 加入素材失敗回退；其他狀態圖回退機制供後續狀態共用。
+- [x] 把現有 pet 開關／導覽／外部關閉搬到專用檔；在 DOM 可用時初始化，無 pet DOM 直接退出。
+- [x] 保留三個導覽、Reduced Motion 捲動與 ARIA 同步；不動 Matter.js。
+- [x] 加入素材失敗回退；其他狀態圖回退機制供後續狀態共用。
 驗收：一次點擊只切換一次；三導覽及外部關閉正常；模拟 pet.png 失敗仍可操作；無重複錯誤迴圈。
 STOP → 06A。
 
