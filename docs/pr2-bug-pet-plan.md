@@ -159,9 +159,9 @@ STOP → 06B。
 
 ### PR2-PET-06B｜底部移動、停留與邊界
 範圍：js/pet.js、Pet CSS。
-- [ ] 單一 rAF、px/s 位移、左右轉向、4–8秒走／2–5秒停。
-- [ ] 分離位移與翻轉 transform；按 GIF 原朝向決定翻轉。
-- [ ] 實作 resize clamp、safe-area與基本可視範圍；開對話立即停止。
+- [x] 單一 rAF、px/s 位移、左右轉向、4–8秒走／2–5秒停。
+- [x] 分離位移與翻轉 transform；按 GIF 原朝向決定翻轉。
+- [x] 實作 resize clamp、safe-area與基本可視範圍；開對話立即停止。
 驗收：左右邊界各撞一次；持續30秒見走／停；1280縮至320不出界；Happy 不移動。
 STOP → 06C。
 
