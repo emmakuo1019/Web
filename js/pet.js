@@ -214,11 +214,13 @@
 
         /**
          * 更新圖像水平翻轉方向
-         * 原素材 pet.gif 為正向面對，向右為正向，向左 scaleX(-1) 翻轉
+         * 原素材 pet.gif 預設面向左側：
+         * - 向左走 (direction === -1)：使用原圖面向左，移除 is-flipped
+         * - 向右走 (direction === 1)：水平翻轉面向右，加上 is-flipped (scaleX(-1))
          */
         function updateFacing() {
             if (petImg) {
-                if (direction === -1) {
+                if (direction === 1) {
                     petImg.classList.add('is-flipped');
                 } else {
                     petImg.classList.remove('is-flipped');
