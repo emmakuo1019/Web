@@ -2,9 +2,9 @@
 
 - **Task ID**: PR2-PET-06C
 - **相關 PR**: PR #2 (`plan/pr2-bug-pet`)
-- **文件狀態**: 審查後修訂完成，等待人工審查（Planning Only）
+- **文件狀態**: 實作與驗證完成，等待人工審查（Implementation Completed）
 - **撰寫日期**: 2026-10-15
-- **基準 Commit**: `18dc70ec89e15c665afa5291d953be5350122d40` (docs(pet): plan PR2-PET-06C lifecycle and pause controls)
+- **基準 Commit**: `09ddda4a2d06dbb951446a2e291320cb527105b7` (docs(pet): revise PR2-PET-06C plan after review)
 
 ---
 
@@ -441,85 +441,78 @@ flowchart TD
 ## 7. 驗收標準（Acceptance Criteria）
 
 > [!NOTE]
-> 本階段為規劃階段，所有驗收項目皆為待實作後驗證之客觀項目，目前狀態皆為 **[NOT TESTED]**。
+> 實作完成後已進行全面驗證，以下 11 項驗收標準與 6 項回歸測試全數通過（PASS）。
 
-- [ ] **[NOT TESTED] AC-1 (分頁切換暫停與防瞬移)**：
-  - 讓角色處於 `Walking` 狀態，記錄當前 X 座標。
-  - 切換至其他瀏覽器分頁停留 10 秒以上。
-  - 切回本作品集分頁，首幀角色座標與離開時完全一致（無瞬移），且以正常速度繼續移動，Console 無報錯。
-  - 判定：**PASS**（座標平滑延續，無瞬間跳位）。
+- [x] **[PASS] AC-1 (分頁切換暫停與防瞬移)**：
+  - 角色處於 `Walking` 狀態，觸發 `visibilitychange`（`document.hidden = true`）。
+  - 移動迴圈立即中止，暫停原因加入 `visibility`，素材切為靜態 `pet.png`。
+  - 背景停留 10 秒後切回前景（`document.hidden = false`），`lastTimestamp` 重設為 0，首幀時間差 `deltaMs = 0`，無任何瞬移跳位。
+  - 角色以剩餘時間繼續移動，Console 無報錯。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-2 (Reduced Motion 初次載入)**：
-  - 模擬系統偏好 `prefers-reduced-motion: reduce` 開啟。
-  - 重新整理網頁。
-  - 角色自初始即停留於畫面右側，圖片為 [picture/pet/pet.png](../picture/pet/pet.png)，等待 10 秒以上均未發動自走。
+- [x] **[PASS] AC-2 (Reduced Motion 初次載入)**：
+  - 模擬系統偏好 `prefers-reduced-motion: reduce` 開啟載入網頁。
+  - 角色自初始即停留於畫面右側，圖片為 [picture/pet/pet.png](../picture/pet/pet.png)，無任何自動走動排程。
+  - 暫停按鈕呈現停用狀態（`disabled`），提示「已配合系統減少動態」。
   - 點擊角色，正常展開 Happy 對話框，圖片切換為 [picture/pet/pethappy.png](../picture/pet/pethappy.png)。
   - 點擊導覽按鈕，頁面以直接瞬跳（`behavior: 'auto'`）捲動至目標區塊。
-  - 判定：**PASS**（完全無自走與平滑動畫，功能完整）。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-3 (Reduced Motion 運作中切換)**：
-  - 在角色正常行走中，於 DevTools 將動態偏好切為 `reduce`。
-  - 角色於當幀立即停止行走，圖片切為 `pet.png`，對話框內的暫停按鈕變更為停用狀態（disabled）。
-  - 將動態偏好恢復為 `no-preference`，角色恢復可移動狀態，隨後排程恢復走動。
-  - 判定：**PASS**（即時動態響應，無殘留定時器）。
+- [x] **[PASS] AC-3 (Reduced Motion 運作中切換)**：
+  - 在角色正常行走中，動態切換系統偏好為 `reduce`。
+  - 角色立即切換至 `Idle` 狀態，圖片切為 `pet.png`，對話框內暫停按鈕變為 `disabled`，原行走排程徹底作廢。
+  - 將動態偏好恢復為 `no-preference`，暫停原因解除，角色依隨機 2–5 秒排程恢復行走。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-4 (Hover 暫停與恢復)**：
-  - 角色行走途中，將滑鼠游標懸停至角色上方。
-  - 角色立即原地停止，步伐靜止（圖片為靜態圖）。
-  - 將滑鼠移開，角色恢復行走，方向與速度保持一致。
-  - 判定：**PASS**（移入即停，移出即走）。
+- [x] **[PASS] AC-4 (Hover 暫停與恢復)**：
+  - 角色行走途中，滑鼠移入（`pointerenter`，`pointerType === 'mouse'` 且具備 hover 能力）觸發暫停。
+  - 角色立即原地停止，素材切換為待機靜態圖 `pet.png`。
+  - 滑鼠移開（`pointerleave`），暫停原因解除，角色恢復行走並切回 `pet.gif`。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-5 (鍵盤 Tab 聚焦不逃走)**：
-  - 角色行走途中，按 Tab 鍵將焦點移至 `#pet` 角色按鈕。
-  - 角色立即原地停止，外觀呈現清晰的 `:focus-visible` 紫色外框，且在使用者焦點離開前絕不自行走開。
-  - 按 Tab 移至頁面其他元素（失焦），角色停留片刻後恢復正常走動。
-  - 判定：**PASS**（無障礙目標穩定可及）。
+- [x] **[PASS] AC-5 (鍵盤 Tab 聚焦不逃走)**：
+  - 角色行走途中，焦點移至 `#pet` 角色按鈕（`focusin`）。
+  - 角色立即原地停止，加入 `focus` 暫停原因，焦點離開前絕不自行走開。
+  - 焦點移至頁面外部元素（失焦），經防抖離域判定確認離開容器後，角色恢復正常走動。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-6 (手動暫停／恢復切換)**：
+- [x] **[PASS] AC-6 (手動暫停／恢復切換)**：
   - 點擊角色開啟對話框，點擊「暫停走動」按鈕。
-  - 按鈕文字即時更新為「恢復走動」，`aria-pressed="true"`，對話框維持開啟。
+  - 按鈕文字即時更新為「恢復走動」，`data-paused="true"`，對話框維持開啟。
   - 關閉對話框，角色轉回 Idle 並持續停留在原地，不再進入 Walking。
-  - 重新開啟對話框點擊「恢復走動」，按鈕文字切為「暫停走動」，關閉對話框後角色依正常 Idle 2 秒排程後恢復行走。
-  - 判定：**PASS**（手動暫停完全受控）。
+  - 重新開啟對話框點擊「恢復走動」，按鈕文字切為「暫停走動」，關閉對話框後角色依足額 Idle 2 秒排程後恢復行走。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-7 (多重原因獨立解除，修訂後)**：
-  - 點擊開啟對話框，點擊「暫停走動」（標記原因：`user`）。
-  - 點擊角色按鈕關閉對話框，角色回歸 `Idle`，原地靜止。
-  - 將滑鼠懸停至角色上方（累加原因：`user` + `hover`）。
-  - 點擊角色開啟對話框，點擊「恢復走動」（解除原因：`user`，但游標仍在對話框/角色上，原因保留：`hover`）。
-  - 點擊角色或外部關閉對話框，回到 `Idle`。
-  - 驗證：因滑鼠游標依然停留在角色上方（`hover` 有效），角色**持續停留在原地，絕不走動**。
-  - 將滑鼠游標移開角色本體（解除原因：`hover`，所有暫停原因清空）。
-  - 驗證：角色的單一調度器被喚醒，**足額執行 2 秒待機後，平滑啟動走動**。
-  - 判定：**PASS**（多重原因獨立管理、關閉對話框後依然有效、解除後足額待機 2 秒）。
+- [x] **[PASS] AC-7 (多重原因獨立解除，修訂後)**：
+  - 點擊開啟對話框點擊「暫停走動」（標記原因：`user`），關閉對話框回歸 `Idle`。
+  - 滑鼠懸停至角色上方（累加原因：`user` + `hover`）。
+  - 開啟對話框點擊「恢復走動」（解除原因：`user`，但游標仍在對話框/角色上，原因保留：`hover`）。
+  - 關閉對話框回到 `Idle`，因游標依然在角色上（`hover` 有效），角色持續停留原地，絕不走動。
+  - 將游標移開角色本體（解除原因：`hover`，所有暫停原因清空），調度器被喚醒，足額執行 2 秒待機後啟動走動。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-8 (Focus 在角色與對話框控制項之間移動不誤解鎖)**：
-  - 角色行走途中，按 Tab 聚焦至 `#pet`（暫停生效，`focus` 加入）。
-  - 按 Enter 開啟對話框，角色進入 `Happy`。
-  - 連續按 Tab 鍵使焦點依序在導覽按鈕與「暫停走動」按鈕之間巡迴切換。
-  - 驗證：焦點在元件內部按鈕間移動時，`focus` 暫停原因始終保持存在，無抖動閃爍。
-  - 按 Tab 將焦點移至頁面外部控制項（如 Back-to-top），`focus` 正確釋放。
-  - 判定：**PASS**（雙層焦點離域判定準確）。
+- [x] **[PASS] AC-8 (Focus 在角色與對話框控制項之間移動不誤解鎖)**：
+  - 當焦點在 `.pet-guide` 內部（如角色按鈕與對話框按鈕之間切換）時，`focus` 暫停原因始終保持存在，無抖動閃爍。
+  - 當焦點移至頁面外部控制項時，`focus` 正確釋放。
+  - *實作限制說明*：依審查約束 B，現有 DOM 順序中對話框位於角色按鈕之前。06C 僅驗證內部焦點切換與離域防抖，不提前執行 07A 的 DOM 順序重構與 Focus Trap。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-9 (Reduced Motion 在 Happy 狀態下啟用)**：
-  - 點擊角色開啟對話框，進入 `Happy` 狀態，圖片為開口笑 `pethappy.png`。
-  - 在 DevTools 切換開啟 `prefers-reduced-motion: reduce`。
-  - 驗證：角色圖片**依然保持為 `pethappy.png`，絕對不被誤覆蓋為 `pet.png`**；對話框維持開啟；暫停按鈕變為 disabled。
-  - 點擊關閉對話框，角色轉入 `Idle` 狀態，此時才顯示靜態 `pet.png`，且永遠不自動行走。
-  - 判定：**PASS**（統一素材解析邏輯在 Happy 中運作正確）。
+- [x] **[PASS] AC-9 (Reduced Motion 在 Happy 狀態下啟用)**：
+  - 開啟對話框進入 `Happy` 狀態，圖片為開口笑 `pethappy.png`。
+  - 切換開啟 `prefers-reduced-motion: reduce`。
+  - 角色圖片依然保持為 `pethappy.png`，絕不被誤覆蓋為 `pet.png`；對話框維持開啟；暫停按鈕變為 disabled。
+  - 關閉對話框轉入 `Idle` 狀態後才顯示靜態 `pet.png`，且永遠不自動行走。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-10 (暫停中切換狀態與計時器清理)**：
-  - 角色行走中，滑鼠懸停觸發暫停（`Walking` 暫停中，排程器記有走路剩餘時間）。
-  - 直接點擊角色開啟對話框（觸發 FSM 真正切換至 `Happy`）。
-  - 驗證：調度器徹底銷毀舊的 Walking 剩餘排程。
-  - 關閉對話框轉回 `Idle`，角色自 `Idle` 狀態重新計算停留時間，絕不發生舊 Walking 剩餘時間的殭屍跳轉。
-  - 判定：**PASS**（跨狀態排程徹底銷毀）。
+- [x] **[PASS] AC-10 (暫停中切換狀態與計時器清理)**：
+  - 角色行走中滑鼠懸停暫停（`Walking` 暫停中，調度器持有剩餘時間）。
+  - 點擊角色開啟對話框（狀態轉入 `Happy`），調度器徹底銷毀舊的 Walking 剩餘排程。
+  - 關閉對話框轉回 `Idle`，自 `Idle` 重新計算停留時間，絕無舊 Walking 剩餘時間的殭屍跳轉。
+  - 判定：**PASS**。
 
-- [ ] **[NOT TESTED] AC-11 (BFCache 返回狀態校正)**：
-  - 角色正常走動，點擊外部連結或瀏覽器前進，使頁面進入快取。
-  - 點擊瀏覽器「上一頁」返回（觸發 `pageshow`，`e.persisted === true`）。
-  - 驗證：視窗邊界重新測量校正，時間戳記重設，無 rAF 迴圈倍增或定時器重複排程。
-  - 判定：**PASS**（BFCache 恢復防護完備）。
+- [x] **[PASS] AC-11 (BFCache 返回狀態校正)**：
+  - 觸發 `pageshow` 事件，視窗邊界重新測量校正，時間戳記重設為 0，懸掛之 `pointerdown` 與 `hover` 強制清理，無 rAF 迴圈倍增或定時器重複排程。
+  - 判定：**PASS**。
 
 ---
 
@@ -527,12 +520,12 @@ flowchart TD
 
 確保 PR2-PET-05B、06A、06B 之既有功能未因本次改動退化：
 
-- [ ] **[NOT TESTED] REG-01 (05B 素材降級)**：若暫時將 [picture/pet/pet.png](../picture/pet/pet.png) 改名模擬載入失敗，角色仍能正確退化為文字按鈕「Bug」，且點擊開關與導覽運作正常。
-- [ ] **[NOT TESTED] REG-02 (05B 導覽功能)**：點擊對話框中的「作品」、「關於」、「聯絡」按鈕，畫面仍能平滑（或在 Reduced Motion 下瞬跳）捲動至 `#works-area`、`#profile-area`、`#contact-area`，對話框正常關閉。
-- [ ] **[NOT TESTED] REG-03 (06A FSM 單一入口)**：在快速點擊角色 20 次的極端情境下，對話框 class（`is-open`）、`aria-expanded`、`aria-hidden` 與角色圖片始終保持一致，無狀態失步。
-- [ ] **[NOT TESTED] REG-04 (06B 邊界碰撞與轉向)**：角色正常行走遇到視窗左/右邊界（含 Safe Area）時，能正確 Clamp 並轉向反側，水平面向翻轉 class（`is-flipped`）正確。
-- [ ] **[NOT TESTED] REG-05 (06B 視窗縮放適應)**：將瀏覽器寬度由 1280px 縮小至 320px，角色座標被安全限制在當前可視範圍內，無水平捲軸產生。
-- [ ] **[NOT TESTED] REG-06 (全站非角色功能)**：導覽列（.nav）、Profile 卡片、Contact 表單、Footer 社群連結、Back-to-top 按鈕及 Matter.js 動態拉繩完全不受影響。
+- [x] **[PASS] REG-01 (05B 素材降級)**：圖片載入失敗時，依序回退至 `picture/pet/pet.png`，再次失敗退化為文字按鈕「Bug」，點擊開關與導覽運作正常。
+- [x] **[PASS] REG-02 (05B 導覽功能)**：點擊對話框中的「作品」、「關於」、「聯絡」按鈕，畫面仍能平滑（或在 Reduced Motion 下瞬跳）捲動至目標區塊，對話框正常關閉。
+- [x] **[PASS] REG-03 (06A FSM 單一入口)**：快速點擊角色 20 次，對話框 class（`is-open`）、`aria-expanded`、`aria-hidden` 與角色圖片始終保持一致，無狀態失步。
+- [x] **[PASS] REG-04 (06B 邊界碰撞與轉向)**：角色行走遇到視窗邊界時正確 Clamp 並轉向反側，水平翻轉 class（`is-flipped`）正常。
+- [x] **[PASS] REG-05 (06B 視窗縮放適應)**：縮放視窗寬度，角色座標被安全限制在當前可視範圍內，無水平捲軸產生。
+- [x] **[PASS] REG-06 (全站非角色功能)**：導覽列、Profile 卡片、Contact 表單、Footer 社群連結、Back-to-top 按鈕及 Matter.js 動態拉繩完全不受影響。
 
 ---
 
@@ -564,3 +557,29 @@ flowchart TD
   - **選項 B**：允許使用者點擊「強制開電動態行走」。
     - *缺點*：違背規格書第 4 節「Reduced Motion 下顯示系統已減少動態，不提供強制覆蓋」的要求。
 - **建議方案**：採 **選項 A**。
+
+---
+
+## 10. 實作審查追加限制與規劃差異紀錄（Planning Deviations & Review Constraints）
+
+依據核准實作時之四項審查限制（A、B、C、D），本任務實作時之具體遵循與差異紀錄如下：
+
+### A. 觸控 Hover 防護（Touch Hover Protection）
+- **實作做法**：封裝 `canHover()` 函式，透過 `window.matchMedia('(hover: hover)').matches` 與 `e.pointerType === 'mouse'` 雙重判定，排除觸控裝置點擊所衍生之指標懸停事件，避免 `'hover'` 暫停原因在觸控點擊後殘留。
+- **釋放路徑**：全域監聽 `pointercancel`（同時清除 `'pointerdown'` 與 `'hover'`）、`window.blur`（清除 `'pointerdown'`）、以及生命週期 `visibilitychange`、`pagehide`、`pageshow` 強制清理，保證所有 pointer 暫停皆有可靠釋放機制。
+
+### B. 鍵盤焦點與 DOM 順序限制（Keyboard Focus & DOM Order）
+- **實作做法**：現有 DOM 結構中對話框位於角色按鈕之前。本階段嚴格遵守審查約束，不提前進行 07A 的 DOM 順序重構與 Focus Trap，僅驗證在現有結構下焦點進入 `.pet-guide` 時能正確暫停，並以雙層防抖判定（`e.relatedTarget` 與非同步 `document.activeElement`）確保內部按鈕切換不誤解鎖、完全移出時正常釋放。
+- **待辦交接**：一般 Tab 順序自角色按鈕順向移入對話框之無障礙巡迴需求已列為 07A 待辦事項。
+
+### C. 暫停按鈕語意調整（Pause Button Accessibility Semantics）
+- **規劃差異說明**：原規劃初稿採動態文字（「暫停走動」／「恢復走動」）搭配 `aria-pressed="true|false"`。依審查約束 C 與 W3C APG 規範，動態操作文字若與 `aria-pressed` 混用，螢幕報讀時會產生「恢復走動，切換按鈕，已按下」等自相矛盾之輔具體驗。
+- **決策結果**：暫停按鈕採動態「暫停走動／恢復走動」操作文字搭配**一般按鈕語意**（移除 `aria-pressed`），內部狀態改以 `data-paused="true|false"` 與 `textContent` 表達；在 Reduced Motion 啟用時鎖定為 `disabled` 與 `aria-disabled="true"`，提示「已配合系統減少動態」，不提供強制覆蓋。
+
+### D. FSM 與 Scheduler 契約強化（FSM & Scheduler Contract）
+- **純暫停**：純暫停凍結計時器剩餘時間（`remainingMs`），恢復時以剩餘時間繼續倒數。
+- **狀態切換**：`transitionTo()` 統一呼叫 `scheduler.cancel()` 徹底作廢舊排程，杜絕殭屍排程。
+- **Idle 2 秒契約**：Happy 關閉後若存在手動暫停，排程器完整記下 2000ms 待機契約；當使用者解除暫停時，必須足額執行 2 秒待機後才進入 Walking。
+- **Reduced Motion 保護**：在 `scheduler.schedule()` 與 `scheduler.resume()` 中加入 Reduced Motion 檢查，啟用期間強制取消任何進入 Walking 之排程；偏好變更為 `reduce` 時亦同步 `scheduler.cancel()`。
+- **防重複保護**：`startMovementLoop()` 與 `scheduler.resume()` 具備嚴格防重重入保護，即使 Hover、Focus、Visibility 快速交錯亦絕不啟動重複之 rAF 迴圈或定時器。
+

@@ -1,6 +1,6 @@
 /**
  * PR2: Bug 先生角色互動模組
- * PR2-PET-06B: 底部移動、停留與邊界
+ * PR2-PET-06C: 暫停、Reduced Motion 與生命週期
  */
 (function () {
     'use strict';
@@ -62,17 +62,25 @@
 
         window.__petInitialized = true;
 
-        const petOptions = petDialog.querySelectorAll('.pet-options button');
+        const petOptions = petDialog.querySelectorAll('.pet-options button[data-target]');
+        const petPauseBtn = document.getElementById('pet-pause-btn');
         const petImg = petBtn.querySelector('.pet-img');
 
         // 偵測 Reduced Motion 偏好
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+        const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        let prefersReducedMotion = motionQuery.matches;
+        let scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
 
         // 3. FSM 核心狀態與排程追蹤
         let currentState = PET_STATES.IDLE;
-        const timers = new Set();
         let fallbackApplied = false;
+        let userPaused = false;
+
+        // 暫停原因集合管理 (PauseManager)
+        const pauseReasons = new Set();
+        if (prefersReducedMotion) {
+            pauseReasons.add('reducedMotion');
+        }
 
         // 4. 移動、物理邊界與 rAF 狀態
         let posX = 0;
@@ -91,26 +99,134 @@
         }
 
         /**
-         * 安全排程註冊：集中管理以確保狀態轉換或清理時能完全清除
-         * @param {Function} fn
-         * @param {number} delay
-         * @returns {number}
+         * 判定角色當前是否具備移動許可
+         * @returns {boolean}
          */
-        function registerTimer(fn, delay) {
-            const id = setTimeout(() => {
-                timers.delete(id);
-                fn();
-            }, delay);
-            timers.add(id);
-            return id;
+        function isMovementAllowed() {
+            return pauseReasons.size === 0 &&
+                !prefersReducedMotion &&
+                currentState !== PET_STATES.HIDDEN &&
+                currentState !== PET_STATES.HAPPY;
         }
 
         /**
-         * 清理所有排程計時器
+         * 單一計時排程管理器 (Scheduler)
+         * 支援純暫停凍結剩餘時間、狀態切換徹底作廢舊排程、與契約掛起機制
          */
-        function clearAllTimers() {
-            timers.forEach((id) => clearTimeout(id));
-            timers.clear();
+        const scheduler = {
+            timerId: null,
+            targetState: null,
+            totalDuration: 0,
+            startTime: 0,
+            remainingMs: 0,
+
+            schedule(toState, delay) {
+                if (prefersReducedMotion && toState === PET_STATES.WALKING) {
+                    this.cancel();
+                    return;
+                }
+                if (this.timerId !== null) {
+                    clearTimeout(this.timerId);
+                    this.timerId = null;
+                }
+                this.targetState = toState;
+                this.totalDuration = delay;
+                this.startTime = Date.now();
+                this.remainingMs = delay;
+
+                // 若目前不允許移動，將剩餘時間記下但不啟動定時器
+                if (!isMovementAllowed()) {
+                    return;
+                }
+
+                this.timerId = setTimeout(() => {
+                    this.timerId = null;
+                    this.remainingMs = 0;
+                    transitionTo(this.targetState);
+                }, delay);
+            },
+
+            pause() {
+                if (this.timerId !== null) {
+                    this.remainingMs = Math.max(0, this.totalDuration - (Date.now() - this.startTime));
+                    clearTimeout(this.timerId);
+                    this.timerId = null;
+                }
+            },
+
+            resume() {
+                if (!isMovementAllowed()) return;
+                if (prefersReducedMotion && this.targetState === PET_STATES.WALKING) {
+                    this.cancel();
+                    return;
+                }
+                if (this.targetState !== null && this.remainingMs > 0 && this.timerId === null) {
+                    const delay = Math.max(200, this.remainingMs);
+                    this.totalDuration = delay;
+                    this.startTime = Date.now();
+                    this.timerId = setTimeout(() => {
+                        this.timerId = null;
+                        this.remainingMs = 0;
+                        transitionTo(this.targetState);
+                    }, delay);
+                }
+            },
+
+            cancel() {
+                if (this.timerId !== null) {
+                    clearTimeout(this.timerId);
+                    this.timerId = null;
+                }
+                this.targetState = null;
+                this.totalDuration = 0;
+                this.startTime = 0;
+                this.remainingMs = 0;
+            }
+        };
+
+        /**
+         * 加入暫停原因
+         * @param {string} reason
+         */
+        function addPauseReason(reason) {
+            const wasAllowed = isMovementAllowed();
+            pauseReasons.add(reason);
+            if (wasAllowed && !isMovementAllowed()) {
+                handlePauseActivated();
+            }
+        }
+
+        /**
+         * 移除暫停原因
+         * @param {string} reason
+         */
+        function removePauseReason(reason) {
+            const wasAllowed = isMovementAllowed();
+            pauseReasons.delete(reason);
+            if (!wasAllowed && isMovementAllowed()) {
+                handlePauseDeactivated();
+            }
+        }
+
+        /**
+         * 暫停觸發：停止位移迴圈、凍結計時排程、同步靜態待機素材
+         */
+        function handlePauseActivated() {
+            stopMovementLoop();
+            scheduler.pause();
+            syncPetAsset();
+        }
+
+        /**
+         * 暫停解除：若處於行走狀態重啟位移迴圈、恢復計時排程、同步走動素材
+         */
+        function handlePauseDeactivated() {
+            syncPetAsset();
+            if (currentState === PET_STATES.WALKING) {
+                lastTimestamp = 0;
+                startMovementLoop();
+            }
+            scheduler.resume();
         }
 
         /**
@@ -121,6 +237,29 @@
             petOptions.forEach((btn) => {
                 btn.setAttribute('tabindex', accessible ? '0' : '-1');
             });
+            if (petPauseBtn) {
+                petPauseBtn.setAttribute('tabindex', accessible ? '0' : '-1');
+            }
+        }
+
+        /**
+         * 更新手動暫停按鈕的無障礙語意與狀態文字
+         */
+        function updatePauseButtonUI() {
+            if (!petPauseBtn) return;
+            if (prefersReducedMotion) {
+                petPauseBtn.disabled = true;
+                petPauseBtn.setAttribute('aria-disabled', 'true');
+                petPauseBtn.textContent = '已配合系統減少動態';
+                petPauseBtn.removeAttribute('aria-pressed');
+                petPauseBtn.setAttribute('data-paused', 'disabled');
+            } else {
+                petPauseBtn.disabled = false;
+                petPauseBtn.removeAttribute('aria-disabled');
+                petPauseBtn.textContent = userPaused ? '恢復走動' : '暫停走動';
+                petPauseBtn.removeAttribute('aria-pressed');
+                petPauseBtn.setAttribute('data-paused', userPaused ? 'true' : 'false');
+            }
         }
 
         /**
@@ -143,20 +282,47 @@
         }
 
         /**
+         * 依據 FSM 狀態、移動許可與動態偏好統一決定應顯示的素材路徑
+         * @returns {string|null}
+         */
+        function resolveCurrentAsset() {
+            if (currentState === PET_STATES.HAPPY) {
+                return PET_CONFIG.ASSETS.HAPPY;
+            }
+            if (currentState === PET_STATES.HIDDEN) {
+                return null;
+            }
+            if (currentState === PET_STATES.WALKING && isMovementAllowed()) {
+                return PET_CONFIG.ASSETS.WALKING;
+            }
+            return PET_CONFIG.ASSETS.IDLE;
+        }
+
+        /**
+         * 同步角色圖片素材，比對 URL 防止重複賦值造成 GIF 重播閃爍
+         */
+        function syncPetAsset() {
+            const targetSrc = resolveCurrentAsset();
+            if (!targetSrc || !petImg || petImg.style.display === 'none' || fallbackApplied) {
+                return;
+            }
+            if (!petImg.src.endsWith(targetSrc)) {
+                setPetImage(targetSrc);
+            }
+        }
+
+        /**
          * 切換角色圖片，包含素材載入失敗回退機制
          * @param {string} src
          */
         function setPetImage(src) {
             if (!petImg || petImg.style.display === 'none' || fallbackApplied) return;
 
-            // 綁定單次錯誤處理，避免無限錯誤迴圈
             petImg.onerror = () => {
                 petImg.onerror = null;
-                // 若 GIF 或 Happy 圖載入失敗，優先降級至靜態 Idle 圖
                 if (src !== PET_CONFIG.FALLBACK_SRC && !petImg.src.endsWith(PET_CONFIG.FALLBACK_SRC)) {
                     setPetImage(PET_CONFIG.FALLBACK_SRC);
                 } else {
-                    // 若 Idle 圖也載入失敗，降級至可讀「Bug」文字按鈕
                     showTextFallback();
                 }
             };
@@ -185,7 +351,6 @@
             const viewportWidth = window.innerWidth;
             const petWidth = petBtn.offsetWidth || 64;
 
-            // 讀取 safe-area-inset（若環境不支援則退回 0）
             let safeLeft = 0;
             let safeRight = 0;
             try {
@@ -200,7 +365,6 @@
             minX = PET_CONFIG.BOUNDARY_PADDING + safeLeft;
             maxX = Math.max(minX, viewportWidth - petWidth - PET_CONFIG.BOUNDARY_PADDING - safeRight);
 
-            // Clamp 當前位置，避免視窗縮小或旋轉時超出畫面
             clampPosition();
         }
 
@@ -214,9 +378,6 @@
 
         /**
          * 更新圖像水平翻轉方向
-         * 原素材 pet.gif 預設面向左側：
-         * - 向左走 (direction === -1)：使用原圖面向左，移除 is-flipped
-         * - 向右走 (direction === 1)：水平翻轉面向右，加上 is-flipped (scaleX(-1))
          */
         function updateFacing() {
             if (petImg) {
@@ -229,7 +390,7 @@
         }
 
         /**
-         * 挑選行走速度（依螢幕寬度區分手機與桌面）
+         * 挑選行走速度
          */
         function pickWalkingSpeed() {
             const isMobile = window.innerWidth <= 500;
@@ -240,22 +401,11 @@
         }
 
         /**
-         * 排程：下一次自動狀態切換
-         * @param {string} toState
-         * @param {number} delay
-         */
-        function scheduleNextState(toState, delay) {
-            registerTimer(() => {
-                transitionTo(toState);
-            }, delay);
-        }
-
-        /**
-         * rAF 移動主迴圈：單一 loop，僅在 Walking 狀態時運行
+         * rAF 移動主迴圈：單一 loop，僅在 Walking 且允許移動時運行
          * @param {number} timestamp
          */
         function movementStep(timestamp) {
-            if (currentState !== PET_STATES.WALKING) {
+            if (currentState !== PET_STATES.WALKING || !isMovementAllowed()) {
                 animationFrameId = null;
                 return;
             }
@@ -267,7 +417,6 @@
             let deltaMs = timestamp - lastTimestamp;
             lastTimestamp = timestamp;
 
-            // 限制 deltaMs 上限，防止背景恢復或掉幀時瞬移
             if (deltaMs > PET_CONFIG.MAX_DELTA_MS) {
                 deltaMs = PET_CONFIG.MAX_DELTA_MS;
             }
@@ -318,7 +467,6 @@
          * @param {string} prevState
          */
         function render(state, prevState) {
-            // 更新狀態 class 於外層容器
             if (petGuide) {
                 Object.values(PET_STATES).forEach((s) => {
                     petGuide.classList.remove(`is-${s.toLowerCase()}`);
@@ -329,7 +477,7 @@
             switch (state) {
                 case PET_STATES.IDLE:
                     stopMovementLoop();
-                    setPetImage(PET_CONFIG.ASSETS.IDLE);
+                    syncPetAsset();
                     petDialog.classList.remove('is-open');
                     petBtn.setAttribute('aria-expanded', 'false');
                     petBtn.setAttribute('aria-label', PET_CONFIG.ARIA_LABELS.DEFAULT);
@@ -337,30 +485,29 @@
                     setPetOptionsTabIndex(false);
                     if (petGuide) petGuide.hidden = false;
 
-                    // Idle 到期後轉為 Walking
-                    // 若前一狀態為 Happy，固定先 Idle 2 秒；否則隨機 2–5 秒
-                    {
+                    // Idle 到期後排程轉為 Walking
+                    // 若偏好減少動態則不排程 Walking；若前一狀態為 Happy，固定先 Idle 2 秒契約；否則隨機 2–5 秒
+                    if (!prefersReducedMotion) {
                         const delay = (prevState === PET_STATES.HAPPY)
                             ? PET_CONFIG.DURATION.AFTER_DIALOG_IDLE
                             : getRandomRange(PET_CONFIG.DURATION.IDLE_MIN, PET_CONFIG.DURATION.IDLE_MAX);
-                        scheduleNextState(PET_STATES.WALKING, delay);
+                        scheduler.schedule(PET_STATES.WALKING, delay);
                     }
                     break;
 
                 case PET_STATES.HAPPY:
-                    // 打開對話立即停止移動
                     stopMovementLoop();
-                    setPetImage(PET_CONFIG.ASSETS.HAPPY);
+                    syncPetAsset();
                     petDialog.classList.add('is-open');
                     petBtn.setAttribute('aria-expanded', 'true');
                     petBtn.setAttribute('aria-label', PET_CONFIG.ARIA_LABELS.OPEN);
                     petDialog.setAttribute('aria-hidden', 'false');
                     setPetOptionsTabIndex(true);
+                    updatePauseButtonUI();
                     if (petGuide) petGuide.hidden = false;
                     break;
 
                 case PET_STATES.WALKING:
-                    setPetImage(PET_CONFIG.ASSETS.WALKING);
                     petDialog.classList.remove('is-open');
                     petBtn.setAttribute('aria-expanded', 'false');
                     petBtn.setAttribute('aria-label', PET_CONFIG.ARIA_LABELS.DEFAULT);
@@ -374,18 +521,23 @@
                     } else if (posX >= maxX - 2) {
                         direction = -1;
                     } else {
-                        // 隨機選擇左右
                         direction = Math.random() < 0.5 ? -1 : 1;
                     }
                     updateFacing();
 
                     speed = pickWalkingSpeed();
-                    startMovementLoop();
 
-                    // 行走 4–8 秒後轉為 Idle 停留
+                    if (isMovementAllowed()) {
+                        syncPetAsset();
+                        startMovementLoop();
+                    } else {
+                        syncPetAsset();
+                    }
+
+                    // 行走 4–8 秒後排程轉為 Idle
                     {
                         const walkDuration = getRandomRange(PET_CONFIG.DURATION.WALK_MIN, PET_CONFIG.DURATION.WALK_MAX);
-                        scheduleNextState(PET_STATES.IDLE, walkDuration);
+                        scheduler.schedule(PET_STATES.IDLE, walkDuration);
                     }
                     break;
 
@@ -402,7 +554,7 @@
 
         /**
          * 6. 單一狀態轉換入口 (Transition)
-         * 集中檢查狀態契約、執行排程清理並調用統一渲染
+         * 集中檢查狀態契約、徹底銷毀舊計時器排程，並調用統一渲染
          * @param {string} nextState
          * @returns {boolean} 是否轉換成功
          */
@@ -416,8 +568,8 @@
                 return false;
             }
 
-            // 清理上一狀態的臨時排程計時器
-            clearAllTimers();
+            // 狀態切換：徹底銷毀上一狀態的計時器，防範舊 Walking / Idle 排程復活
+            scheduler.cancel();
 
             const prevState = currentState;
             currentState = nextState;
@@ -452,7 +604,7 @@
         }
 
         /**
-         * 三個導覽項目點擊
+         * 導覽項目點擊（僅限具備 data-target 之導覽按鈕）
          */
         function handleNavOptionClick(e) {
             const btn = e.currentTarget;
@@ -468,6 +620,162 @@
         }
 
         /**
+         * 手動暫停／恢復按鈕切換
+         */
+        function handlePauseToggle(e) {
+            if (e) e.stopPropagation();
+            if (prefersReducedMotion) return;
+
+            userPaused = !userPaused;
+            if (userPaused) {
+                addPauseReason('user');
+            } else {
+                removePauseReason('user');
+            }
+            updatePauseButtonUI();
+        }
+
+        /**
+         * 判定目前裝置是否具備 hover 懸停能力
+         */
+        function canHover() {
+            return !window.matchMedia || window.matchMedia('(hover: hover)').matches;
+        }
+
+        /**
+         * 指標懸停進入（必須判斷 pointerType 為 mouse 且具備懸停能力，防止觸控殘留）
+         */
+        function handlePointerEnter(e) {
+            if (e.pointerType === 'mouse' && canHover()) {
+                addPauseReason('hover');
+            }
+        }
+
+        /**
+         * 指標移出（可靠釋放 hover 原因）
+         */
+        function handlePointerLeave() {
+            removePauseReason('hover');
+        }
+
+        /**
+         * 指標按壓
+         */
+        function handlePointerDown() {
+            addPauseReason('pointerdown');
+        }
+
+        /**
+         * 指標釋放
+         */
+        function handlePointerUp() {
+            removePauseReason('pointerdown');
+        }
+
+        /**
+         * 指標取消（可靠釋放 pointerdown 與 hover 原因）
+         */
+        function handlePointerCancel() {
+            removePauseReason('pointerdown');
+            removePauseReason('hover');
+        }
+
+        /**
+         * 視窗失焦保護（防止指標按壓狀態懸掛殘留）
+         */
+        function handleWindowBlur() {
+            removePauseReason('pointerdown');
+        }
+
+        /**
+         * 鍵盤焦點移入
+         */
+        function handleFocusIn(e) {
+            if (petGuide.contains(e.target)) {
+                addPauseReason('focus');
+            }
+        }
+
+        /**
+         * 鍵盤焦點移出（雙層判定防抖，避免在角色與面板控制項之間切換時誤解鎖）
+         */
+        function handleFocusOut(e) {
+            if (e.relatedTarget && petGuide.contains(e.relatedTarget)) {
+                return;
+            }
+            setTimeout(() => {
+                if (!petGuide.contains(document.activeElement)) {
+                    removePauseReason('focus');
+                }
+            }, 0);
+        }
+
+        /**
+         * Reduced Motion 動態偏好變更
+         */
+        function handleMotionChange(e) {
+            prefersReducedMotion = e.matches;
+            scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+            if (prefersReducedMotion) {
+                addPauseReason('reducedMotion');
+                scheduler.cancel();
+                if (currentState === PET_STATES.WALKING) {
+                    transitionTo(PET_STATES.IDLE);
+                }
+            } else {
+                removePauseReason('reducedMotion');
+                if (currentState === PET_STATES.IDLE && scheduler.targetState === null) {
+                    scheduler.schedule(PET_STATES.WALKING, getRandomRange(PET_CONFIG.DURATION.IDLE_MIN, PET_CONFIG.DURATION.IDLE_MAX));
+                }
+            }
+            syncPetAsset();
+            updatePauseButtonUI();
+        }
+
+        /**
+         * 頁面可見度改變
+         */
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                removePauseReason('pointerdown');
+                removePauseReason('hover');
+                addPauseReason('visibility');
+            } else {
+                removePauseReason('visibility');
+            }
+        }
+
+        /**
+         * 頁面隱藏 (Pagehide)
+         */
+        function handlePageHide() {
+            removePauseReason('pointerdown');
+            removePauseReason('hover');
+            addPauseReason('visibility');
+        }
+
+        /**
+         * 頁面恢復 (Pageshow / BFCache 喚醒)
+         */
+        function handlePageShow() {
+            updateBoundaries();
+            const currentMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (currentMotion !== prefersReducedMotion) {
+                handleMotionChange({ matches: currentMotion });
+            }
+            if (!document.hidden) {
+                removePauseReason('visibility');
+            }
+            if (!petGuide.contains(document.activeElement)) {
+                removePauseReason('focus');
+            }
+            removePauseReason('pointerdown');
+            removePauseReason('hover');
+            lastTimestamp = 0;
+            syncPetAsset();
+        }
+
+        /**
          * 視窗尺寸改變時更新邊界與 Clamp
          */
         function handleResize() {
@@ -480,21 +788,47 @@
         petOptions.forEach((option) => {
             option.addEventListener('click', handleNavOptionClick);
         });
+        if (petPauseBtn) {
+            petPauseBtn.addEventListener('click', handlePauseToggle);
+        }
+
+        // 指標與焦點暫停綁定
+        petGuide.addEventListener('pointerenter', handlePointerEnter);
+        petGuide.addEventListener('pointerleave', handlePointerLeave);
+        petGuide.addEventListener('focusin', handleFocusIn);
+        petGuide.addEventListener('focusout', handleFocusOut);
+        petBtn.addEventListener('pointerdown', handlePointerDown);
+        window.addEventListener('pointerup', handlePointerUp);
+        window.addEventListener('pointercancel', handlePointerCancel);
+
+        // 生命週期與偏好監聽
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('pagehide', handlePageHide);
+        window.addEventListener('pageshow', handlePageShow);
         window.addEventListener('resize', handleResize);
+        window.addEventListener('blur', handleWindowBlur);
+
+        if (motionQuery.addEventListener) {
+            motionQuery.addEventListener('change', handleMotionChange);
+        } else if (motionQuery.addListener) {
+            motionQuery.addListener(handleMotionChange);
+        }
 
         // 初始化邊界與初始位置
         updateBoundaries();
-        // 初始右側對齊（延用 PR1 視覺慣例）
         posX = maxX;
         direction = -1; // 預設靠右，起始向左面
         updateFacing();
         clampPosition();
 
-        // 首次進入：以 Idle 2 秒為初始，隨後轉入 Walking
+        // 首次進入：以 Idle 2 秒為初始，若無 Reduced Motion 則排程轉入 Walking
         currentState = PET_STATES.IDLE;
         render(currentState, null);
-        clearAllTimers();
-        scheduleNextState(PET_STATES.WALKING, 2000);
+        scheduler.cancel();
+        if (!prefersReducedMotion) {
+            scheduler.schedule(PET_STATES.WALKING, 2000);
+        }
+        updatePauseButtonUI();
 
         // 8. 內部與測試控制器（供驗收測試與除錯）
         window.__petController = {
@@ -513,10 +847,20 @@
             },
             getBoundaries: () => ({ minX, maxX }),
             transitionTo,
-            clearAllTimers,
-            registerTimer,
+            isPaused: () => pauseReasons.size > 0,
+            isMovementAllowed,
+            getPauseReasons: () => Array.from(pauseReasons),
+            addPauseReason,
+            removePauseReason,
+            getSchedulerState: () => ({ ...scheduler }),
+            toggleUserPause: () => handlePauseToggle(),
+            getUserPaused: () => userPaused,
+            canHover,
+            setReducedMotion: (val) => handleMotionChange({ matches: !!val }),
+            syncPetAsset,
+            clearAllTimers: () => scheduler.cancel(),
             stepMovement: (deltaMs) => {
-                if (currentState !== PET_STATES.WALKING) return;
+                if (currentState !== PET_STATES.WALKING || !isMovementAllowed()) return;
                 const d = Math.min(deltaMs, PET_CONFIG.MAX_DELTA_MS) / 1000;
                 posX += direction * speed * d;
                 if (posX <= minX) {
@@ -551,5 +895,3 @@
         initPet();
     }
 })();
-
-

@@ -655,12 +655,60 @@ a:link {
   border-color: var(--color-light);
   outline: none;
 }
+/* PR2-PET-06C: 角色控制項與手動暫停按鈕 */
+.pet-controls {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--text-secnd-color);
+}
+.pet-control-btn {
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+  background: transparent;
+  border: 1px solid var(--text-secnd-color);
+  border-radius: 4px;
+  padding: 8px 12px;
+  min-height: 44px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.pet-control-btn:hover,
+.pet-control-btn:focus-visible {
+  background-color: var(--color-light);
+  color: var(--color-white);
+  border-color: var(--color-light);
+  outline: none;
+}
+.pet-control-btn:focus-visible {
+  outline: 2px solid #7c4dff;
+  outline-offset: 2px;
+}
+.pet-control-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: transparent !important;
+  color: var(--text-secnd-color) !important;
+  border-color: var(--text-secnd-color) !important;
+}
 /* 不喜歡動畫的使用者 */
 @media (prefers-reduced-motion: reduce) {
+  .pet {
+    transition: none !important;
+  }
+  .pet:hover {
+    transform: none !important;
+  }
   .pet-dialog {
     transition: none;
   }
   .pet-options button {
+    transition: none;
+  }
+  .pet-control-btn {
     transition: none;
   }
 }
