@@ -583,3 +583,49 @@ flowchart TD
 - **Reduced Motion 保護**：在 `scheduler.schedule()` 與 `scheduler.resume()` 中加入 Reduced Motion 檢查，啟用期間強制取消任何進入 Walking 之排程；偏好變更為 `reduce` 時亦同步 `scheduler.cancel()`。
 - **防重複保護**：`startMovementLoop()` 與 `scheduler.resume()` 具備嚴格防重重入保護，即使 Hover、Focus、Visibility 快速交錯亦絕不啟動重複之 rAF 迴圈或定時器。
 
+---
+
+## 11. Code Review Fix 01 — 補正紀錄（2026-10-15）
+
+### 修正項目
+
+#### Fix-1：Scheduler 零剩餘時間（`remainingMs === 0`）恢復死鎖
+- **問題描述**：當計時器尚在執行但 `pause()` 計算 `remainingMs = Max(0, totalDuration - elapsed)` 時，若 `elapsed ≥ totalDuration`，`remainingMs` 等於 0。原 `resume()` 條件為 `this.remainingMs > 0`，此時不會建立新計時器，FSM 永久停擺。
+- **修正做法**：調整 `resume()` 條件為 `this.targetState !== null && this.timerId === null`（移除 `> 0` 守衛），並將 `delay` 計算改為 `remainingMs > 0 ? Math.max(200, remainingMs) : 0`。`remainingMs = 0` 時以 0ms 計時器立即觸發，保證 FSM 轉換不會因邊界條件而卡死，且不產生重複計時器（`timerId === null` 守衛仍然有效）。
+
+#### Fix-2：初始頁面可見性（`document.hidden`）
+- **問題描述**：`initPet()` 初始化時未讀取 `document.hidden`。在使用者以背景分頁方式開啟頁面時，`pauseReasons` 不含 `'visibility'`，導致 `scheduler.schedule(WALKING, 2000)` 的計時器正常啟動，2 秒後角色進入 `Walking` 狀態（即使分頁仍在背景）。
+- **修正做法**：在 `pauseReasons` 初始化區段加入 `if (document.hidden) { pauseReasons.add('visibility'); }`，確保背景開啟的分頁在初始化時即建立正確的暫停狀態。`scheduler.schedule` 仍然記錄 `targetState = Walking` 與 `remainingMs = 2000`，但因 `isMovementAllowed()` 為 false，不啟動計時器；分頁移至前景後由 `handleVisibilityChange` 解除暫停並觸發 `scheduler.resume()`。
+
+#### Fix-3：BFCache Hover 狀態校正
+- **問題描述**：原 `handlePageShow()` 統一呼叫 `removePauseReason('hover')`，在滑鼠仍停留於角色上方時返回（BFCache 恢復），`'hover'` 被強制清除後，`pointerenter` 事件不會重新觸發（因游標未移動），導致角色誤認無暫停而恢復移動。
+- **修正做法**：
+  - 新增 `isHovered()` 函式，透過 `petGuide.matches(':hover')` 偵測現有懸停狀態，並以 `canHover()` 前置排除不具 hover 能力之觸控裝置，避免誤判。
+  - 更新 `handlePageShow()`：若 `isHovered()` 為 `true`，呼叫 `addPauseReason('hover')` 建立/保留暫停；否則呼叫 `removePauseReason('hover')` 清除舊殘留。
+  - 調整處理順序：先清除 `'pointerdown'`，再校正 `'hover'`，最後校正 `'focus'` 與 `'visibility'`，防止多重原因切換產生短暫啟動的抖動。
+
+### 補強驗收結果
+
+> [!NOTE]
+> 以下測試皆為自動化模擬事件測試（Node.js + 自製 DOM Stub），不代表實機瀏覽器操作。
+> 真實 BFCache 往返、實體滑鼠懸停及背景分頁行為列為 NOT TESTED（需手動驗收）。
+
+| 測試項目 | 測試方式 | 環境 | 結果 |
+| --- | --- | --- | --- |
+| **T14-A** Walking 計時到期後暫停，恢復時不死鎖（remainingMs = 0 → 0ms timeout 正常觸發） | MockDate.advance() 推進至 totalDuration + 100ms，再 addPauseReason / removePauseReason，觀察 timerId 與狀態轉換 | Node.js 22 自動化測試 | **PASS** |
+| **T14-B** Idle 計時到期後暫停，恢復時不死鎖（同上） | 同上 | Node.js 22 自動化測試 | **PASS** |
+| **T14-C** Walking / Idle 計時尚未到期的正常暫停恢復（既有 AC-7 / T7 情境） | 見 T7 / T8 | Node.js 22 自動化測試 | **PASS** |
+| **T15** 頁面初次載入即為 Hidden（document.hidden = true） | 初始化時設定 documentHidden: true，驗證 pauseReasons 含 'visibility'、scheduler 無啟動計時器、切換前景後計時器啟動 | Node.js 22 自動化測試 | **PASS** |
+| **T16-A** BFCache 返回時滑鼠仍位於角色上方（Desktop） | 設定 petGuide.isHoveredMock = true，觸發 pageshow，驗證 hover 暫停建立、rAF 未啟動 | Node.js 22 自動化測試 | **PASS** |
+| **T16-B** BFCache 返回時觸控裝置不偽造 hover | matchMedia '(hover: hover)' = false，觸發 pageshow，驗證 hover 未加入 | Node.js 22 自動化測試 | **PASS** |
+| **T16-C** 重複 pageshow 5 次不產生重複 rAF 或 Timer | 連續觸發 pageshow 5 次，驗證 rAFCount ≤ 1 且 timerId 唯一 | Node.js 22 自動化測試 | **PASS** |
+| **T17** 快速反覆暫停恢復 20 次後仍只有一個有效排程 | 連續 toggleUserPause 20 次，驗證 rAFCount ≤ 1 | Node.js 22 自動化測試 | **PASS** |
+| 實機 BFCache 往返（真實瀏覽器） | 手動驗收：開啟頁面 → 前往其他站點 → 瀏覽器上一頁返回 | — | **NOT TESTED**（需人工驗收） |
+| 實機背景分頁初始化（真實瀏覽器） | 手動驗收：以背景方式開啟連結，2 秒後切換至該分頁確認角色靜止 | — | **NOT TESTED**（需人工驗收） |
+| 實機滑鼠停在角色上方返回（真實瀏覽器） | 手動驗收：滑鼠停在角色上時觸發 BFCache 往返，確認角色不移動 | — | **NOT TESTED**（需人工驗收） |
+
+**自動化測試合計：125 PASS / 0 FAIL**（含原有 T1–T13 的 93 案例 + 新增 T14–T17 的 32 案例）
+
+### Known Issues（補正後）
+- 實機 BFCache、背景分頁初始化、滑鼠懸停返回場景需人工在真實瀏覽器中驗收（Node.js 環境無法模擬 CSS `:hover` 偽類的真實計算）。
+- `petGuide.matches(':hover')` 在不支援 `Element.prototype.matches` 的舊版瀏覽器中以 try-catch 包裹，降級為 `false`（不建立 hover 暫停），屬安全性降級而非錯誤。

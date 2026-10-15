@@ -81,6 +81,9 @@
         if (prefersReducedMotion) {
             pauseReasons.add('reducedMotion');
         }
+        if (document.hidden) {
+            pauseReasons.add('visibility');
+        }
 
         // 4. 移動、物理邊界與 rAF 狀態
         let posX = 0;
@@ -160,8 +163,8 @@
                     this.cancel();
                     return;
                 }
-                if (this.targetState !== null && this.remainingMs > 0 && this.timerId === null) {
-                    const delay = Math.max(200, this.remainingMs);
+                if (this.targetState !== null && this.timerId === null) {
+                    const delay = this.remainingMs > 0 ? Math.max(200, this.remainingMs) : 0;
                     this.totalDuration = delay;
                     this.startTime = Date.now();
                     this.timerId = setTimeout(() => {
@@ -643,6 +646,18 @@
         }
 
         /**
+         * 判定目前指標是否正懸停於角色容器上方（排除不具 hover 能力之觸控裝置）
+         */
+        function isHovered() {
+            if (!canHover()) return false;
+            try {
+                return Boolean(petGuide && petGuide.matches && petGuide.matches(':hover'));
+            } catch (e) {
+                return false;
+            }
+        }
+
+        /**
          * 指標懸停進入（必須判斷 pointerType 為 mouse 且具備懸停能力，防止觸控殘留）
          */
         function handlePointerEnter(e) {
@@ -763,14 +778,25 @@
             if (currentMotion !== prefersReducedMotion) {
                 handleMotionChange({ matches: currentMotion });
             }
-            if (!document.hidden) {
-                removePauseReason('visibility');
+            removePauseReason('pointerdown');
+
+            // BFCache 恢復時校正 Hover 狀態：
+            // 僅在具備 hover 懸停能力且當前指標確實命中容器時建立/保留 hover 暫停，
+            // 避免觸控裝置誤判，亦避免滑鼠停在角色上時誤解除暫停。
+            // 先於 visibility 處理，防止多重原因切換時產生短暫啟動的抖動。
+            if (isHovered()) {
+                addPauseReason('hover');
+            } else {
+                removePauseReason('hover');
             }
+
             if (!petGuide.contains(document.activeElement)) {
                 removePauseReason('focus');
             }
-            removePauseReason('pointerdown');
-            removePauseReason('hover');
+            if (!document.hidden) {
+                removePauseReason('visibility');
+            }
+
             lastTimestamp = 0;
             syncPetAsset();
         }
@@ -856,6 +882,7 @@
             toggleUserPause: () => handlePauseToggle(),
             getUserPaused: () => userPaused,
             canHover,
+            isHovered,
             setReducedMotion: (val) => handleMotionChange({ matches: !!val }),
             syncPetAsset,
             clearAllTimers: () => scheduler.cancel(),
