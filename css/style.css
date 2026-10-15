@@ -532,19 +532,26 @@ a:link {
     }
 }
 
-/* PET-01/PET-04: Pet guide styles */
+/* PET-01/PET-04 / PR2-PET-06B: Pet guide styles */
 .pet-guide {
   position: fixed;
-  right: clamp(16px, 3vw, 32px);
+  left: 0;
   bottom: clamp(16px, 3vw, 32px);
   z-index: 1000;
+  will-change: transform;
 }
 .pet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 8px;
   border: none;
-  background: #7c4dff; /* 紫色 */
+  background: transparent;
   cursor: pointer;
   /* PET-04: hover 微縮放，reduced-motion 會透過全站規則自動停用 */
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -558,11 +565,40 @@ a:link {
   outline-offset: 4px;
   box-shadow: 0 0 0 6px rgba(124, 77, 255, 0.25);
 }
+/* PR2-PET-05A: 角色圖像共用穩定容器，contain 呈現不變形 */
+/* PR2-PET-06B: 分離翻轉 transform 於圖像層，不干擾外層位移與按鈕文字 */
+.pet-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  transition: transform 0.15s ease;
+}
+.pet-img.is-flipped {
+  transform: scaleX(-1);
+}
+/* PR2-PET-05B: 圖片載入失敗時的文字降級按鈕 */
+.pet-fallback-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color);
+  background: var(--bg-page);
+  border: 1px solid var(--text-secnd-color);
+  border-radius: 8px;
+}
 /* Mobile size */
 @media (max-width: 500px) {
   .pet {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
   }
 }
 .pet-dialog {
@@ -619,12 +655,60 @@ a:link {
   border-color: var(--color-light);
   outline: none;
 }
+/* PR2-PET-06C: 角色控制項與手動暫停按鈕 */
+.pet-controls {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--text-secnd-color);
+}
+.pet-control-btn {
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+  background: transparent;
+  border: 1px solid var(--text-secnd-color);
+  border-radius: 4px;
+  padding: 8px 12px;
+  min-height: 44px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.pet-control-btn:hover,
+.pet-control-btn:focus-visible {
+  background-color: var(--color-light);
+  color: var(--color-white);
+  border-color: var(--color-light);
+  outline: none;
+}
+.pet-control-btn:focus-visible {
+  outline: 2px solid #7c4dff;
+  outline-offset: 2px;
+}
+.pet-control-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: transparent !important;
+  color: var(--text-secnd-color) !important;
+  border-color: var(--text-secnd-color) !important;
+}
 /* 不喜歡動畫的使用者 */
 @media (prefers-reduced-motion: reduce) {
+  .pet {
+    transition: none !important;
+  }
+  .pet:hover {
+    transform: none !important;
+  }
   .pet-dialog {
     transition: none;
   }
   .pet-options button {
+    transition: none;
+  }
+  .pet-control-btn {
     transition: none;
   }
 }
