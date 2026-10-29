@@ -863,6 +863,6 @@ flowchart TD
 
 ---
 
-**AWAITING PLAN REVIEW**
+**AWAITING CODE REVIEW**
 
 立即停止，不得開始實作，等待人工審核通過後再執行。

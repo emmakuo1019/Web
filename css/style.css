@@ -653,12 +653,19 @@ a:link {
   text-align: left;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.pet-options button:hover,
-.pet-options button:focus-visible {
+.pet-options button:hover {
   background-color: var(--color-light);
   color: var(--color-white);
   border-color: var(--color-light);
   outline: none;
+}
+.pet-options button:focus-visible {
+  background-color: var(--color-light);
+  color: var(--color-white);
+  border-color: var(--color-light);
+  outline: 3px solid #7c4dff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.25);
 }
 /* PR2-PET-06C: 角色控制項與手動暫停按鈕 */
 .pet-controls {
@@ -684,16 +691,19 @@ a:link {
   text-align: center;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.pet-control-btn:hover,
-.pet-control-btn:focus-visible {
+.pet-control-btn:hover {
   background-color: var(--color-light);
   color: var(--color-white);
   border-color: var(--color-light);
   outline: none;
 }
 .pet-control-btn:focus-visible {
-  outline: 2px solid #7c4dff;
+  background-color: var(--color-light);
+  color: var(--color-white);
+  border-color: var(--color-light);
+  outline: 3px solid #7c4dff;
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.25);
 }
 .pet-control-btn[disabled] {
   opacity: 0.6;
