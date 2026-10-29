@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 :root {
+    /* Safe Area insets (07B) */
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-top: env(safe-area-inset-top, 0px);
+
     --color-white: #f8f5e4;
     --color-secnd-white: #cfcec4;
     --color-black: #221f1b;
@@ -532,20 +538,36 @@ a:link {
     }
 }
 
-/* PET-01/PET-04: Pet guide styles */
+/* PET-01/PET-04 / PR2-PET-06B / PR2-PET-07B: Pet guide styles */
 .pet-guide {
   position: fixed;
-  right: clamp(16px, 3vw, 32px);
-  bottom: clamp(16px, 3vw, 32px);
+  left: 0;
+  bottom: calc(clamp(16px, 3vw, 32px) + var(--safe-area-bottom));
   z-index: 1000;
+  will-change: transform;
+  pointer-events: none; /* 大面積透明區域穿透，子元素互動恢復 */
+  transition: opacity 0.18s ease, visibility 0.18s;
+}
+/* PR2-PET-07B: 暫時避讓收起狀態 */
+.pet-guide.is-avoidance-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 .pet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 8px;
   border: none;
-  background: #7c4dff; /* 紫色 */
+  background: transparent;
   cursor: pointer;
+  pointer-events: auto; /* 恢復按鈕點擊 */
   /* PET-04: hover 微縮放，reduced-motion 會透過全站規則自動停用 */
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -558,21 +580,56 @@ a:link {
   outline-offset: 4px;
   box-shadow: 0 0 0 6px rgba(124, 77, 255, 0.25);
 }
+/* PR2-PET-05A: 角色圖像共用穩定容器，contain 呈現不變形 */
+/* PR2-PET-06B: 分離翻轉 transform 於圖像層，不干擾外層位移與按鈕文字 */
+.pet-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  transition: transform 0.15s ease;
+}
+.pet-img.is-flipped {
+  transform: scaleX(-1);
+}
+/* PR2-PET-05B: 圖片載入失敗時的文字降級按鈕 */
+.pet-fallback-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color);
+  background: var(--bg-page);
+  border: 1px solid var(--text-secnd-color);
+  border-radius: 8px;
+}
 /* Mobile size */
 @media (max-width: 500px) {
   .pet {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
   }
 }
 .pet-dialog {
   position: absolute;
   bottom: calc(100% + 10px);
-  right: 0;
-  /* PET-04: max-width 防止 320px 等窄螢幕溢出 viewport */
+  left: 0;
+  right: auto;
+  /* PET-04 / PR2-PET-07B: max-width / max-height 防止 320px 與短螢幕溢出 */
   width: max-content;
   min-width: 160px;
   max-width: calc(100vw - clamp(16px, 3vw, 32px) * 2);
+  max-height: calc(100vh - 110px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--bg-page);
   color: var(--text-color);
   padding: 12px 16px;
@@ -581,17 +638,40 @@ a:link {
   /* 隱藏時不顯示、不攔截事件 */
   opacity: 0;
   pointer-events: none;
-  transform: translateY(6px);
+  /* PR2-PET-07B: 水平由 --dialog-shift-x 控制，垂直過渡由 CSS translateY 控制 */
+  transform: translate(var(--dialog-shift-x, 0px), 6px);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.pet-dialog p {
+.pet-dialog p,
+.pet-speech {
   margin: 0 0 10px 0;
   font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+/* PR2-PET-07A: 短句文字（空時不佔空間） */
+.pet-speech:empty {
+  display: none;
 }
 .pet-dialog.is-open {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translate(var(--dialog-shift-x, 0px), 0px);
+}
+/* PR2-PET-07B: 極端短視窗緊湊排版 (120px <= availableHeight < 160px) */
+.pet-dialog.is-compact {
+  padding: 8px 12px;
+}
+.pet-dialog.is-compact .pet-speech {
+  margin-bottom: 6px;
+  font-size: var(--font-size-xs);
+}
+.pet-dialog.is-compact .pet-options {
+  gap: 4px;
+}
+.pet-dialog.is-compact .pet-controls {
+  margin-top: 6px;
+  padding-top: 6px;
+  gap: 4px;
 }
 /* PET-03: 三個導覽按鈕 */
 .pet-options {
@@ -612,19 +692,80 @@ a:link {
   text-align: left;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.pet-options button:hover,
-.pet-options button:focus-visible {
+.pet-options button:hover {
   background-color: var(--color-light);
   color: var(--color-white);
   border-color: var(--color-light);
   outline: none;
 }
+.pet-options button:focus-visible {
+  background-color: var(--color-light);
+  color: var(--color-white);
+  border-color: var(--color-light);
+  outline: 3px solid #7c4dff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.25);
+}
+/* PR2-PET-06C: 角色控制項與手動暫停按鈕 */
+.pet-controls {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--text-secnd-color);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pet-control-btn {
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+  background: transparent;
+  border: 1px solid var(--text-secnd-color);
+  border-radius: 4px;
+  padding: 8px 12px;
+  min-height: 44px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.pet-control-btn:hover {
+  background-color: var(--color-light);
+  color: var(--color-white);
+  border-color: var(--color-light);
+  outline: none;
+}
+.pet-control-btn:focus-visible {
+  background-color: var(--color-light);
+  color: var(--color-white);
+  border-color: var(--color-light);
+  outline: 3px solid #7c4dff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.25);
+}
+.pet-control-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: transparent !important;
+  color: var(--text-secnd-color) !important;
+  border-color: var(--text-secnd-color) !important;
+}
 /* 不喜歡動畫的使用者 */
 @media (prefers-reduced-motion: reduce) {
+  .pet {
+    transition: none !important;
+  }
+  .pet:hover {
+    transform: none !important;
+  }
   .pet-dialog {
     transition: none;
   }
   .pet-options button {
+    transition: none;
+  }
+  .pet-control-btn {
     transition: none;
   }
 }
