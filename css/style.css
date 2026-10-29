@@ -620,9 +620,14 @@ a:link {
   transform: translateY(6px);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.pet-dialog p {
+.pet-dialog p,
+.pet-speech {
   margin: 0 0 10px 0;
   font-size: var(--font-size-sm);
+}
+/* PR2-PET-07A: 短句文字（空時不佔空間） */
+.pet-speech:empty {
+  display: none;
 }
 .pet-dialog.is-open {
   opacity: 1;
@@ -660,6 +665,9 @@ a:link {
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px solid var(--text-secnd-color);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 .pet-control-btn {
   width: 100%;

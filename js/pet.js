@@ -1,6 +1,6 @@
 /**
  * PR2: Bug 先生角色互動模組
- * PR2-PET-06C: 暫停、Reduced Motion 與生命週期
+ * PR2-PET-07A: 角色對話、關閉互動與焦點管理
  */
 (function () {
     'use strict';
@@ -37,7 +37,16 @@
             AFTER_DIALOG_IDLE: 2000
         },
         BOUNDARY_PADDING: 12,
-        MAX_DELTA_MS: 50
+        MAX_DELTA_MS: 50,
+        // PR2-PET-07A: 短句池
+        SPEECHES: [
+            '嗨！我是 Bug 先生。',
+            '今天也在努力找 Bug！',
+            '想看看我的主人做過的遊戲嗎？',
+            '這個網站也是自己做的喔！',
+            '我好像又發現一個 Bug……',
+            '不要 Debug 我啦！'
+        ]
     };
 
     // 2. 狀態常數 (FSM States)
@@ -64,6 +73,8 @@
 
         const petOptions = petDialog.querySelectorAll('.pet-options button[data-target]');
         const petPauseBtn = document.getElementById('pet-pause-btn');
+        const petCloseBtn = document.getElementById('pet-close-btn'); // PR2-PET-07A
+        const petSpeechEl = document.getElementById('pet-speech');    // PR2-PET-07A
         const petImg = petBtn.querySelector('.pet-img');
 
         // 偵測 Reduced Motion 偏好
@@ -75,6 +86,25 @@
         let currentState = PET_STATES.IDLE;
         let fallbackApplied = false;
         let userPaused = false;
+
+        // PR2-PET-07A: 短句抽取狀態（跨次開啟持續追蹤）
+        let lastSpeechIndex = -1;
+
+        /**
+         * 從短句池隨機抽取一則，避免連續兩次相同
+         * @returns {string}
+         */
+        function pickSpeech() {
+            const speeches = PET_CONFIG.SPEECHES;
+            if (!speeches || speeches.length === 0) return '';
+            if (speeches.length === 1) return speeches[0];
+            let idx;
+            do {
+                idx = Math.floor(Math.random() * speeches.length);
+            } while (idx === lastSpeechIndex);
+            lastSpeechIndex = idx;
+            return speeches[idx];
+        }
 
         // 暫停原因集合管理 (PauseManager)
         const pauseReasons = new Set();
@@ -242,6 +272,10 @@
             });
             if (petPauseBtn) {
                 petPauseBtn.setAttribute('tabindex', accessible ? '0' : '-1');
+            }
+            // PR2-PET-07A: 新增關閉按鈕管理
+            if (petCloseBtn) {
+                petCloseBtn.setAttribute('tabindex', accessible ? '0' : '-1');
             }
         }
 
@@ -508,6 +542,10 @@
                     setPetOptionsTabIndex(true);
                     updatePauseButtonUI();
                     if (petGuide) petGuide.hidden = false;
+                    // PR2-PET-07A: 每次開啟更新一次短句，同次不自動輪播
+                    if (petSpeechEl) {
+                        petSpeechEl.textContent = pickSpeech();
+                    }
                     break;
 
                 case PET_STATES.WALKING:
@@ -597,17 +635,26 @@
 
         /**
          * 點擊外部關閉
+         * PR2-PET-07A: 補強焦點判斷，僅在焦點位於 pet-guide 內時才返焦，
+         * 否則尊重使用者正在操作的外部元素，不搶奪焦點。
          */
         function handleDocumentClick(e) {
             if (currentState !== PET_STATES.HAPPY) return;
 
             if (!petBtn.contains(e.target) && !petDialog.contains(e.target)) {
+                // 先判斷焦點位置，再執行狀態轉換（轉換後 activeElement 可能已跳位）
+                const focusIsInPetGuide = petGuide.contains(document.activeElement);
                 transitionTo(PET_STATES.IDLE);
+                // 僅在焦點確實在 pet-guide 內時才返焦
+                if (focusIsInPetGuide) {
+                    petBtn.focus({ preventScroll: true });
+                }
             }
         }
 
         /**
          * 導覽項目點擊（僅限具備 data-target 之導覽按鈕）
+         * PR2-PET-07A: 導覽後將焦點移至目的地 section 的 .title 或 section 本身
          */
         function handleNavOptionClick(e) {
             const btn = e.currentTarget;
@@ -616,6 +663,17 @@
 
             if (target) {
                 target.scrollIntoView({ behavior: scrollBehavior });
+
+                // 優先聚焦 section 下的 .title；無法使用時才聚焦 section 本身
+                const heading = target.querySelector('.title') || target;
+                const needsTabindex = !heading.getAttribute('tabindex');
+                if (needsTabindex) {
+                    heading.setAttribute('tabindex', '-1');
+                    heading.addEventListener('blur', () => {
+                        heading.removeAttribute('tabindex');
+                    }, { once: true });
+                }
+                heading.focus({ preventScroll: true });
             }
 
             // 導覽後關閉對話框，轉回 Idle 狀態
@@ -636,6 +694,28 @@
                 removePauseReason('user');
             }
             updatePauseButtonUI();
+        }
+
+        /**
+         * PR2-PET-07A: 關閉按鈕點擊 Handler
+         * 關閉對話框並將焦點返回角色
+         */
+        function handleCloseBtn(e) {
+            if (e) e.stopPropagation(); // 防止觸發 handleDocumentClick
+            transitionTo(PET_STATES.IDLE);
+            petBtn.focus({ preventScroll: true });
+        }
+
+        /**
+         * PR2-PET-07A: 全域 Escape 按鍵 Handler
+         * 在 Happy 狀態下按 Escape 關閉對話框並將焦點返回角色
+         */
+        function handleDocumentKeydown(e) {
+            if (e.key !== 'Escape') return;
+            if (currentState !== PET_STATES.HAPPY) return;
+            e.preventDefault();
+            transitionTo(PET_STATES.IDLE);
+            petBtn.focus({ preventScroll: true });
         }
 
         /**
@@ -818,6 +898,12 @@
             petPauseBtn.addEventListener('click', handlePauseToggle);
         }
 
+        // PR2-PET-07A: 關閉按鈕與全域 Escape 鍵（初始化時綁定一次，不在 render 中重複綁定）
+        if (petCloseBtn) {
+            petCloseBtn.addEventListener('click', handleCloseBtn);
+        }
+        document.addEventListener('keydown', handleDocumentKeydown);
+
         // 指標與焦點暫停綁定
         petGuide.addEventListener('pointerenter', handlePointerEnter);
         petGuide.addEventListener('pointerleave', handlePointerLeave);
@@ -912,7 +998,15 @@
             },
             setPetImage,
             showTextFallback,
-            updateBoundaries
+            updateBoundaries,
+            // PR2-PET-07A: 新增測試接口
+            pickSpeech,
+            getSpeechIndex: () => lastSpeechIndex,
+            closePetDialogWithFocus: () => {
+                transitionTo(PET_STATES.IDLE);
+                petBtn.focus({ preventScroll: true });
+            },
+            triggerEscape: () => handleDocumentKeydown({ key: 'Escape', preventDefault: () => {} })
         };
     }
 
