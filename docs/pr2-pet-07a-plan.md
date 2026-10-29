@@ -2,8 +2,10 @@
 
 - **Task ID**: PR2-PET-07A
 - **相關 PR**: PR #2 (`plan/pr2-bug-pet`)
-- **文件狀態**: 實作完成，等待人工驗收（Implementation Complete — AWAITING CODE REVIEW）
+- **文件狀態**: ACCEPTED — IMPLEMENTATION VERIFIED
+- **人工驗收說明**: 人工驗收已由使用者確認通過，審查基準 Commit 為 `9c50b1a`。
 - **實作 Commit**: `01ac30b` (feat(pet): implement PR2-PET-07A dialog and focus behavior)
+- **修正 Commit**: `9c50b1a` (fix(pet): polish PR2-PET-07A focus visibility and docs)
 - **撰寫日期**: 2026-10-15
 - **基準 Commit**: `56378a0` (fix(pet): address PR2-PET-06C review findings)
 - **前置任務**: PR2-PET-06C（暫停、Reduced Motion 與生命週期）— 已通過人工複驗
@@ -863,6 +865,8 @@ flowchart TD
 
 ---
 
-**AWAITING CODE REVIEW**
+**ACCEPTED — IMPLEMENTATION VERIFIED**
 
-立即停止，不得開始實作，等待人工審核通過後再執行。
+人工驗收已由使用者確認通過，審查基準 Commit 為 `9c50b1a`。
+
+本小步已完工，由 PR2-PET-07B 接續進行定位與避讓技術規劃。
