@@ -2,7 +2,8 @@
 
 - **Task ID**: PR2-PET-07A
 - **相關 PR**: PR #2 (`plan/pr2-bug-pet`)
-- **文件狀態**: 規劃完成，等待人工審查（Planning Complete — AWAITING PLAN REVIEW）
+- **文件狀態**: 實作完成，等待人工驗收（Implementation Complete — AWAITING CODE REVIEW）
+- **實作 Commit**: `01ac30b` (feat(pet): implement PR2-PET-07A dialog and focus behavior)
 - **撰寫日期**: 2026-10-15
 - **基準 Commit**: `56378a0` (fix(pet): address PR2-PET-06C review findings)
 - **前置任務**: PR2-PET-06C（暫停、Reduced Motion 與生命週期）— 已通過人工複驗
