@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 :root {
+    /* Safe Area insets (07B) */
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-top: env(safe-area-inset-top, 0px);
+
     --color-white: #f8f5e4;
     --color-secnd-white: #cfcec4;
     --color-black: #221f1b;
@@ -532,13 +538,21 @@ a:link {
     }
 }
 
-/* PET-01/PET-04 / PR2-PET-06B: Pet guide styles */
+/* PET-01/PET-04 / PR2-PET-06B / PR2-PET-07B: Pet guide styles */
 .pet-guide {
   position: fixed;
   left: 0;
-  bottom: clamp(16px, 3vw, 32px);
+  bottom: calc(clamp(16px, 3vw, 32px) + var(--safe-area-bottom));
   z-index: 1000;
   will-change: transform;
+  pointer-events: none; /* 大面積透明區域穿透，子元素互動恢復 */
+  transition: opacity 0.18s ease, visibility 0.18s;
+}
+/* PR2-PET-07B: 暫時避讓收起狀態 */
+.pet-guide.is-avoidance-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 .pet {
   display: flex;
@@ -553,6 +567,7 @@ a:link {
   border: none;
   background: transparent;
   cursor: pointer;
+  pointer-events: auto; /* 恢復按鈕點擊 */
   /* PET-04: hover 微縮放，reduced-motion 會透過全站規則自動停用 */
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -604,11 +619,17 @@ a:link {
 .pet-dialog {
   position: absolute;
   bottom: calc(100% + 10px);
-  right: 0;
-  /* PET-04: max-width 防止 320px 等窄螢幕溢出 viewport */
+  left: 0;
+  right: auto;
+  /* PET-04 / PR2-PET-07B: max-width / max-height 防止 320px 與短螢幕溢出 */
   width: max-content;
   min-width: 160px;
   max-width: calc(100vw - clamp(16px, 3vw, 32px) * 2);
+  max-height: calc(100vh - 110px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--bg-page);
   color: var(--text-color);
   padding: 12px 16px;
@@ -617,13 +638,15 @@ a:link {
   /* 隱藏時不顯示、不攔截事件 */
   opacity: 0;
   pointer-events: none;
-  transform: translateY(6px);
+  /* PR2-PET-07B: 水平由 --dialog-shift-x 控制，垂直過渡由 CSS translateY 控制 */
+  transform: translate(var(--dialog-shift-x, 0px), 6px);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .pet-dialog p,
 .pet-speech {
   margin: 0 0 10px 0;
   font-size: var(--font-size-sm);
+  flex-shrink: 0;
 }
 /* PR2-PET-07A: 短句文字（空時不佔空間） */
 .pet-speech:empty {
@@ -632,7 +655,23 @@ a:link {
 .pet-dialog.is-open {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translate(var(--dialog-shift-x, 0px), 0px);
+}
+/* PR2-PET-07B: 極端短視窗緊湊排版 (120px <= availableHeight < 160px) */
+.pet-dialog.is-compact {
+  padding: 8px 12px;
+}
+.pet-dialog.is-compact .pet-speech {
+  margin-bottom: 6px;
+  font-size: var(--font-size-xs);
+}
+.pet-dialog.is-compact .pet-options {
+  gap: 4px;
+}
+.pet-dialog.is-compact .pet-controls {
+  margin-top: 6px;
+  padding-top: 6px;
+  gap: 4px;
 }
 /* PET-03: 三個導覽按鈕 */
 .pet-options {

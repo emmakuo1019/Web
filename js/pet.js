@@ -37,6 +37,8 @@
             AFTER_DIALOG_IDLE: 2000
         },
         BOUNDARY_PADDING: 12,
+        MIN_SAFE_WIDTH: 96, // PR2-PET-07B: 全域統一安全區間最小寬度
+        AVOID_PADDING: 16,  // PR2-PET-07B: 水平避讓間距
         MAX_DELTA_MS: 50,
         // PR2-PET-07A: 短句池
         SPEECHES: [
@@ -124,6 +126,15 @@
         let animationFrameId = null;
         let lastTimestamp = 0;
 
+        // PR2-PET-07B: 避讓系統 (AvoidanceManager) 狀態變數
+        let isAvoidanceHidden = false;
+        let safeIntervals = [];       // [{ start, end }]
+        let currentInterval = null;   // { start, end }
+        let currentMinX = 0;
+        let currentMaxX = 0;
+        let isFormFocused = false;
+        let isRepositioning = false;  // 避讓重新定位過渡中旗標
+
         /**
          * 隨機整數產生輔助函式 [min, max]
          */
@@ -138,6 +149,7 @@
         function isMovementAllowed() {
             return pauseReasons.size === 0 &&
                 !prefersReducedMotion &&
+                !isAvoidanceHidden &&
                 currentState !== PET_STATES.HIDDEN &&
                 currentState !== PET_STATES.HAPPY;
         }
@@ -279,6 +291,374 @@
             }
         }
 
+        // =========================================================================
+        // PR2-PET-07B: 避讓管理器 (AvoidanceManager)
+        // =========================================================================
+
+        const AVOIDANCE_TARGET_SELECTORS = [
+            '.nav',
+            '#myForm input',
+            '#myForm textarea',
+            '#myForm button',
+            '.back-to-top-wrapper button',
+            '.footer a',
+            '.footer button',
+            '#projects .card-link'
+        ].join(', ');
+
+        let scrollThrottleTimeout = null;
+        let resizeDebounceTimeout = null;
+        let scrollCooldownTimeout = null;
+        let isScrolling = false;
+
+        /**
+         * 尋找視窗中可見且安全的主要內容標題或區塊（供角色收起時安全轉移焦點，不丟給 body）
+         * @returns {HTMLElement}
+         */
+        function findSafeContentFocusTarget() {
+            const sections = document.querySelectorAll('main section, header.header');
+            const geo = getViewportGeometry();
+            const viewMidY = geo.offsetTop + (geo.height / 2);
+
+            let bestTarget = null;
+            let minDistance = Infinity;
+
+            sections.forEach((sec) => {
+                const rect = sec.getBoundingClientRect();
+                const secMidY = rect.top + (rect.height / 2);
+                const dist = Math.abs(secMidY - (geo.height / 2));
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    const title = sec.querySelector('.title, h1, h2, h3');
+                    bestTarget = title || sec;
+                }
+            });
+
+            if (!bestTarget) {
+                bestTarget = document.querySelector('.logo a, .nav a, main') || petBtn;
+            }
+
+            return bestTarget;
+        }
+
+        /**
+         * 暫時避讓收起／恢復處理
+         * @param {boolean} hide 是否隱藏
+         * @param {boolean} immediate 是否跳過淡出動畫
+         */
+        function setAvoidanceHidden(hide, immediate = false) {
+            if (isAvoidanceHidden === hide) return;
+
+            isAvoidanceHidden = hide;
+
+            if (isAvoidanceHidden) {
+                // 1. 若焦點在角色或面板內部，安全轉移焦點至可見主內容元素
+                if (petGuide.contains(document.activeElement)) {
+                    if (isFormFocused) {
+                        // 表單正在操作中，焦點不移轉，游標 100% 保持
+                    } else {
+                        const safeTarget = findSafeContentFocusTarget();
+                        if (safeTarget && safeTarget !== petBtn) {
+                            if (!safeTarget.getAttribute('tabindex')) {
+                                safeTarget.setAttribute('tabindex', '-1');
+                                safeTarget.addEventListener('blur', () => {
+                                    safeTarget.removeAttribute('tabindex');
+                                }, { once: true });
+                            }
+                            safeTarget.focus({ preventScroll: true });
+                        }
+                    }
+                }
+
+                // 2. 對話框開啟中遇到避讓，安靜關閉對話框
+                if (currentState === PET_STATES.HAPPY) {
+                    petDialog.classList.remove('is-open');
+                    petBtn.setAttribute('aria-expanded', 'false');
+                    petDialog.setAttribute('aria-hidden', 'true');
+                    setPetOptionsTabIndex(false);
+                    currentState = PET_STATES.IDLE;
+                }
+
+                // 3. 角色按鈕本身在隱藏期間不可被 Tab 聚焦
+                petBtn.setAttribute('tabindex', '-1');
+                setPetOptionsTabIndex(false);
+
+                // 4. 套用 CSS 避讓收起樣式（opacity: 0; pointer-events: none; visibility: hidden）
+                petGuide.classList.add('is-avoidance-hidden');
+
+                // 5. 停止移動迴圈與排程
+                stopMovementLoop();
+                scheduler.pause();
+                syncPetAsset();
+            } else {
+                // 恢復顯示
+                petBtn.removeAttribute('tabindex'); // 恢復正常 Tab 順序
+                petGuide.classList.remove('is-avoidance-hidden');
+
+                // 恢復待機素材與排程
+                syncPetAsset();
+                if (currentState === PET_STATES.WALKING && isMovementAllowed()) {
+                    lastTimestamp = 0;
+                    startMovementLoop();
+                }
+                scheduler.resume();
+            }
+        }
+
+        /**
+         * 計算所有可見關鍵互動元素與底部活動帶的禁止區間，並提取合法安全區間
+         */
+        function evaluateAvoidanceIntervals() {
+            // 若為表單聚焦狀態，一律維持避讓收起
+            if (isFormFocused) {
+                setAvoidanceHidden(true);
+                return;
+            }
+
+            const geo = getViewportGeometry();
+            const petWidth = petBtn.offsetWidth || 64;
+            const petHeight = petBtn.offsetHeight || 64;
+
+            let bottomInset = 20;
+            try {
+                const guideStyle = getComputedStyle(petGuide);
+                bottomInset = parseFloat(guideStyle.bottom) || 20;
+            } catch (e) {
+                bottomInset = 20 + geo.safeBottom;
+            }
+
+            // 活動帶在 Visual Viewport 中的垂直範圍
+            // 磁滯門檻：收起門檻為侵入超過 10px，恢復門檻為淨空超過 24px
+            const bandTop = geo.height - (bottomInset + petHeight + 8);
+            const bandBottom = geo.height;
+
+            const targets = document.querySelectorAll(AVOIDANCE_TARGET_SELECTORS);
+            const blockedIntervals = [];
+
+            targets.forEach((el) => {
+                // 排除角色與對話框自身的子元素
+                if (petGuide.contains(el)) return;
+
+                // 可見性過濾
+                if (el.offsetWidth === 0 || el.offsetHeight === 0) return;
+                const cs = getComputedStyle(el);
+                if (cs.visibility === 'hidden' || cs.display === 'none' || parseFloat(cs.opacity) === 0) return;
+
+                const rect = el.getBoundingClientRect();
+                // 換算為相對於 Visual Viewport 的垂直座標
+                const visualTop = rect.top - geo.offsetTop;
+                const visualBottom = rect.bottom - geo.offsetTop;
+
+                // 判斷是否與活動帶垂直相交（侵入深度 > 10px）
+                const isOverlapping = (visualBottom > (bandTop + 10)) && ((visualTop + 10) < bandBottom);
+
+                if (isOverlapping) {
+                    // 水平禁止區間（換算為 Layout Viewport 下角色左緣 posX 的禁止範圍）
+                    // 當 posX + petWidth > rect.left - AVOID_PADDING 且 posX < rect.right + AVOID_PADDING 時重疊
+                    const blockedStart = Math.max(minX, rect.left - petWidth - PET_CONFIG.AVOID_PADDING);
+                    const blockedEnd = Math.min(maxX, rect.right + PET_CONFIG.AVOID_PADDING);
+
+                    if (blockedEnd > blockedStart) {
+                        blockedIntervals.push({ start: blockedStart, end: blockedEnd });
+                    }
+                }
+            });
+
+            // 合併重疊的禁止區間
+            blockedIntervals.sort((a, b) => a.start - b.end);
+            const mergedBlocked = [];
+            blockedIntervals.forEach((interval) => {
+                if (mergedBlocked.length === 0) {
+                    mergedBlocked.push({ ...interval });
+                } else {
+                    const last = mergedBlocked[mergedBlocked.length - 1];
+                    if (interval.start <= last.end) {
+                        last.end = Math.max(last.end, interval.end);
+                    } else {
+                        mergedBlocked.push({ ...interval });
+                    }
+                }
+            });
+
+            // 自 [minX, maxX] 扣除禁止區間，提取安全區間
+            const extractedSafe = [];
+            let currentLeft = minX;
+
+            mergedBlocked.forEach((b) => {
+                if (b.start > currentLeft) {
+                    const width = b.start - currentLeft;
+                    if (width >= PET_CONFIG.MIN_SAFE_WIDTH) {
+                        extractedSafe.push({ start: currentLeft, end: b.start });
+                    }
+                }
+                currentLeft = Math.max(currentLeft, b.end);
+            });
+
+            if (maxX > currentLeft) {
+                const width = maxX - currentLeft;
+                if (width >= PET_CONFIG.MIN_SAFE_WIDTH) {
+                    extractedSafe.push({ start: currentLeft, end: maxX });
+                }
+            }
+
+            safeIntervals = extractedSafe;
+
+            // 根據安全區間評估角色行為
+            if (safeIntervals.length === 0) {
+                // 完全無安全空間 -> 觸發暫時收起
+                currentInterval = null;
+                setAvoidanceHidden(true);
+            } else {
+                // 檢查目前角色 posX 是否處於合法安全區間
+                const containingInterval = safeIntervals.find((interval) => {
+                    return posX >= (interval.start - 1) && posX <= (interval.end + 1);
+                });
+
+                if (containingInterval) {
+                    // 目前座標安全，更新邊界
+                    currentInterval = containingInterval;
+                    currentMinX = containingInterval.start;
+                    currentMaxX = containingInterval.end;
+
+                    // 若先前處於暫時收起狀態且目前非捲動激烈中，安全恢復
+                    if (isAvoidanceHidden && !isRepositioning && !isScrolling) {
+                        setAvoidanceHidden(false);
+                    }
+                } else {
+                    // 當前座標落入禁止區間！
+                    // 規格強制要求：嚴禁穿越障礙前往安全區！
+                    // 執行「先暫時收起 -> 重新定位 -> 安全恢復」流程
+                    repositionToSafeInterval();
+                }
+            }
+        }
+
+        /**
+         * 執行「先暫時收起 -> 重新定位至合法安全區中心 -> 安全恢復」流程
+         */
+        function repositionToSafeInterval() {
+            if (isRepositioning) return;
+            isRepositioning = true;
+
+            // 1. 先暫時收起（透明淡出）
+            setAvoidanceHidden(true);
+
+            // 2. 等待淡出動畫完成後（180ms），在不可見狀態下離屏重新定位
+            setTimeout(() => {
+                if (safeIntervals.length > 0) {
+                    // 選取距離目前位置最近的安全區間
+                    let nearestInterval = safeIntervals[0];
+                    let minDistance = Infinity;
+
+                    safeIntervals.forEach((interval) => {
+                        const mid = (interval.start + interval.end) / 2;
+                        const dist = Math.abs(mid - posX);
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            nearestInterval = interval;
+                        }
+                    });
+
+                    currentInterval = nearestInterval;
+                    currentMinX = nearestInterval.start;
+                    currentMaxX = nearestInterval.end;
+
+                    // 追加實作要求：安全區間定義為角色左緣合法 posX 時，中心點使用 (start + end) / 2，不可重複扣除角色寬度
+                    posX = Math.round((nearestInterval.start + nearestInterval.end) / 2);
+                    clampPosition();
+
+                    // 3. 安全恢復（待完全隱藏並就位後，延遲 100ms 移除隱藏，並重設 Idle 2 秒契約）
+                    setTimeout(() => {
+                        isRepositioning = false;
+                        if (!isFormFocused && safeIntervals.length > 0 && !isScrolling) {
+                            setAvoidanceHidden(false);
+                            if (currentState === PET_STATES.WALKING) {
+                                currentState = PET_STATES.IDLE;
+                                render(PET_STATES.IDLE, null);
+                            }
+                        }
+                    }, 100);
+                } else {
+                    isRepositioning = false;
+                }
+            }, prefersReducedMotion ? 10 : 200);
+        }
+
+        /**
+         * 捲動監聽（rAF / 節流與磁滯冷卻）
+         */
+        function handleScroll() {
+            isScrolling = true;
+
+            if (scrollCooldownTimeout) {
+                clearTimeout(scrollCooldownTimeout);
+            }
+
+            // 捲動期間以 80ms 節流進行避讓檢查（僅在必要時執行收起）
+            if (!scrollThrottleTimeout) {
+                scrollThrottleTimeout = setTimeout(() => {
+                    scrollThrottleTimeout = null;
+                    evaluateAvoidanceIntervals();
+                }, 80);
+            }
+
+            // 磁滯防抖：捲動停止 150ms 後冷卻，才允許重新恢復顯示
+            scrollCooldownTimeout = setTimeout(() => {
+                isScrolling = false;
+                scrollCooldownTimeout = null;
+                evaluateAvoidanceIntervals();
+                if (currentState === PET_STATES.HAPPY) {
+                    updateDialogPositionAndHeight();
+                }
+            }, 150);
+        }
+
+        /**
+         * 表單控制項聚焦處理（即時收起角色，絕不移焦或干擾輸入法）
+         */
+        function handleFormFocusIn(e) {
+            const target = e.target;
+            if (target && target.matches && target.matches('input, textarea, select')) {
+                isFormFocused = true;
+                setAvoidanceHidden(true);
+            }
+        }
+
+        /**
+         * 表單控制項失焦處理
+         */
+        function handleFormFocusOut(e) {
+            setTimeout(() => {
+                const active = document.activeElement;
+                if (!active || !active.matches || !active.matches('input, textarea, select')) {
+                    isFormFocused = false;
+                    evaluateAvoidanceIntervals();
+                }
+            }, 60);
+        }
+
+        /**
+         * 監聽 #projects 卡片動態生成（不修改 js/list.js）
+         */
+        function setupProjectsObserver() {
+            const projectsContainer = document.getElementById('projects');
+            if (!projectsContainer) return;
+
+            const observer = new MutationObserver((mutations) => {
+                let hasNewNodes = false;
+                mutations.forEach((m) => {
+                    if (m.addedNodes.length > 0) hasNewNodes = true;
+                });
+                if (hasNewNodes) {
+                    requestAnimationFrame(() => {
+                        evaluateAvoidanceIntervals();
+                    });
+                }
+            });
+
+            observer.observe(projectsContainer, { childList: true, subtree: true });
+        }
+
         /**
          * 更新手動暫停按鈕的無障礙語意與狀態文字
          */
@@ -382,35 +762,144 @@
         }
 
         /**
-         * 量測安全可視邊界，結合 safe-area-inset 與元件寬度
+         * PR2-PET-07B: 幾何查詢器 (Viewport Geometry Resolver)
+         * 統一取得 Visual Viewport、Layout Viewport 與 Safe Area Insets
          */
-        function updateBoundaries() {
-            const viewportWidth = window.innerWidth;
-            const petWidth = petBtn.offsetWidth || 64;
+        function getViewportGeometry() {
+            const vv = window.visualViewport;
+            const width = vv ? vv.width : window.innerWidth;
+            const height = vv ? vv.height : window.innerHeight;
+            const offsetLeft = vv ? vv.offsetLeft : 0;
+            const offsetTop = vv ? vv.offsetTop : 0;
+            const scale = vv ? vv.scale : 1;
 
             let safeLeft = 0;
             let safeRight = 0;
+            let safeBottom = 0;
+            let safeTop = 0;
+
             try {
                 const computed = getComputedStyle(document.documentElement);
-                safeLeft = parseFloat(computed.getPropertyValue('--safe-area-inset-left')) || 0;
-                safeRight = parseFloat(computed.getPropertyValue('--safe-area-inset-right')) || 0;
+                safeLeft = parseFloat(computed.getPropertyValue('--safe-area-left')) ||
+                           parseFloat(computed.getPropertyValue('--safe-area-inset-left')) || 0;
+                safeRight = parseFloat(computed.getPropertyValue('--safe-area-right')) ||
+                            parseFloat(computed.getPropertyValue('--safe-area-inset-right')) || 0;
+                safeBottom = parseFloat(computed.getPropertyValue('--safe-area-bottom')) ||
+                             parseFloat(computed.getPropertyValue('--safe-area-inset-bottom')) || 0;
+                safeTop = parseFloat(computed.getPropertyValue('--safe-area-top')) ||
+                          parseFloat(computed.getPropertyValue('--safe-area-inset-top')) || 0;
             } catch (e) {
                 safeLeft = 0;
                 safeRight = 0;
+                safeBottom = 0;
+                safeTop = 0;
             }
 
-            minX = PET_CONFIG.BOUNDARY_PADDING + safeLeft;
-            maxX = Math.max(minX, viewportWidth - petWidth - PET_CONFIG.BOUNDARY_PADDING - safeRight);
+            return {
+                width,
+                height,
+                offsetLeft,
+                offsetTop,
+                scale,
+                safeLeft,
+                safeRight,
+                safeBottom,
+                safeTop
+            };
+        }
+
+        /**
+         * 量測安全可視邊界，結合 safe-area-inset 與元件寬度
+         * PR2-PET-07B: 支援 Visual Viewport 偏移換算至 Layout Viewport
+         */
+        function updateBoundaries() {
+            const geo = getViewportGeometry();
+            const petWidth = petBtn.offsetWidth || 64;
+
+            minX = geo.offsetLeft + PET_CONFIG.BOUNDARY_PADDING + geo.safeLeft;
+            maxX = Math.max(minX, geo.offsetLeft + geo.width - petWidth - PET_CONFIG.BOUNDARY_PADDING - geo.safeRight);
+
+            // 若尚未建立有效安全區間，預設當前區間為全域可視邊界
+            if (safeIntervals.length === 0) {
+                currentMinX = minX;
+                currentMaxX = maxX;
+            }
 
             clampPosition();
         }
 
         /**
-         * 限制 posX 在 [minX, maxX] 區間內並更新 DOM transform
+         * 限制 posX 在 [currentMinX, currentMaxX] 區間內並更新 DOM transform
          */
         function clampPosition() {
-            posX = Math.max(minX, Math.min(posX, maxX));
+            const boundMin = (currentMinX !== undefined && currentMinX >= minX) ? currentMinX : minX;
+            const boundMax = (currentMaxX !== undefined && currentMaxX <= maxX) ? currentMaxX : maxX;
+            posX = Math.max(boundMin, Math.min(posX, boundMax));
             petGuide.style.transform = `translateX(${posX}px)`;
+        }
+
+        /**
+         * PR2-PET-07B: 對話框定位與 Clamp 演算法
+         * 以角色為錨點，左右 Clamp 保留 12px 安全距離，並根據真實可用高度限制面板
+         * @returns {boolean} 是否允許開啟對話框（可用高度不足 120px 時拒絕開啟）
+         */
+        function updateDialogPositionAndHeight() {
+            const geo = getViewportGeometry();
+            const petWidth = petBtn.offsetWidth || 64;
+            const petHeight = petBtn.offsetHeight || 64;
+
+            // 1. 真實可用高度計算
+            // bottomInset 包含 clamp(16px, 3vw, 32px) 與 safeBottom
+            let bottomInset = 20;
+            try {
+                const guideStyle = getComputedStyle(petGuide);
+                bottomInset = parseFloat(guideStyle.bottom) || 20;
+            } catch (e) {
+                bottomInset = 20 + geo.safeBottom;
+            }
+
+            const dialogGap = 10;
+            const topMargin = 12 + geo.safeTop;
+            const availableHeight = geo.height - (bottomInset + petHeight + dialogGap + topMargin);
+
+            // 規格要求：可用高度不足 120px 時安全拒絕開啟或關閉面板
+            if (availableHeight < 120) {
+                return false;
+            }
+
+            // 2. 設置對話框最大高度與緊湊模式
+            petDialog.style.maxHeight = `${Math.floor(availableHeight)}px`;
+            if (availableHeight < 160) {
+                petDialog.classList.add('is-compact');
+            } else {
+                petDialog.classList.remove('is-compact');
+            }
+
+            // 3. 水平 Clamp 計算
+            // 角色相對於 Visual Viewport 的目前左緣
+            const petVisualX = posX - geo.offsetLeft;
+            const dialogWidth = petDialog.offsetWidth || 200;
+
+            // 理想中心對齊：對話框中心與角色中心重疊
+            const desiredVisualLeft = petVisualX + (petWidth / 2) - (dialogWidth / 2);
+
+            const minAllowedVisual = geo.safeLeft + 12;
+            const maxAllowedVisual = geo.width - geo.safeRight - 12 - dialogWidth;
+
+            let clampedVisualLeft;
+            if (maxAllowedVisual < minAllowedVisual) {
+                // 窄螢幕（如 320px）下對話框寬度貼滿安全區間
+                clampedVisualLeft = minAllowedVisual;
+                petDialog.style.maxWidth = `${Math.max(120, geo.width - minAllowedVisual - geo.safeRight - 12)}px`;
+            } else {
+                clampedVisualLeft = Math.max(minAllowedVisual, Math.min(desiredVisualLeft, maxAllowedVisual));
+            }
+
+            // 對話框相對於角色左緣 (left: 0) 的 CSS 水平偏移量
+            const dialogShiftX = clampedVisualLeft - petVisualX;
+            petDialog.style.setProperty('--dialog-shift-x', `${Math.round(dialogShiftX)}px`);
+
+            return true;
         }
 
         /**
@@ -461,13 +950,16 @@
             const deltaSeconds = deltaMs / 1000;
             posX += direction * speed * deltaSeconds;
 
-            // 邊界碰撞檢測與轉向
-            if (posX <= minX) {
-                posX = minX;
+            // 邊界碰撞檢測與轉向（遵循目前所在安全區間或全域邊界）
+            const boundMin = (currentMinX !== undefined && currentMinX >= minX) ? currentMinX : minX;
+            const boundMax = (currentMaxX !== undefined && currentMaxX <= maxX) ? currentMaxX : maxX;
+
+            if (posX <= boundMin) {
+                posX = boundMin;
                 direction = 1;
                 updateFacing();
-            } else if (posX >= maxX) {
-                posX = maxX;
+            } else if (posX >= boundMax) {
+                posX = boundMax;
                 direction = -1;
                 updateFacing();
             }
@@ -535,6 +1027,14 @@
                 case PET_STATES.HAPPY:
                     stopMovementLoop();
                     syncPetAsset();
+
+                    // PR2-PET-07B: 檢查可用高度，不足 120px 時拒絕開啟對話框並退回 Idle
+                    if (!updateDialogPositionAndHeight()) {
+                        currentState = PET_STATES.IDLE;
+                        render(PET_STATES.IDLE, prevState);
+                        return;
+                    }
+
                     petDialog.classList.add('is-open');
                     petBtn.setAttribute('aria-expanded', 'true');
                     petBtn.setAttribute('aria-label', PET_CONFIG.ARIA_LABELS.OPEN);
@@ -882,10 +1382,20 @@
         }
 
         /**
-         * 視窗尺寸改變時更新邊界與 Clamp
+         * 視窗尺寸改變時更新邊界、Clamp 與對話框
          */
         function handleResize() {
-            updateBoundaries();
+            if (resizeDebounceTimeout) clearTimeout(resizeDebounceTimeout);
+            resizeDebounceTimeout = setTimeout(() => {
+                resizeDebounceTimeout = null;
+                updateBoundaries();
+                evaluateAvoidanceIntervals();
+                if (currentState === PET_STATES.HAPPY) {
+                    if (!updateDialogPositionAndHeight()) {
+                        transitionTo(PET_STATES.IDLE);
+                    }
+                }
+            }, 120);
         }
 
         // 事件綁定
@@ -920,6 +1430,21 @@
         window.addEventListener('resize', handleResize);
         window.addEventListener('blur', handleWindowBlur);
 
+        // PR2-PET-07B: Visual Viewport、捲動、表單焦點與卡片生成監聽
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', handleResize);
+            window.visualViewport.addEventListener('scroll', handleScroll);
+        }
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('orientationchange', () => {
+            handleResize();
+            setTimeout(handleResize, 200);
+        });
+
+        document.addEventListener('focusin', handleFormFocusIn, true);
+        document.addEventListener('focusout', handleFormFocusOut, true);
+        setupProjectsObserver();
+
         if (motionQuery.addEventListener) {
             motionQuery.addEventListener('change', handleMotionChange);
         } else if (motionQuery.addListener) {
@@ -928,6 +1453,7 @@
 
         // 初始化邊界與初始位置
         updateBoundaries();
+        evaluateAvoidanceIntervals();
         posX = maxX;
         direction = -1; // 預設靠右，起始向左面
         updateFacing();
@@ -1006,7 +1532,15 @@
                 transitionTo(PET_STATES.IDLE);
                 petBtn.focus({ preventScroll: true });
             },
-            triggerEscape: () => handleDocumentKeydown({ key: 'Escape', preventDefault: () => {} })
+            triggerEscape: () => handleDocumentKeydown({ key: 'Escape', preventDefault: () => {} }),
+            // PR2-PET-07B: 避讓系統測試接口
+            isAvoidanceHidden: () => isAvoidanceHidden,
+            getSafeIntervals: () => safeIntervals.map(i => ({ ...i })),
+            getCurrentInterval: () => (currentInterval ? { ...currentInterval } : null),
+            evaluateAvoidance: () => evaluateAvoidanceIntervals(),
+            setAvoidanceHidden: (h) => setAvoidanceHidden(h),
+            getViewportGeometry,
+            updateDialogPositionAndHeight
         };
     }
 

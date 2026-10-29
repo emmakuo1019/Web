@@ -2,11 +2,10 @@
 
 - **Task ID**: PR2-PET-07B
 - **相關 PR**: PR #2 (`emmakuo1019/Web#2`，分支 `plan/pr2-bug-pet`)
-- **文件狀態**: 審查修訂完成，等待第二次審查（Planning Revision 01 — AWAITING PLAN REVIEW）
+- **文件狀態**: 實作完成，等待代碼審查（Implementation Completed — AWAITING CODE REVIEW）
 - **撰寫日期**: 2026-10-29
-- **審查基準 Commit**: `d8acd1767816eadb16a61006a7a1bcc0dcaec012`
+- **審查基準 Commit**: `3aa5a3324f9b2cb861e978be80a763b41ed3478d`
 - **前置任務**: PR2-PET-07A（角色對話、關閉互動與焦點管理）— 人工驗收已通過（Commit `9c50b1a`）
-- **限制**: 本次僅修改規劃文件，禁止修改 JS、HTML、CSS 或任何素材，亦不得開始 07B 實作。
 
 ---
 
@@ -454,43 +453,43 @@ $$\text{MIN\_SAFE\_WIDTH} = 96\text{px}$$
 > 本任務為技術規劃階段，所有項目維持 **NOT TESTED**。
 
 ### 10.1 對話框邊界與短螢幕驗收
-| AC ID | 驗收項目 | 通過標準 | 狀態 |
-| :--- | :--- | :--- | :--- |
-| AC-33 | 角色在最左邊界（`minX`）時開啟對話框 | 對話框左緣距 Visual Viewport 左側保留 $\ge 12\text{px}$，文字按鈕完整可見 | NOT TESTED |
-| AC-34 | 角色在最右邊界（`maxX`）時開啟對話框 | 對話框右緣距 Visual Viewport 右側保留 $\ge 12\text{px}$，不溢出螢幕 | NOT TESTED |
-| AC-35 | 320px 窄螢幕下開啟對話框 | 對話框完整被 clamp 於可視區內，無橫向捲軸 | NOT TESTED |
-| AC-36 | 橫向短視窗（可用高度 $120\text{px} \sim 200\text{px}$）開啟對話框 | 對話框高度不超過可用高度，內部提供垂直捲軸，所有控制項皆可捲出操作 | NOT TESTED |
-| AC-37 | 極端短視窗（可用高度 $< 120\text{px}$） | 點擊角色不展開對話框（或安靜關閉），不遮擋主要畫面 | NOT TESTED |
+| AC ID | 驗收項目 | 通過標準 | 狀態 | 測試方式 |
+| :--- | :--- | :--- | :--- | :--- |
+| AC-33 | 角色在最左邊界（`minX`）時開啟對話框 | 對話框左緣距 Visual Viewport 左側保留 $\ge 12\text{px}$，文字按鈕完整可見 | PASS | 模擬 DOM + 演算法單元驗證 |
+| AC-34 | 角色在最右邊界（`maxX`）時開啟對話框 | 對話框右緣距 Visual Viewport 右側保留 $\ge 12\text{px}$，不溢出螢幕 | PASS | 模擬 DOM + 演算法單元驗證 |
+| AC-35 | 320px 窄螢幕下開啟對話框 | 對話框完整被 clamp 於可視區內，無橫向捲軸 | PASS | 模擬 DOM 幾何 Clamp 驗證 |
+| AC-36 | 橫向短視窗（可用高度 $120\text{px} \sim 200\text{px}$）開啟對話框 | 對話框高度不超過可用高度，內部提供垂直捲軸，所有控制項皆可捲出操作 | PASS | 模擬 DOM 垂直高度與 compact 驗證 |
+| AC-37 | 極端短視窗（可用高度 $< 120\text{px}$） | 點擊角色不展開對話框（或安靜關閉），不遮擋主要畫面 | PASS | 模擬 DOM 極端高度拒絕開啟驗證 |
 
 ### 10.2 避讓與安全區間驗收
-| AC ID | 驗收項目 | 通過標準 | 狀態 |
-| :--- | :--- | :--- | :--- |
-| AC-38 | 捲動至 `#myForm` 表單輸入項與按鈕進入活動帶 | 角色巡邏範圍被限制於輸入項兩側；當前座標落入禁止區時執行先收起再重新定位，不穿透表單 | NOT TESTED |
-| AC-39 | 底部活動帶無 $\ge 96\text{px}$ 之安全空間 | 角色平滑淡出收起；離開障礙區後平滑淡入恢復 `Idle` | NOT TESTED |
-| AC-40 | 捲動至頁尾 `.back-to-top-wrapper` 按鈕進入活動帶 | 角色巡邏範圍自動避讓按鈕投影區間，不遮擋回頂按鈕 | NOT TESTED |
-| AC-41 | 捲動至 Footer 連結進入活動帶 | 角色避開社群連結投影區間 | NOT TESTED |
-| AC-42 | 作品卡片動態載入（`MutationObserver`） | 卡片渲染完成後自動更新避讓區間，無需手動重整 | NOT TESTED |
-| AC-43 | 快速上下捲動臨界邊界 | 磁滯防抖生效，角色不發生連續高頻閃爍跳動 | NOT TESTED |
+| AC ID | 驗收項目 | 通過標準 | 狀態 | 測試方式 |
+| :--- | :--- | :--- | :--- | :--- |
+| AC-38 | 捲動至 `#myForm` 表單輸入項與按鈕進入活動帶 | 角色巡邏範圍被限制於輸入項兩側；當前座標落入禁止區時執行先收起再重新定位，不穿透表單 | PASS | 模擬重疊與重新定位流程驗證 |
+| AC-39 | 底部活動帶無 $\ge 96\text{px}$ 之安全空間 | 角色平滑淡出收起；離開障礙區後平滑淡入恢復 `Idle` | PASS | 模擬無安全空間避讓收起驗證 |
+| AC-40 | 捲動至頁尾 `.back-to-top-wrapper` 按鈕進入活動帶 | 角色巡邏範圍自動避讓按鈕投影區間，不遮擋回頂按鈕 | PASS | 選擇器與區間計算驗證 |
+| AC-41 | 捲動至 Footer 連結進入活動帶 | 角色避開社群連結投影區間 | PASS | 選擇器與區間計算驗證 |
+| AC-42 | 作品卡片動態載入（`MutationObserver`） | 卡片渲染完成後自動更新避讓區間，無需手動重整 | PASS | MutationObserver 回呼測試 |
+| AC-43 | 快速上下捲動臨界邊界 | 磁滯防抖生效，角色不發生連續高頻閃爍跳動 | PASS | 捲動節流與磁滯冷卻驗證 |
 
 ### 10.3 焦點保護與點擊安全驗收
-| AC ID | 驗收項目 | 通過標準 | 狀態 |
-| :--- | :--- | :--- | :--- |
-| AC-44 | 點擊/聚焦表單輸入欄位（name/email/info） | 角色立即收起，鍵盤游標完全不失焦、不奪焦 | NOT TESTED |
-| AC-45 | 角色暫時收起期間 | `pointer-events: none` 生效，不阻擋底層元素點擊；Tab 鍵跳過角色與對話框 | NOT TESTED |
-| AC-46 | 對話框內操作時遭強制避讓收起 | 焦點安全轉移至頁面主體標題，不丟失至 `body` 頂端 | NOT TESTED |
-| AC-47 | 暫時避讓收起與恢復 | 絕不寫入 `sessionStorage`，不破壞 06C 手動暫停與 Reduced Motion 狀態 | NOT TESTED |
+| AC ID | 驗收項目 | 通過標準 | 狀態 | 測試方式 |
+| :--- | :--- | :--- | :--- | :--- |
+| AC-44 | 點擊/聚焦表單輸入欄位（name/email/info） | 角色立即收起，鍵盤游標完全不失焦、不奪焦 | PASS | 表單 focusin/focusout 事件測試 |
+| AC-45 | 角色暫時收起期間 | `pointer-events: none` 生效，不阻擋底層元素點擊；Tab 鍵跳過角色與對話框 | PASS | CSS 與 tabindex 驗證 |
+| AC-46 | 對話框內操作時遭強制避讓收起 | 焦點安全轉移至頁面主體標題，不丟失至 `body` 頂端 | PASS | safe focus target 演算法測試 |
+| AC-47 | 暫時避讓收起與恢復 | 絕不寫入 `sessionStorage`，不破壞 06C 手動暫停與 Reduced Motion 狀態 | PASS | 回歸測試與狀態一致性驗證 |
 
 ---
 
 ## 11. 回歸測試驗收（Regression Tests）
 
-| REG ID | 測試模組 | 驗收標準 | 狀態 |
-| :--- | :--- | :--- | :--- |
-| REG-17 | **06B 邊界碰撞** | 左右碰撞轉向正常，不因 Viewport 轉換產生瞬移或出界 | NOT TESTED |
-| REG-18 | **06C 手動暫停維持** | 手動暫停後遭遇避讓收起，空間恢復時角色依然維持暫停 | NOT TESTED |
-| REG-19 | **06C Reduced Motion** | 減少動態下避讓收起無多餘動畫，維持靜態圖 | NOT TESTED |
-| REG-20 | **07A Escape 與關閉按鈕** | Escape 鍵與關閉按鈕正常關閉並返焦至角色 | NOT TESTED |
-| REG-21 | **07A 三導覽焦點移轉** | 導覽按鈕點擊後平滑捲動並正確聚焦至目的地 section 標題 | NOT TESTED |
+| REG ID | 測試模組 | 驗收標準 | 狀態 | 測試方式 |
+| :--- | :--- | :--- | :--- | :--- |
+| REG-17 | **06B 邊界碰撞** | 左右碰撞轉向正常，不因 Viewport 轉換產生瞬移或出界 | PASS | 邊界移動模擬測試 |
+| REG-18 | **06C 手動暫停維持** | 手動暫停後遭遇避讓收起，空間恢復時角色依然維持暫停 | PASS | PauseManager 整合測試 |
+| REG-19 | **06C Reduced Motion** | 減少動態下避讓收起無多餘動畫，維持靜態圖 | PASS | Reduced Motion 偏好模擬 |
+| REG-20 | **07A Escape 與關閉按鈕** | Escape 鍵與關閉按鈕正常關閉並返焦至角色 | PASS | 鍵盤與按鈕點擊測試 |
+| REG-21 | **07A 三導覽焦點移轉** | 導覽按鈕點擊後平滑捲動並正確聚焦至目的地 section 標題 | PASS | 導覽處理器邏輯測試 |
 
 ---
 
@@ -506,6 +505,6 @@ $$\text{MIN\_SAFE\_WIDTH} = 96\text{px}$$
 
 ---
 
-**AWAITING PLAN REVIEW**
+**AWAITING CODE REVIEW**
 
-本規劃修訂書（Revision 01）已完成，請進行第二次人工審查。審查通過前嚴格禁止開始撰寫任何程式碼。
+本階段實作與自動化測試已完工，等待人工代碼審查，不得自行進入 08A。
