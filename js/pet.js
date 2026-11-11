@@ -497,7 +497,7 @@
             });
 
             // 合併重疊的禁止區間
-            blockedIntervals.sort((a, b) => a.start - b.end);
+            blockedIntervals.sort((a, b) => a.start - b.start);
             const mergedBlocked = [];
             blockedIntervals.forEach((interval) => {
                 if (mergedBlocked.length === 0) {
@@ -1073,6 +1073,12 @@
                         return;
                     }
 
+                    // 文字更新可能改變面板寬度；以最終內容重新 Clamp，再顯示面板。
+                    if (petSpeechEl) {
+                        petSpeechEl.textContent = pickSpeech();
+                        updateDialogPositionAndHeight();
+                    }
+
                     petDialog.classList.add('is-open');
                     petBtn.setAttribute('aria-expanded', 'true');
                     petBtn.setAttribute('aria-label', PET_CONFIG.ARIA_LABELS.OPEN);
@@ -1080,10 +1086,6 @@
                     setPetOptionsTabIndex(true);
                     updatePauseButtonUI();
                     if (petGuide) petGuide.hidden = false;
-                    // PR2-PET-07A: 每次開啟更新一次短句，同次不自動輪播
-                    if (petSpeechEl) {
-                        petSpeechEl.textContent = pickSpeech();
-                    }
                     break;
 
                 case PET_STATES.WALKING:
