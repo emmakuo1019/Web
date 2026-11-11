@@ -79,6 +79,7 @@
         const petDebugBtn = document.getElementById('pet-debug-btn');
         const petSpeechEl = document.getElementById('pet-speech');    // PR2-PET-07A
         const petImg = petBtn.querySelector('.pet-img');
+        document.documentElement.classList.add('pet-js-ready');
 
         // 偵測 Reduced Motion 偏好
         const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -94,6 +95,10 @@
         let initiallyHidden = false;
         try {
             initiallyHidden = window.sessionStorage.getItem(HIDDEN_STORAGE_KEY) === '1';
+            if (initiallyHidden) {
+                const initialGuide = document.querySelector('.pet-guide');
+                if (initialGuide) initialGuide.hidden = true;
+            }
         } catch (error) {
             hiddenStorageAvailable = false;
         }
@@ -1171,8 +1176,25 @@
             }
         }
 
+        function persistAndCompleteDebugHide(token) {
+            if (token !== transitionToken || currentState === PET_STATES.HIDDEN) return;
+            if (debugTransitionEndHandler) petBtn.removeEventListener('transitionend', debugTransitionEndHandler);
+            debugTransitionEndHandler = null;
+            if (debugAnimationFallbackId !== null) clearTimeout(debugAnimationFallbackId);
+            debugAnimationFallbackId = null;
+            try {
+                if (hiddenStorageAvailable) window.sessionStorage.setItem(HIDDEN_STORAGE_KEY, '1');
+            } catch (error) {
+                hiddenStorageAvailable = false;
+            }
+            transitionTo(PET_STATES.HIDDEN);
+            transitionBusy = false;
+            completeDebugHide = null;
+        }
+
         let debugAnimationFallbackId = null;
         let debugTransitionEndHandler = null;
+        let completeDebugHide = null;
 
         function handleDebugClick() {
             if (transitionBusy || currentState === PET_STATES.HIDDEN) return;
@@ -1196,6 +1218,12 @@
                 }
             }
 
+            petDialog.classList.remove('is-open');
+            petBtn.setAttribute('aria-expanded', 'false');
+            petDialog.setAttribute('aria-hidden', 'true');
+            setPetOptionsTabIndex(false);
+            if (petDebugBtn) petDebugBtn.setAttribute('aria-disabled', 'true');
+
             petGuide.classList.add('is-debug-hiding');
             debugTransitionEndHandler = (event) => {
                 if (event.target !== petBtn || event.propertyName !== 'opacity') return;
@@ -1205,20 +1233,8 @@
                 debugAnimationFallbackId = null;
                 finish();
             };
-            const finish = () => {
-                if (token !== transitionToken || currentState === PET_STATES.HIDDEN) return;
-                if (debugTransitionEndHandler) petBtn.removeEventListener('transitionend', debugTransitionEndHandler);
-                debugTransitionEndHandler = null;
-                if (debugAnimationFallbackId !== null) clearTimeout(debugAnimationFallbackId);
-                debugAnimationFallbackId = null;
-                try {
-                    if (hiddenStorageAvailable) window.sessionStorage.setItem(HIDDEN_STORAGE_KEY, '1');
-                } catch (error) {
-                    hiddenStorageAvailable = false;
-                }
-                transitionTo(PET_STATES.HIDDEN);
-                transitionBusy = false;
-            };
+            const finish = () => persistAndCompleteDebugHide(token);
+            completeDebugHide = finish;
 
             if (prefersReducedMotion) {
                 finish();
@@ -1297,6 +1313,7 @@
          */
         function handleCloseBtn(e) {
             if (e) e.stopPropagation(); // 防止觸發 handleDocumentClick
+            if (transitionBusy) return;
             transitionTo(PET_STATES.IDLE);
             petBtn.focus({ preventScroll: true });
         }
@@ -1307,6 +1324,7 @@
          */
         function handleDocumentKeydown(e) {
             if (e.key !== 'Escape') return;
+            if (transitionBusy) return;
             if (currentState !== PET_STATES.HAPPY) return;
             e.preventDefault();
             transitionTo(PET_STATES.IDLE);
@@ -1408,11 +1426,14 @@
             scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
             if (prefersReducedMotion && transitionBusy && currentState !== PET_STATES.HIDDEN) {
                 transitionToken += 1;
+                const immediateToken = transitionToken;
                 if (debugTransitionEndHandler) petBtn.removeEventListener('transitionend', debugTransitionEndHandler);
                 debugTransitionEndHandler = null;
                 if (debugAnimationFallbackId !== null) clearTimeout(debugAnimationFallbackId);
                 debugAnimationFallbackId = null;
-                handleDebugClick();
+                petGuide.classList.add('is-debug-hiding');
+                completeDebugHide = null;
+                persistAndCompleteDebugHide(immediateToken);
                 return;
             }
             if (prefersReducedMotion) {

@@ -558,6 +558,13 @@ a:link {
 .pet-guide.is-hidden {
   pointer-events: none !important;
 }
+/* Hide the persisted state before first paint only after pet.js initializes;
+   if JavaScript fails, the guide remains available as a static fallback. */
+.pet-js-ready .pet-guide[data-pet-initial-hidden="true"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
 .pet-guide.is-debug-hiding .pet,
 .pet-guide.is-debug-hiding .pet-img {
   transform: scale(0.55);
@@ -582,7 +589,7 @@ a:link {
   cursor: pointer;
   pointer-events: auto; /* 恢復按鈕點擊 */
   /* PET-04: hover 微縮放，reduced-motion 會透過全站規則自動停用 */
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.18s ease, box-shadow 0.15s ease;
 }
 .pet:hover {
   transform: scale(1.07);
