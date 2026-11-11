@@ -554,6 +554,19 @@ a:link {
   pointer-events: none !important;
   visibility: hidden !important;
 }
+.pet-guide.is-debug-hiding,
+.pet-guide.is-hidden {
+  pointer-events: none !important;
+}
+.pet-guide.is-debug-hiding .pet,
+.pet-guide.is-debug-hiding .pet-img {
+  transform: scale(0.55);
+  opacity: 0;
+}
+.pet-guide.is-hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
 .pet {
   display: flex;
   align-items: center;
@@ -767,5 +780,9 @@ a:link {
   }
   .pet-control-btn {
     transition: none;
+  }
+  .pet-guide.is-debug-hiding .pet,
+  .pet-guide.is-debug-hiding .pet-img {
+    transition: none !important;
   }
 }

@@ -76,6 +76,7 @@
         const petOptions = petDialog.querySelectorAll('.pet-options button[data-target]');
         const petPauseBtn = document.getElementById('pet-pause-btn');
         const petCloseBtn = document.getElementById('pet-close-btn'); // PR2-PET-07A
+        const petDebugBtn = document.getElementById('pet-debug-btn');
         const petSpeechEl = document.getElementById('pet-speech');    // PR2-PET-07A
         const petImg = petBtn.querySelector('.pet-img');
 
@@ -86,6 +87,16 @@
 
         // 3. FSM 核心狀態與排程追蹤
         let currentState = PET_STATES.IDLE;
+        let transitionBusy = false;
+        let transitionToken = 0;
+        let hiddenStorageAvailable = true;
+        const HIDDEN_STORAGE_KEY = 'emma.pet.hidden.v1';
+        let initiallyHidden = false;
+        try {
+            initiallyHidden = window.sessionStorage.getItem(HIDDEN_STORAGE_KEY) === '1';
+        } catch (error) {
+            hiddenStorageAvailable = false;
+        }
         let fallbackApplied = false;
         let userPaused = false;
 
@@ -134,6 +145,18 @@
         let currentMaxX = 0;
         let isFormFocused = false;
         let isRepositioning = false;  // 避讓重新定位過渡中旗標
+        let repositionToken = 0;
+        let repositionTimeoutId = null;
+        let repositionRestoreTimeoutId = null;
+
+        function cancelReposition() {
+            repositionToken += 1;
+            if (repositionTimeoutId !== null) clearTimeout(repositionTimeoutId);
+            if (repositionRestoreTimeoutId !== null) clearTimeout(repositionRestoreTimeoutId);
+            repositionTimeoutId = null;
+            repositionRestoreTimeoutId = null;
+            isRepositioning = false;
+        }
 
         /**
          * 隨機整數產生輔助函式 [min, max]
@@ -289,6 +312,7 @@
             if (petCloseBtn) {
                 petCloseBtn.setAttribute('tabindex', accessible ? '0' : '-1');
             }
+            if (petDebugBtn) petDebugBtn.setAttribute('tabindex', accessible ? '0' : '-1');
         }
 
         // =========================================================================
@@ -537,14 +561,17 @@
          * 執行「先暫時收起 -> 重新定位至合法安全區中心 -> 安全恢復」流程
          */
         function repositionToSafeInterval() {
-            if (isRepositioning) return;
+            if (isRepositioning || currentState === PET_STATES.HIDDEN || transitionBusy) return;
             isRepositioning = true;
+            const token = ++repositionToken;
 
             // 1. 先暫時收起（透明淡出）
             setAvoidanceHidden(true);
 
             // 2. 等待淡出動畫完成後（180ms），在不可見狀態下離屏重新定位
-            setTimeout(() => {
+            repositionTimeoutId = setTimeout(() => {
+                repositionTimeoutId = null;
+                if (token !== repositionToken || currentState === PET_STATES.HIDDEN || transitionBusy) return;
                 if (safeIntervals.length > 0) {
                     // 選取距離目前位置最近的安全區間
                     let nearestInterval = safeIntervals[0];
@@ -568,7 +595,9 @@
                     clampPosition();
 
                     // 3. 安全恢復（待完全隱藏並就位後，延遲 100ms 移除隱藏，並重設 Idle 2 秒契約）
-                    setTimeout(() => {
+                    repositionRestoreTimeoutId = setTimeout(() => {
+                        repositionRestoreTimeoutId = null;
+                        if (token !== repositionToken || currentState === PET_STATES.HIDDEN || transitionBusy) return;
                         isRepositioning = false;
                         if (!isFormFocused && safeIntervals.length > 0 && !isScrolling) {
                             setAvoidanceHidden(false);
@@ -588,6 +617,7 @@
          * 捲動監聽（rAF / 節流與磁滯冷卻）
          */
         function handleScroll() {
+            if (transitionBusy || currentState === PET_STATES.HIDDEN) return;
             isScrolling = true;
 
             if (scrollCooldownTimeout) {
@@ -1084,6 +1114,12 @@
 
                 case PET_STATES.HIDDEN:
                     stopMovementLoop();
+                    scheduler.cancel();
+                    cancelReposition();
+                    petGuide.classList.remove('is-debug-hiding');
+                    petGuide.classList.add('is-hidden');
+                    petBtn.setAttribute('tabindex', '-1');
+                    petBtn.setAttribute('aria-hidden', 'true');
                     petDialog.classList.remove('is-open');
                     petBtn.setAttribute('aria-expanded', 'false');
                     petDialog.setAttribute('aria-hidden', 'true');
@@ -1108,6 +1144,7 @@
             if (currentState === nextState) {
                 return false;
             }
+            if (transitionBusy && nextState !== PET_STATES.HIDDEN) return false;
 
             // 狀態切換：徹底銷毀上一狀態的計時器，防範舊 Walking / Idle 排程復活
             scheduler.cancel();
@@ -1126,10 +1163,68 @@
          */
         function handlePetClick(e) {
             if (e) e.preventDefault();
+            if (transitionBusy || currentState === PET_STATES.HIDDEN) return;
             if (currentState === PET_STATES.HAPPY) {
                 transitionTo(PET_STATES.IDLE);
             } else if (currentState === PET_STATES.IDLE || currentState === PET_STATES.WALKING) {
                 transitionTo(PET_STATES.HAPPY);
+            }
+        }
+
+        let debugAnimationFallbackId = null;
+        let debugTransitionEndHandler = null;
+
+        function handleDebugClick() {
+            if (transitionBusy || currentState === PET_STATES.HIDDEN) return;
+            transitionBusy = true;
+            const token = ++transitionToken;
+            scheduler.cancel();
+            stopMovementLoop();
+            cancelReposition();
+            pauseReasons.add('debugTransition');
+
+            if (petGuide.contains(document.activeElement)) {
+                const safeTarget = findSafeContentFocusTarget();
+                if (safeTarget && safeTarget !== petBtn) {
+                    if (!safeTarget.hasAttribute('tabindex')) {
+                        safeTarget.setAttribute('tabindex', '-1');
+                        safeTarget.addEventListener('blur', () => safeTarget.removeAttribute('tabindex'), { once: true });
+                    }
+                    safeTarget.focus({ preventScroll: true });
+                } else {
+                    document.activeElement.blur();
+                }
+            }
+
+            petGuide.classList.add('is-debug-hiding');
+            debugTransitionEndHandler = (event) => {
+                if (event.target !== petBtn || event.propertyName !== 'opacity') return;
+                petBtn.removeEventListener('transitionend', debugTransitionEndHandler);
+                debugTransitionEndHandler = null;
+                if (debugAnimationFallbackId !== null) clearTimeout(debugAnimationFallbackId);
+                debugAnimationFallbackId = null;
+                finish();
+            };
+            const finish = () => {
+                if (token !== transitionToken || currentState === PET_STATES.HIDDEN) return;
+                if (debugTransitionEndHandler) petBtn.removeEventListener('transitionend', debugTransitionEndHandler);
+                debugTransitionEndHandler = null;
+                if (debugAnimationFallbackId !== null) clearTimeout(debugAnimationFallbackId);
+                debugAnimationFallbackId = null;
+                try {
+                    if (hiddenStorageAvailable) window.sessionStorage.setItem(HIDDEN_STORAGE_KEY, '1');
+                } catch (error) {
+                    hiddenStorageAvailable = false;
+                }
+                transitionTo(PET_STATES.HIDDEN);
+                transitionBusy = false;
+            };
+
+            if (prefersReducedMotion) {
+                finish();
+            } else {
+                petBtn.addEventListener('transitionend', debugTransitionEndHandler);
+                debugAnimationFallbackId = setTimeout(finish, 260);
             }
         }
 
@@ -1311,6 +1406,15 @@
         function handleMotionChange(e) {
             prefersReducedMotion = e.matches;
             scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+            if (prefersReducedMotion && transitionBusy && currentState !== PET_STATES.HIDDEN) {
+                transitionToken += 1;
+                if (debugTransitionEndHandler) petBtn.removeEventListener('transitionend', debugTransitionEndHandler);
+                debugTransitionEndHandler = null;
+                if (debugAnimationFallbackId !== null) clearTimeout(debugAnimationFallbackId);
+                debugAnimationFallbackId = null;
+                handleDebugClick();
+                return;
+            }
             if (prefersReducedMotion) {
                 addPauseReason('reducedMotion');
                 scheduler.cancel();
@@ -1388,6 +1492,7 @@
             if (resizeDebounceTimeout) clearTimeout(resizeDebounceTimeout);
             resizeDebounceTimeout = setTimeout(() => {
                 resizeDebounceTimeout = null;
+                if (transitionBusy || currentState === PET_STATES.HIDDEN) return;
                 updateBoundaries();
                 evaluateAvoidanceIntervals();
                 if (currentState === PET_STATES.HAPPY) {
@@ -1412,6 +1517,7 @@
         if (petCloseBtn) {
             petCloseBtn.addEventListener('click', handleCloseBtn);
         }
+        if (petDebugBtn) petDebugBtn.addEventListener('click', handleDebugClick);
         document.addEventListener('keydown', handleDocumentKeydown);
 
         // 指標與焦點暫停綁定
@@ -1453,17 +1559,21 @@
 
         // 初始化邊界與初始位置
         updateBoundaries();
-        evaluateAvoidanceIntervals();
         posX = maxX;
         direction = -1; // 預設靠右，起始向左面
         updateFacing();
         clampPosition();
+        evaluateAvoidanceIntervals();
 
         // 首次進入：以 Idle 2 秒為初始，若無 Reduced Motion 則排程轉入 Walking
-        currentState = PET_STATES.IDLE;
+        currentState = initiallyHidden ? PET_STATES.HIDDEN : PET_STATES.IDLE;
+        if (initiallyHidden) {
+            petGuide.classList.add('is-hidden');
+            petGuide.hidden = true;
+        }
         render(currentState, null);
         scheduler.cancel();
-        if (!prefersReducedMotion) {
+        if (!initiallyHidden && !prefersReducedMotion) {
             scheduler.schedule(PET_STATES.WALKING, 2000);
         }
         updatePauseButtonUI();
@@ -1473,6 +1583,10 @@
             STATES: PET_STATES,
             CONFIG: PET_CONFIG,
             getState: () => currentState,
+            getTransitionState: () => ({ busy: transitionBusy, token: transitionToken }),
+            debugHide: handleDebugClick,
+            getHiddenStorageAvailable: () => hiddenStorageAvailable,
+            getRepositionState: () => ({ active: isRepositioning, token: repositionToken, timeoutId: repositionTimeoutId, restoreTimeoutId: repositionRestoreTimeoutId }),
             getPosition: () => posX,
             setPosition: (x) => {
                 posX = x;
