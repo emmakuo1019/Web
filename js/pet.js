@@ -77,6 +77,7 @@
         const petPauseBtn = document.getElementById('pet-pause-btn');
         const petCloseBtn = document.getElementById('pet-close-btn'); // PR2-PET-07A
         const petDebugBtn = document.getElementById('pet-debug-btn');
+        const petRecallBtn = document.getElementById('pet-recall-btn');
         const petSpeechEl = document.getElementById('pet-speech');    // PR2-PET-07A
         const petImg = petBtn.querySelector('.pet-img');
 
@@ -1197,6 +1198,7 @@
         let debugAnimationFallbackId = null;
         let debugTransitionEndHandler = null;
         let completeDebugHide = null;
+        let recallBusy = false;
 
         function handleDebugClick() {
             if (transitionBusy || currentState === PET_STATES.HIDDEN) return;
@@ -1243,6 +1245,55 @@
             } else {
                 petBtn.addEventListener('transitionend', debugTransitionEndHandler);
                 debugAnimationFallbackId = setTimeout(finish, 260);
+            }
+        }
+
+        function handlePetRecall(e) {
+            if (e) e.preventDefault();
+            if (recallBusy || transitionBusy) return;
+
+            // Visible pets are never re-instantiated or rescheduled by repeated Footer activation.
+            if (currentState !== PET_STATES.HIDDEN) return;
+            recallBusy = true;
+
+            // Invalidate Debug animation callbacks and all delayed avoidance reposition work.
+            transitionToken += 1;
+            cancelReposition();
+            if (debugTransitionEndHandler) petBtn.removeEventListener('transitionend', debugTransitionEndHandler);
+            debugTransitionEndHandler = null;
+            if (debugAnimationFallbackId !== null) clearTimeout(debugAnimationFallbackId);
+            debugAnimationFallbackId = null;
+            completeDebugHide = null;
+
+            try {
+                window.sessionStorage.removeItem(HIDDEN_STORAGE_KEY);
+                hiddenStorageAvailable = true;
+            } catch (error) {
+                hiddenStorageAvailable = false;
+            }
+
+            // Clear the formal Hidden presentation before the existing FSM renders Idle.
+            petGuide.hidden = false;
+            petGuide.classList.remove('is-hidden', 'is-debug-hiding');
+            petBtn.removeAttribute('tabindex');
+            petBtn.removeAttribute('aria-hidden');
+            if (petDebugBtn) petDebugBtn.removeAttribute('aria-disabled');
+            pauseReasons.delete('debugTransition');
+            transitionBusy = false;
+
+            const transitioned = transitionTo(PET_STATES.IDLE);
+            // Re-evaluate only after leaving Hidden so 07B can start repositioning when needed.
+            updateBoundaries();
+            evaluateAvoidanceIntervals();
+            if (isAvoidanceHidden || isRepositioning) {
+                petGuide.classList.add('is-avoidance-hidden');
+                petBtn.setAttribute('tabindex', '-1');
+            }
+            recallBusy = false;
+
+            // Keep the viewport stationary. Only transfer keyboard focus if the role is truly available.
+            if (e && e.detail === 0 && transitioned && !isAvoidanceHidden && !isRepositioning && !petGuide.hidden) {
+                petBtn.focus({ preventScroll: true });
             }
         }
 
@@ -1541,6 +1592,7 @@
             petCloseBtn.addEventListener('click', handleCloseBtn);
         }
         if (petDebugBtn) petDebugBtn.addEventListener('click', handleDebugClick);
+        if (petRecallBtn) petRecallBtn.addEventListener('click', handlePetRecall);
         document.addEventListener('keydown', handleDocumentKeydown);
 
         // 指標與焦點暫停綁定
