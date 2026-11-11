@@ -456,26 +456,32 @@ h3{
     color: var(--text-color-hover);
 }
 .pet-recall-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-grid;
+    place-items: center;
     min-width: 44px;
     min-height: 44px;
-    margin-top: 8px;
-    padding: 8px 12px;
-    border: 1px solid var(--text-secnd-color);
-    border-radius: 6px;
-    background: transparent;
+    margin-top: 4px;
+    padding: 2px 5px;
+    border: 0;
+    border-radius: 0;
+    background: none;
     color: var(--text-secnd-color);
     font: inherit;
-    letter-spacing: 0.04em;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.05;
+    letter-spacing: 0.08em;
     cursor: pointer;
-    transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+    transition: color 0.18s ease;
 }
-.pet-recall-btn:hover,
-.pet-recall-btn:focus-visible {
+.pet-recall-btn span {
+    display: block;
+    white-space: nowrap;
+}
+.pet-recall-btn:hover {
     color: var(--text-color-hover);
-    border-color: var(--text-color-hover);
+}
+.pet-recall-btn:focus-visible {
     outline: 3px solid var(--text-color-hover);
     outline-offset: 3px;
 }
