@@ -558,13 +558,6 @@ a:link {
 .pet-guide.is-hidden {
   pointer-events: none !important;
 }
-/* Hide the persisted state before first paint only after pet.js initializes;
-   if JavaScript fails, the guide remains available as a static fallback. */
-.pet-js-ready .pet-guide[data-pet-initial-hidden="true"] {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
 .pet-guide.is-debug-hiding .pet,
 .pet-guide.is-debug-hiding .pet-img {
   transform: scale(0.55);

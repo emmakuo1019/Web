@@ -79,7 +79,6 @@
         const petDebugBtn = document.getElementById('pet-debug-btn');
         const petSpeechEl = document.getElementById('pet-speech');    // PR2-PET-07A
         const petImg = petBtn.querySelector('.pet-img');
-        document.documentElement.classList.add('pet-js-ready');
 
         // 偵測 Reduced Motion 偏好
         const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -97,7 +96,10 @@
             initiallyHidden = window.sessionStorage.getItem(HIDDEN_STORAGE_KEY) === '1';
             if (initiallyHidden) {
                 const initialGuide = document.querySelector('.pet-guide');
-                if (initialGuide) initialGuide.hidden = true;
+                if (initialGuide) {
+                    initialGuide.classList.add('is-hidden');
+                    initialGuide.hidden = true;
+                }
             }
         } catch (error) {
             hiddenStorageAvailable = false;
