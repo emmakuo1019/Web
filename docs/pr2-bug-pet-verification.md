@@ -1,7 +1,7 @@
-# PR2-PET｜09A/09B 驗收紀錄
+# PR2-PET｜09A–09C 驗收與交付紀錄
 
-- Task ID：PR2-PET-09A
-- 測試日期：2026-11-12（Asia/Taipei）
+- 範圍：PR2-PET-09A、09B 使用者回報及自動化驗收；09C 文件整合與程式審查
+- 09A headless 測試日期：2026-11-12（Asia/Taipei）
 - Repository：`emmakuo1019/Web`
 - Branch：`plan/pr2-bug-pet`
 - 驗收基準：`06ba34bfff1818e0621c0de845ea335a48b60633`
@@ -10,7 +10,7 @@
 - 請求視窗：1280×800；Chrome 回報 `innerWidth=1280`、`innerHeight=657`
 - 裝置／作業系統 GUI：未測；本次為 headless，不代表桌面人工操作
 
-## 結果摘要
+## 09A headless 結果摘要
 
 | 結果 | 數量 | 說明 |
 | --- | ---: | --- |
@@ -80,7 +80,7 @@
 - [ ] 操作 Light／Dark 主題切換，檢查角色與 Footer 可讀性。
 - [ ] 比較頁面捲動、Footer 排版與社群連結；確認兩個社群連結仍可正常開啟。
 
-## 缺陷紀錄
+## 09A 當時缺陷紀錄
 
 - **確認缺陷：無。**
 - **不成立的初步警訊：** 右側 clamp 一度在 CSS transform transition 尚未完成時被量測。因量測時機不符合驗收條件，不登記為產品 FAIL；正確的人工重測方式是開框後等待 transition 完成再量測。
@@ -105,13 +105,25 @@
 - Task ID：PR2-PET-09B
 - 測試日期：2026-11-12（Asia/Taipei）
 - Repository / branch：`emmakuo1019/Web` / `plan/pr2-bug-pet`
-- 測試基準：`13c77d7910f5891cf1e1ce3ee084142a616f1f65`，含本任務下列兩項缺陷修正
+- 測試基準：`13c77d7910f5891cf1e1ce3ee084142a616f1f65` 加上 09B 工作樹修正；修正後版本提交於 `ff2286c8d39fc1f10ed12b904f8e7609099badbd`
 - 瀏覽器：Google Chrome 157.0.8103.39，headless
 - 測試頁：本機唯讀 HTTP `http://127.0.0.1:8765/index.html`
 - 作業系統 GUI：未使用；沒有實體手機。Chrome user-agent 顯示 HeadlessChrome 157；未把 user-agent 內的 OS 字串當作實際 OS 版本。
 - 方法：Chrome DevTools Protocol（CDP）viewport override、media preference emulation 及合成鍵盤事件；不等同實體手機或桌面 GUI 人工操作。`mobile=false`，未啟用觸控。
 - Viewport：320×800、375×812、390×844、768×1024、844×390（短橫向）、640×400。最後一項以 1280×800 的一半 CSS 尺寸作為 200% 縮放等效視窗；不是瀏覽器 UI 的原生 200% 縮放。
 - 證據：本機 Chrome 的 DOM／viewport 幾何、狀態與 scheduler 回報；本任務未保存截圖。
+
+### 09B 使用者回報之人工驗收
+
+以下結果由使用者回報，與本文件的 headless Chrome 自動化紀錄分開。執行日期、瀏覽器與版本、作業系統、viewport／測試尺寸、縮放設定細節及截圖未提供，故不推測。
+
+| 情境 | 使用者回報結果 | 備註 |
+| --- | --- | --- |
+| 實體鍵盤操作與焦點 | PASS | 人工驗收；環境資料未提供 |
+| Light／Dark 視覺 | PASS | 人工驗收；環境資料未提供 |
+| 原生 200% 瀏覽器縮放 | PASS | 人工驗收；viewport 未提供 |
+| Reduced Motion 下的導覽 | PASS | 人工驗收；瀏覽器版本未提供 |
+| 實體手機與軟鍵盤 | NOT TESTED | 不以桌面 viewport 模擬替代 |
 
 ### 響應式、面板與避讓（自動化瀏覽器）
 
@@ -133,8 +145,9 @@
 | Debug 後焦點 | 從 Debug 控制項執行 handler；Hidden 完成後焦點在 pet-guide 外，沒有留在隱藏內容 | PASS（DOM handler 測試） |
 | 07B 暫時避讓時 Tab 焦點 | Contact 欄位取得焦點期間角色設為 `tabindex=-1` 並避讓隱藏；Tab 序列未把焦點送到不可見角色 | PASS |
 | Footer 召回與焦點交接（角色可見） | 以 DOM `.click()` 觸發 Footer 按鈕，回 Idle 並聚焦可見角色；未模擬真實 Enter／Space 按鈕啟動 | PASS（DOM handler 測試） |
-| Enter／Space 開啟角色及 Enter／Space 召回 | Headless CDP keydown 未產生原生按鈕啟動 click；需真實鍵盤人工覆核 | NOT TESTED |
-| focus-visible 是否清楚可辨 | 本輪未作桌面 GUI 視覺檢查；CSS 規則存在不作為視覺通過證據 | NOT TESTED（人工視覺） |
+| Headless CDP Enter／Space 按鈕啟動 | CDP keydown 未產生原生按鈕 click，故本自動化 harness 不判定這兩個啟動鍵 | NOT TESTED（自動化限制） |
+| 實體鍵盤 Enter／Space 與焦點 | 使用者回報實體鍵盤操作及焦點 PASS；細分按鍵情境未另提供 | PASS（使用者回報） |
+| focus-visible 實際視覺辨識 | 使用者回報 Light／Dark 視覺及鍵盤焦點 PASS；本輪沒有桌面 GUI 截圖或自動化視覺判斷 | PASS（使用者回報）；自動化視覺 NOT TESTED |
 
 Tab 序列在表單欄位聚焦時略過避讓隱藏的角色，符合不可聚焦隱藏角色的要求；對話內相鄰順序則另以上表確認。合成 Escape keydown 是瀏覽器事件測試，不是使用者實體鍵盤驗收。
 
@@ -146,7 +159,7 @@ Tab 序列在表單欄位聚焦時略過避讓隱藏的角色，符合不可聚�
 | 正在 Walking 時切換為減少動態 | 轉 Idle、換靜態圖，scheduler `targetState=null`、timer 為 null | PASS |
 | Walking 中啟動 Debug，接著切換減少動態 | 轉 Hidden；`transitionBusy=false`，沒有殘留 scheduler | PASS |
 | 減少動態下 Footer 召回 | 回 Idle、使用靜態圖，無 scheduler timer 或 pet movement rAF | PASS（DOM handler 測試） |
-| 對話及作品導覽控制可用性 | 減少動態下可開啟對話，三個導覽按鈕仍顯示；未逐一啟動導覽目標 | PASS（顯示／DOM）；目標導覽人工操作 NOT TESTED |
+| 對話及作品導覽控制可用性 | 減少動態下可開啟對話，三個導覽按鈕仍顯示；使用者另回報 Reduced Motion 下導覽 PASS，但未提供逐一目標細節 | PASS（顯示／DOM＋使用者回報） |
 | 重複排程／rAF | 監測角色 `movementStep` rAF：正常走動最多 1 個；減少動態及 10 次快速狀態往返後為 0；Reduced Motion 下 scheduler 為 null | PASS（瀏覽器狀態監測） |
 
 ### 裝置與主題
@@ -155,8 +168,8 @@ Tab 序列在表單欄位聚焦時略過避讓隱藏的角色，符合不可聚�
 | --- | --- | --- |
 | 實體手機觸控 | 沒有實體裝置可測；本次 CDP 未啟用 touch | NOT TESTED |
 | 手機軟鍵盤與安全區域 | 沒有實體手機或作業系統鍵盤／safe-area 測試 | NOT TESTED |
-| Light／Dark 元件顏色 | CDP 下切換 `data-theme`，檢查對話背景／文字及 Footer 文字色等 computed values；受測色值隨主題改變 | PASS（computed-style 檢查） |
-| 角色、亂碼入口與 focus-visible 的實際可辨識性 | 未在 GUI 或實體顯示器作視覺檢查；computed style 不代表人工對比驗收 | NOT TESTED（人工視覺） |
+| Light／Dark 元件顏色 | CDP 下切換 `data-theme`，檢查對話背景／文字及 Footer 文字色等 computed values；使用者另回報 Light／Dark 視覺 PASS | PASS（computed-style＋使用者回報） |
+| Light／Dark 下角色、亂碼入口與 focus-visible 可辨識性 | 使用者回報 Light／Dark 視覺與鍵盤焦點 PASS；自動化僅查 CSS 色值，未做畫面視覺判斷 | PASS（使用者回報）；自動化視覺 NOT TESTED |
 
 ### 缺陷與修正
 
@@ -167,9 +180,6 @@ Tab 序列在表單欄位聚焦時略過避讓隱藏的角色，符合不可聚�
 
 ### 尚需使用者親自確認
 
-- 以真實鍵盤 Enter／Space 開啟角色、Space 與 Enter 召回，以及實際 focus-visible 視覺辨識。
-- 真實手機觸控、軟鍵盤、safe-area 與對話框操作；本次沒有裝置模擬冒充實機結果。
-- 瀏覽器 UI 原生 200% 縮放；本次只有 640×400 CSS viewport 等效模擬。
-- Light／Dark 實際顯示器下角色、對話框、亂碼 Footer 入口和焦點樣式的可辨識性。
-- 對話作品／關於／聯絡三個目標在 Reduced Motion 下逐一實際導覽；本次僅確認按鈕仍顯示可用。
-- 09A 八項桌面人工 PASS 的瀏覽器版本、viewport、測試日期與截圖若需納入正式證據，仍需使用者補充；目前保留為「使用者回報」。
+- 實體手機觸控、軟鍵盤、safe-area 與對話框操作；本輪明確維持 NOT TESTED，沒有以裝置模擬冒充實機結果。
+- Headless Chrome 對 Enter／Space 原生按鈕啟動未作判定；實體鍵盤項目依使用者人工回報記 PASS。
+- 09A／09B 使用者人工結果的瀏覽器版本、viewport／測試尺寸、執行日期與截圖未提供；文件保留為「使用者回報」，不要求以推測補值。

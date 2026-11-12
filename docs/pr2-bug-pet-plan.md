@@ -2,7 +2,7 @@
 Pet Visual & Behavior Integration · .EMMA 個人作品集
 
 - 文件日期：2026-10-08
-- 狀態：規劃已整理；功能尚未實作／驗收。本 PR 先提交本文件，後續在同分支追加實作。
+- 狀態：PR2-PET-05A–09B 已實作並完成有證據的驗收；PR2-PET-09C 文件整合與審查完成。PR #2 維持 Draft，尚未合併。
 - 基準：main / 3d9cca2d75ac987fdd7472fc943c04ea9b564e5e；PR1 #1 已合併。
 - 執行方式：本地 AI 一次完成一個明確指定的小任務，人工驗收後才進下一項。
 - 命名：原初稿 PET-05～09 保留為階段，但正式 Task ID 使用 PR2-PET-05A 等，避免與 PR1 PET-05 重複。
@@ -30,15 +30,28 @@ Pet Visual & Behavior Integration · .EMMA 個人作品集
 | 其他系統 | home.js 也包含 Matter.js 拉繩、表單、導覽、標題效果 | 不重構，不把角色接進 Matter.js |
 | 專案指示 | 本次遠端檔案樹未見 AGENTS.md | 本地執行仍須讀取當地存在的適用指示 |
 
-允許實作檔案：index.html、css/style.css、js/home.js（僅搬移 pet 區段）、新增 js/pet.js、picture/pet/ 指定素材、本文件，以及最終 docs/pr2-bug-pet-verification.md。不新增框架或建置系統。
+實作與交付檔案：index.html、css/style.css、js/home.js（僅移除搬至 pet.js 的角色區段）、js/pet.js、picture/pet/ 三素材、本文件、docs/pr2-bug-pet-verification.md，以及分項規劃／驗證紀錄 docs/pr2-pet-06c-plan.md、docs/pr2-pet-07a-plan.md、docs/pr2-pet-07b-plan.md。不新增框架或建置系統。
 
 ## 3. 美術與初始參數
 素材原始比例、透明背景不可破壞。PR2-PET-05A 已完成盤點並記錄如下；不得自行重畫或壓縮覆寫原圖。
 
-### PR2-PET-05A 素材盤點結果
+### PR2-PET-05A 首次素材盤點（commit `b6a592a`）
+
+以下是 05A 首次提交時的素材版本與盤點紀錄，不代表目前 HEAD 的檔案大小。素材後於 `fc992b8` 更新，GIF 又在 `5b8d3e0` 調整；保留本表作為版本沿革，不覆寫原始紀錄。
+
 - **`picture/pet/pet.gif`**：17,297 bytes、100×100 px（1:1）、GIF (Mode P)、透明背景。8 幀（120/130ms，循環 1000ms，無限循環 loop 0），Alpha BBox 約 (21~28, 4~9, 78~86, 96~98)。朝向：正向面對（Front-facing）擺腿步伐。
 - **`picture/pet/pet.png`**：4,694 bytes、100×100 px（1:1）、PNG (RGBA)、透明背景。Alpha BBox (20, 5, 84, 97)。朝向：正向面對（Front-facing），待機狀態。
 - **`picture/pet/pethappy.png`**：4,833 bytes、100×100 px（1:1）、PNG (RGBA)、透明背景。Alpha BBox (20, 5, 84, 97) 與 pet.png 底線及邊界完全一致，僅嘴部表情差異（221 像素開口笑）。朝向：正向面對（Front-facing），開心狀態。
+
+### 目前 HEAD 素材（PR2-PET-09B 基準 `ff2286c`）
+
+目前 tracked 檔案以 `Pillow` 讀取，Git blob 大小與工作樹檔案大小一致。05A 初版紀錄保留如上；本表才是 `ff2286c` 的實際素材版本。
+
+| 檔案 | 大小與格式 | 畫面資料 |
+| --- | --- | --- |
+| `picture/pet/pet.gif` | 3,885 bytes；GIF P；100×100 | 8 幀，120/130ms 交替（總循環 1,000ms）；透明 palette index 2；目前檔案 `loop=0`；8 幀 alpha 聯集約 `(21, 4, 86, 98)` |
+| `picture/pet/pet.png` | 4,919 bytes；PNG RGBA；100×100 | alpha bbox `(20, 5, 84, 97)`；Idle |
+| `picture/pet/pethappy.png` | 5,312 bytes；PNG RGBA；100×100 | alpha bbox `(20, 5, 84, 97)`；Happy |
 
 | 項目 | 初始設定 | 調整原則 |
 | --- | --- | --- |
@@ -110,7 +123,7 @@ Pet Visual & Behavior Integration · .EMMA 個人作品集
 - 首版不做物理碰撞；若安全區算法超出小任務預算，回報具體重疊情境，由使用者決定調整規格，不可把「不遮擋」勾選通過。
 
 ## 7. Debug、Footer 與保存
-Footer 按鈕顯示 #@$%_BUG?!，可附 title，accessible name 為「召回 Bug 先生」。觸發後從視窗底部出現，不從 Footer 的文件座標飛行。
+Footer 召回按鈕目前顯示 `■B?u◇*g!_`（HTML span 含前置空白），accessible name 為「召回 Bug 先生」。觸發後從視窗底部出現，不從 Footer 的文件座標飛行。
 
 保存 key 建議 emma.pet.hidden.v1，值為1代表 Hidden，召回時 removeItem。
 讀写 sessionStorage 均 try/catch；不可用時退化為當頁記憶，整個角色仍可用。初始化先讀旗標再顯示，避免重整時閃現。
@@ -167,86 +180,93 @@ STOP → 06C。
 
 ### PR2-PET-06C｜暫停、Reduced Motion 與生命週期
 範圍：js/pet.js、index.html 面板暫停鈕、Pet CSS。
-- [ ] 分頁 hidden 停 rAF及排程、換靜態；恢復不瞬移不補跑。
-- [ ] 讀取並監聽動態偏好變更；靜態替代 GIF，停用 hover、出場與離場動態。
-- [ ] 接入「暫停／恢復走動」，與 hover/focus/pointerdown 暫停共同運作；每種原因解除不得覆蓋其他原因。
+- [x] 分頁 hidden 停 rAF及排程、換靜態；恢復不瞬移不補跑。
+- [x] 讀取並監聽動態偏好變更；靜態替代 GIF，停用 hover、出場與離場動態。
+- [x] 接入「暫停／恢復走動」，與 hover/focus/pointerdown 暫停共同運作；每種原因解除不得覆蓋其他原因。
 驗收：切走10秒再回；執行中切偏好；暫停後開關對話；Tab 聚焦時角色不逃走；確認未重複排程。
+完成證據：`docs/pr2-pet-06c-plan.md` 記錄 11 項 AC 與回歸測試 PASS；真實 BFCache／背景分頁／實體滑鼠情境仍明列 NOT TESTED。
 STOP → 07A。
 
 ### PR2-PET-07A｜內容、關閉與焦點
 範圍：index.html、js/pet.js、Pet CSS。
-- [ ] Happy 換圖，新增短句池；保留作品／關於／聯絡。
-- [ ] 加入關閉、Escape；依第5節實作開關、外部點擊、導覽焦點；涵蓋全部可聚焦項。
-- [ ] 調整 DOM／Tab 順序，使角色後可直接進面板；面板關閉後子項不可聚焦。
+- [x] Happy 換圖，新增短句池；保留作品／關於／聯絡。
+- [x] 加入關閉、Escape；依第5節實作開關、外部點擊、導覽焦點；涵蓋全部可聚焦項。
+- [x] 調整 DOM／Tab 順序，使角色後可直接進面板；面板關閉後子項不可聚焦。
 驗收：滑鼠、Tab/Shift+Tab、Enter/Space、Escape；三導覽焦點／落點；連開5次無中途輪播。
+完成證據：07A 分項規劃記錄實作驗收；09A 使用者回報對話／鍵盤 PASS，09B 使用者另回報實體鍵盤／焦點 PASS。細分瀏覽器與 viewport 未提供。
 STOP → 07B。
 
 ### PR2-PET-07B｜面板邊界與避讓
 範圍：js/pet.js、Pet CSS。
-- [ ] 跟隨角色定位、面板邊界 clamp、高度限制、透明區點擊穿透。
-- [ ] 按第6節排除重要互動區；沒有安全空間時暫時收起、恢復時 Idle。
-- [ ] 表單聚焦／手機可視高度改變不遮擋、不奪焦；臨時收起不等於 Hidden。
+- [x] 跟隨角色定位、面板邊界 clamp、高度限制、透明區點擊穿透。
+- [x] 按第6節排除重要互動區；沒有安全空間時暫時收起、恢復時 Idle。
+- [x] 表單聚焦／可視高度改變時避讓、不奪焦；臨時收起不等於 Hidden。
 驗收：角色在最左最右開框；320px與橫向矮螢幕；到表單、回頂、Footer及作品卡逐項確認可操作。
+完成證據：09A 使用者回報定位避讓 PASS；09B headless 幾何驗證通過並修正排序與文字後 clamp。實體手機軟鍵盤／safe-area 仍 NOT TESTED。
 STOP → 08A。
 
 ### PR2-PET-08A｜Debug 與持久隱藏
 範圍：index.html、js/pet.js、Pet CSS。
-- [ ] Debug 按鈕、Hidden、縮淡、排程停止、隱藏焦點交接。
-- [ ] sessionStorage 防例外讀寫；初始化隱藏不閃現；Reduced Motion 立即隱藏。
-- [ ] transitionBusy／取消 token，連點不重入；記錄 Debug 後停止活動。
+- [x] Debug 按鈕、Hidden、縮淡、排程停止、隱藏焦點交接。
+- [x] sessionStorage 防例外讀寫；初始化隱藏不閃現；Reduced Motion 立即隱藏。
+- [x] transitionBusy／取消 token，連點不重入；Debug 後停止活動。
 驗收：Debug後按Tab不進隱藏項；重整仍隱藏；拒絕儲存時不崩潰；連點不重複寫入或排程。
 本小步尚無召回 UI，驗收後可由開發工具移除指定 key 重整，不能把這項當成最終產品體驗。
+完成證據：09A 使用者回報 Debug PASS；09A headless 測試記錄 Hidden 重整、Storage 例外與排程結果。
 STOP → 08B。
 
 ### PR2-PET-08B｜Footer 召回與往返
 範圍：index.html Footer、js/pet.js、Pet CSS。
-- [ ] 原生亂碼 button、可讀焦點及accessible name；接清旗標、出場、Idle再Walking。
-- [ ] 保持捲動位置；鍵盤召回焦點交給角色；可見時重按不重建實例。
-- [ ] Debug／召回連續切換具一致結果；音效只留無副作用註解或 hook，不載入音檔。
+- [x] 原生亂碼 button、可讀焦點及accessible name；接清旗標、出場、Idle再Walking。
+- [x] 保持捲動位置；鍵盤召回焦點交給角色；可見時重按不重建實例。
+- [x] Debug／召回連續切換具一致結果；音效只留無副作用註解或 hook，不載入音檔。
 驗收：Debug→重整→Footer召回→重整；10次往返；減少動態；召回中再次點擊；原社群連結正常。
+完成證據：09A 使用者回報 Debug／Footer 及鍵盤召回 PASS；headless 自動化記錄召回、往返、Storage 例外與頁面捲動位置。
 STOP → 09A。
 
 ### PR2-PET-09A｜桌面與狀態回歸
 範圍：只修正本 PR 引入缺陷；新增 docs/pr2-bug-pet-verification.md。
-- [ ] 按下方矩陣驗證桌面、主題、狀態、異常情境；記錄瀏覽器版本／viewport／結果／截圖或重現步驟。
-- [ ] 原 Navbar、作品列表、Profile、Contact操作、Back to top、Matter.js切換主題抽查。
+- [x] 按下方矩陣驗證桌面、主題、狀態、異常情境；結果記入驗收文件。使用者回報的桌面人工環境資料未提供，已明確標示。
+- [x] 原 Navbar、作品列表、Profile、Contact操作、Back to top、Matter.js切換主題抽查（使用者回報 PASS；自動化只檢查部分 DOM 結構）。
 驗收：必測項有真實結果；無新增 Console 錯誤；未解缺陷具重現步驟。
+完成證據：驗收文件分開列出 15 項 headless PASS、使用者回報桌面人工 8/8 PASS 與 NOT TESTED 項目。
 STOP → 09B。
 
 ### PR2-PET-09B｜手機、鍵盤與減少動態驗收
 範圍：Pet缺陷修正與驗收文件。
-- [ ] 320/375/390/768px、橫向、200%縮放；實體手機軟鍵盤與safe-area，若無設備明列未測。
-- [ ] 鍵盤開關／導航／Debug／召回焦點；隱藏內容無可聚焦項。
-- [ ] Reduced Motion 初次載入和執行中變更；手動暫停；Light/Dark。
+- [x] 320/375/390/768px、橫向、200%縮放；實體手機軟鍵盤與safe-area 另明列 NOT TESTED。
+- [x] 鍵盤開關／導航／Debug／召回焦點；隱藏內容無可聚焦項。
+- [x] Reduced Motion 初次載入和執行中變更；手動暫停；Light/Dark。
 驗收：主要內容與表單操作不受干擾；不得把裝置模擬寫為實體手機實測。
+完成證據：09B headless 矩陣、兩項已修正缺陷及使用者回報四項人工 PASS 均記於驗收文件；實體手機／軟鍵盤／safe-area NOT TESTED。
 STOP → 09C。
 
 ### PR2-PET-09C｜整理證據與交付審查
 範圍：文件及必要PR資訊；不新增功能。
-- [ ] 核對實作任務、diff、素材版本、驗收結果與已知問題；勾選有證據的任務。
-- [ ] 回報未測設備與所有失敗項；高影響缺陷未解則維持 Draft。
-- [ ] 提供最後commit、已測矩陣、待人工驗收事項；由使用者決定ready／merge。
+- [x] 核對實作任務、相對 main 的完整 diff、素材版本、驗收結果與已知問題；僅勾選有文件／測試證據的任務。
+- [x] 回報未測設備與已確認缺陷；09B 兩項已重現缺陷已修正，手機實測限制明列。
+- [x] 更新驗收文件及 PR #2 說明，提供最終 commit、測試矩陣與待人工驗收事項；PR 維持 Draft 且未合併。
 驗收：沒有把規劃文件或尚未執行測試當成功能完成。
 STOP；不得自行合併。
 
 ## 10. 最終驗收矩陣
-結果欄於實作後填 PASS / FAIL / NOT TESTED，附證據；目前全部未測。
+結果按已取得證據記錄；自動化、使用者回報人工及未執行情境分開標示。詳細環境與項目見 `docs/pr2-bug-pet-verification.md`。人工回報未提供的瀏覽器／viewport 資料不推測。
 
-| 類別 | 必測情境 | 通過標準 |
-| --- | --- | --- |
-| 素材 | 三狀態、失敗載入、方向 | 比例正確、底線穩定、可退化操作 |
-| 移動 | 邊界、resize、連續30秒 | 不出界、速度合理、無重複迴圈 |
-| 暫停 | hover/focus、背景、手動、對話 | 不移動、恢復無瞬移、其他暫停原因仍有效 |
-| 對話 | 再點、Close、Escape、外部、三導覽 | 一致關閉、焦點合理、ARIA同步 |
-| 往返 | Debug/召回10次、快速重按 | 狀態正確、動畫不中途鎖死 |
-| 保存 | 重整、獨立新頁、儲存拋錯 | 同頁保留、例外可操作；分頁複製行為依瀏覽器記錄 |
-| 尺寸 | 320/375/390/768/1280/1440px、矮螢幕、200% | 無新增橫向捲軸，面板內容可存取 |
-| 手機 | iOS Safari／Android Chrome可取得設備 | 安全區／軟鍵盤不遮擋；無設備須列未測 |
-| 桌面 | 至少一個Chromium瀏覽器，Safari可取得時 | 記錄名稱版本，不籠統寫全瀏覽器通過 |
-| 外觀 | Light/Dark、focus、Footer入口 | 文字／焦點可辨，角色不主導作品閱讀 |
-| 減少動態 | 初始及執行中切換 | 無GIF、自走、彈跳；導覽非smooth |
-| 效能 | Hidden／背景／Idle檢查排程 | 無不必要移動迴圈、無累積timer/listener |
-| 原站回歸 | Nav、列表、Profile、表單、回頂、拉繩 | PR1既有操作不退化，不擅自送出真實表單資料 |
+| 類別 | 必測情境 | 通過標準 | 現有證據／狀態 |
+| --- | --- | --- | --- |
+| 素材 | 三狀態、失敗載入、方向 | 比例正確、底線穩定、可退化操作 | PASS（素材版本盤點及 05A–05B 驗收文件） |
+| 移動 | 邊界、resize、行走／停留 | 不出界、無重複迴圈 | PASS（09A 使用者回報桌面人工；headless 排程監測）；細項環境未提供 |
+| 暫停 | focus、手動、對話、Reduced Motion | 暫停原因不互相覆蓋 | PASS（06C 分項驗收及 09B headless）；真實背景頁／BFCache NOT TESTED |
+| 對話 | 再點、Close、Escape、外部、三導覽 | 一致關閉、焦點合理、ARIA 同步 | PASS（09A 使用者回報及 09B 鍵盤／Reduced Motion 驗收） |
+| 往返 | Debug／召回、重複輸入 | 狀態正確、動畫不中途鎖死 | PASS（09A 使用者回報；headless 10 次往返及排程檢查） |
+| 保存 | 重整、Storage 例外 | 同頁狀態及例外降級可用 | PASS（09A headless）；獨立／複製分頁差異未測 |
+| 尺寸 | 320/375/390/768px、844×390、640×400 等效視窗及原生 200% | 無新增水平溢出，面板內容可存取 | PASS（09B headless viewport 矩陣；原生 200% 為使用者人工回報） |
+| 手機 | 實體觸控、軟鍵盤、安全區 | 安全區／軟鍵盤不遮擋 | NOT TESTED（沒有實體手機；未以裝置模擬替代） |
+| 桌面 | Chromium 與桌面操作 | 記錄可確認的瀏覽器資訊 | PASS（Chrome 157.0.8103.39 headless；09A/09B 人工 PASS 為使用者回報且環境未提供；Safari NOT TESTED） |
+| 外觀 | Light/Dark、focus、Footer 入口 | 文字／焦點可辨 | PASS（09B 使用者人工回報；headless 僅查 computed styles，無視覺判讀） |
+| 減少動態 | 初始及執行中切換 | 不自走／持續 GIF，導覽可用 | PASS（09B headless 狀態／排程監測及使用者人工導覽回報） |
+| 效能 | Hidden／Idle 的 scheduler 與 rAF | 無重複活動迴圈 | PASS（09B headless 監測）；真實背景分頁生命週期 NOT TESTED |
+| 原站回歸 | Nav、列表、Profile、Contact、回頂、拉繩 | PR1 既有操作不退化 | PASS（09A 使用者回報；自動化僅檢查部分 DOM 結構，未覆蓋拉繩互動） |
 
 ## 11. 交給本地 AI 的第一輪指令
 ```text
@@ -264,13 +284,13 @@ Checks（已測、未測、失敗）/ Commit / Known Issues / Next Task，然後
 後續每輪以同模板替換為下一個完整 Task ID；新對話提供目前分支、上次commit、未解問題即可，不要求AI每次重讀全站。
 
 ## 12. 合併標準
-- [ ] 三素材已核對並提交；角色取代紫球。
-- [ ] 自走、待機、轉向、暫停、Happy與導覽正常。
-- [ ] Debug／Footer召回及保存／儲存失敗降級正常。
-- [ ] FSM、計時器、動畫與重複輸入沒有互相衝突。
-- [ ] 桌機／手機布局、鍵盤、Reduced Motion、Light/Dark符合矩陣。
-- [ ] 重要內容不被角色阻礙，暫時避讓與真正Hidden可區分。
-- [ ] PR1回歸檢查完成，未測與失敗明確列出。
+- [x] 三素材已核對並提交；角色取代紫球。
+- [x] 自走、待機、轉向、暫停、Happy 與導覽有實作及驗收證據。
+- [x] Debug／Footer 召回及保存／儲存失敗降級有驗收證據。
+- [x] FSM、排程、動畫及重複輸入有程式審查與自動化狀態監測證據。
+- [ ] 桌機／手機布局、鍵盤、Reduced Motion、Light/Dark 全符合矩陣（手機實機、軟鍵盤及 safe-area 尚未測）。
+- [x] 已測重要內容避讓及暫時隱藏／Debug Hidden 區別有驗收證據。
+- [x] PR1 回歸已有使用者回報 PASS，未測與自動化覆蓋限制明確列出。
 - [ ] 使用者完成人工審查並決定合併。
 
-本 PR 建立時僅包含製作規格；上述各項均未宣稱完成。
+本 PR 維持 Draft，09C 不會替使用者決定 Ready 或合併。原始建立時僅含製作規格的歷史狀態已由目前實作與驗收紀錄取代；未測限制及待使用者審查關卡如上保留。
